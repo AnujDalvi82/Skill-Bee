@@ -77,13 +77,16 @@ MATHE_ITEMS = [
     }
 ]
 
+from pydantic import BaseModel, Field
+
 class QuestionResponse(BaseModel):
-    question_id: str = ""
+    question_id: str = Field(min_length=1, max_length=100)
     is_correct: bool
-    topic: str
+    topic: str = Field(min_length=1, max_length=50)
 
 class CATEvaluationRequest(BaseModel):
-    responses: List[QuestionResponse]
+    # I-03: Cap test items to 50 to prevent algorithmic complexity DoS in MAP grid search
+    responses: List[QuestionResponse] = Field(default_factory=list, max_length=50)
 
 def irt_probability_2pl(theta: float, a: float, b: float, D: float = 1.702) -> float:
     z = D * a * (theta - b)

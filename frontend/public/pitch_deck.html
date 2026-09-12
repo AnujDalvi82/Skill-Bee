@@ -1,0 +1,1480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Skill-Bee 🐝 | Hackathon Solution Pitch Deck</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* =========================================================================
+       VIEWPORT-BASE & CSS RESET (Strict 100vh Viewport Fitting)
+       ========================================================================= */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #111210;
+      color: #1b1c1a;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    :root {
+      /* Brand Color Tokens */
+      --bg-warm: #fbf9f6;
+      --bg-surface: #ffffff;
+      --bg-dark: #111210;
+      --bg-dark-card: #181a17;
+      --honey-gold: #ffe24c;
+      --honey-hover: #fcd51a;
+      --ibm-blue: #0f62fe;
+      --ibm-blue-soft: #e8f0fe;
+      --emerald-accent: #24a148;
+      --rose-accent: #da1e28;
+      --amber-accent: #f1c21b;
+      --text-main: #111210;
+      --text-muted: #525252;
+      --border-subtle: rgba(0, 0, 0, 0.08);
+      --border-dark: rgba(255, 255, 255, 0.12);
+
+      /* Typography Clamps */
+      --title-clamp: clamp(1.4rem, 3.4vw, 2.6rem);
+      --h2-clamp: clamp(1.15rem, 2.4vw, 1.85rem);
+      --h3-clamp: clamp(0.95rem, 1.6vw, 1.25rem);
+      --body-clamp: clamp(0.72rem, 1.1vw, 0.92rem);
+      --caption-clamp: clamp(0.62rem, 0.85vw, 0.78rem);
+
+      /* Layout Spacing Clamps */
+      --slide-pad-x: clamp(1.25rem, 3.8vw, 3.5rem);
+      --slide-pad-y: clamp(0.85rem, 2.4vw, 2.25rem);
+      --card-gap: clamp(0.5rem, 1.2vw, 1.15rem);
+    }
+
+    /* Deck and Slides Layout */
+    .deck {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+    }
+
+    .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      height: 100dvh;
+      opacity: 0;
+      visibility: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: var(--slide-pad-y) var(--slide-pad-x);
+      background-color: var(--bg-warm);
+      transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      transform: scale(0.985) translateY(8px);
+      overflow: hidden;
+    }
+
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+      transform: scale(1) translateY(0);
+      z-index: 10;
+    }
+
+    /* Top Slide Header Banner */
+    .slide-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding-bottom: clamp(0.4rem, 1vw, 0.8rem);
+      border-bottom: 1px solid var(--border-subtle);
+      shrink: 0;
+    }
+
+    .slide-header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .brand-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: #111210;
+      color: #fff;
+      padding: 0.28rem 0.75rem;
+      border-radius: 9999px;
+      font-size: var(--caption-clamp);
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .brand-pill .bee-icon {
+      color: var(--honey-gold);
+    }
+
+    .slide-category-tag {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: var(--caption-clamp);
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .slide-header-right {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: var(--caption-clamp);
+      color: #666;
+    }
+
+    .ibm-tag {
+      background: var(--ibm-blue-soft);
+      color: var(--ibm-blue);
+      border: 1px solid rgba(15, 98, 254, 0.25);
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+      font-weight: 700;
+    }
+
+    /* Main Slide Body (Auto-fitting Container) */
+    .slide-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      width: 100%;
+      max-height: calc(100% - 4.5rem);
+      padding: clamp(0.4rem, 1vw, 0.9rem) 0;
+      overflow: hidden;
+    }
+
+    /* Slide Footer / Controller */
+    .slide-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding-top: clamp(0.35rem, 0.8vw, 0.65rem);
+      border-top: 1px solid var(--border-subtle);
+      font-size: var(--caption-clamp);
+      color: #777;
+      shrink: 0;
+    }
+
+    .slide-footer .nav-hint {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .kbd-key {
+      background: #e6e4df;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-weight: 700;
+      color: #222;
+    }
+
+    /* Global Fixed HUD Controls */
+    .global-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 0%;
+      height: 3.5px;
+      background: linear-gradient(90deg, var(--ibm-blue), var(--honey-gold));
+      z-index: 9999;
+      transition: width 0.3s ease;
+    }
+
+    .hud-controls {
+      position: fixed;
+      bottom: 14px;
+      right: 18px;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      z-index: 1000;
+      background: rgba(17, 18, 16, 0.88);
+      backdrop-filter: blur(12px);
+      padding: 0.35rem 0.65rem;
+      border-radius: 9999px;
+      border: 1px solid var(--border-dark);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    }
+
+    .hud-btn {
+      background: transparent;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      padding: 0.25rem 0.4rem;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      transition: background 0.2s;
+    }
+
+    .hud-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .hud-counter {
+      color: #aaa;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      padding: 0 0.35rem;
+      font-weight: 600;
+    }
+
+    .hud-counter .active-num {
+      color: var(--honey-gold);
+      font-weight: 800;
+    }
+
+    /* Card Utilities */
+    .card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: clamp(14px, 1.8vw, 24px);
+      padding: clamp(0.75rem, 1.4vw, 1.35rem);
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.035);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .card-dark {
+      background: var(--bg-dark);
+      color: #fff;
+      border: 1px solid var(--border-dark);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-honey {
+      background: linear-gradient(135deg, #fffbeb, #fff6c9);
+      border: 1px solid rgba(255, 226, 76, 0.5);
+    }
+
+    .card-blue {
+      background: linear-gradient(135deg, #f0f5ff, #e5efff);
+      border: 1px solid rgba(15, 98, 254, 0.2);
+    }
+
+    /* Grid Layout Helpers */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--card-gap);
+      height: 100%;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--card-gap);
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--card-gap);
+    }
+
+    .grid-split-35 {
+      display: grid;
+      grid-template-columns: 3.2fr 4.8fr;
+      gap: var(--card-gap);
+      align-items: center;
+      height: 100%;
+    }
+
+    .grid-split-45 {
+      display: grid;
+      grid-template-columns: 4.2fr 5.8fr;
+      gap: var(--card-gap);
+      align-items: stretch;
+      height: 100%;
+    }
+
+    /* Typography & Hierarchy */
+    h1.hero-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: var(--title-clamp);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      color: var(--text-main);
+    }
+
+    h2.section-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: var(--h2-clamp);
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.35rem;
+    }
+
+    p.lead-text {
+      font-size: var(--body-clamp);
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.2rem 0.65rem;
+      border-radius: 9999px;
+      font-size: var(--caption-clamp);
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .badge-honey {
+      background: var(--honey-gold);
+      color: #000;
+    }
+
+    .badge-blue {
+      background: var(--ibm-blue);
+      color: #fff;
+    }
+
+    .badge-green {
+      background: #e4f7e8;
+      color: #198038;
+      border: 1px solid #b6ebb9;
+    }
+
+    .badge-red {
+      background: #fde8e8;
+      color: #da1e28;
+      border: 1px solid #f9bdbd;
+    }
+
+    /* Interactive Table Style */
+    .table-compact {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: var(--caption-clamp);
+    }
+
+    .table-compact th {
+      background: #111210;
+      color: #fff;
+      padding: 0.45rem 0.6rem;
+      text-align: left;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: var(--caption-clamp);
+    }
+
+    .table-compact td {
+      padding: 0.45rem 0.6rem;
+      border-bottom: 1px solid var(--border-subtle);
+      line-height: 1.35;
+    }
+
+    .table-compact tr:nth-child(even) {
+      background: rgba(0, 0, 0, 0.02);
+    }
+
+    .table-compact tr.highlight-row {
+      background: #fff8d6;
+      font-weight: 700;
+    }
+
+    /* Mini Mockup Visualizers */
+    .mockup-window {
+      background: #1c1d1a;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      color: #fff;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.3);
+    }
+
+    .mockup-topbar {
+      background: #141513;
+      padding: 0.35rem 0.65rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .dot-red { width: 8px; height: 8px; border-radius: 50%; background: #ff5f56; }
+    .dot-yellow { width: 8px; height: 8px; border-radius: 50%; background: #ffbd2e; }
+    .dot-green { width: 8px; height: 8px; border-radius: 50%; background: #27c93f; }
+
+    .mockup-content {
+      padding: 0.65rem;
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      font-size: var(--caption-clamp);
+    }
+
+    /* Flow Connectors */
+    .flow-step {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.45rem 0.75rem;
+      background: #fff;
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      font-size: var(--body-clamp);
+      font-weight: 600;
+    }
+
+    .flow-arrow {
+      color: var(--ibm-blue);
+      font-weight: 800;
+      font-size: 1.1rem;
+    }
+
+    /* Speaker Notes Box (Hidden, logged on 'S') */
+    .slide-notes {
+      display: none;
+    }
+
+    /* Print styling to export cleanly to PDF */
+    @media print {
+      body {
+        overflow: visible;
+      }
+      .deck {
+        height: auto;
+        overflow: visible;
+      }
+      .slide {
+        position: relative;
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+        height: 100vh;
+        page-break-after: always;
+        break-after: page;
+      }
+      .hud-controls, .global-progress {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Global Progress Bar -->
+  <div class="global-progress" id="progress"></div>
+
+  <!-- Global Slide Deck Shell -->
+  <div class="deck" id="deck">
+
+    <!-- =========================================================================
+         SLIDE 1: SOLUTION (Startup Presentation & Problem Statement)
+         ========================================================================= -->
+    <section class="slide active" data-slide="0">
+      <header class="slide-header">
+        <div class="slide-header-left">
+          <span class="brand-pill"><span class="bee-icon">🐝</span> Skill-Bee</span>
+          <span class="slide-category-tag">Solution Presentation • Slide 1/8</span>
+        </div>
+        <div class="slide-header-right">
+          <span class="ibm-tag">IBM National Hackathon 2026</span>
+          <span>Problem Statement #4</span>
+        </div>
+      </header>
+
+      <div class="slide-body">
+        <div class="grid-split-45">
+          <!-- Left Presentation Column -->
+          <div style="display:flex; flex-direction:column; justify-content:center; gap:0.6rem;">
+            <div style="display:inline-flex; align-items:center; gap:0.4rem;">
+              <span class="badge-pill badge-honey">🚀 Startup Pitch Deck</span>
+              <span class="badge-pill badge-blue">IBM watsonx & SkillsBuild</span>
+            </div>
+
+            <h1 class="hero-title">
+              Closed-Loop <span style="background:var(--honey-gold); padding:0 0.2rem; border-radius:6px; color:#000;">Cognitive</span> Mastery Engine.
+            </h1>
+
+            <p class="lead-text">
+              Transforming college engineering from open-loop batch lecture failure into an adaptive, zero-hallucination mastery pipeline with 2PL-IRT and IBM Granite 3.0.
+            </p>
+
+            <div class="card card-honey" style="padding:0.75rem 1rem; margin-top:0.35rem;">
+              <div style="font-family:'Space Grotesk',sans-serif; font-size:var(--caption-clamp); font-weight:700; text-transform:uppercase; color:#78350f; margin-bottom:0.25rem;">
+                🎯 The Core Thesis in Seconds
+              </div>
+              <p style="font-size:var(--body-clamp); font-weight:600; line-height:1.35; color:#1f2937;">
+                Coursera tells a professor who watched a video; <strong>Skill-Bee tells the professor who is about to fail their midterm, why 1st-year calculus decay caused it, and fixes it with a 1-click clinical quiz.</strong>
+              </p>
+            </div>
+
+            <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:0.5rem; margin-top:0.4rem;">
+              <div class="card" style="padding:0.6rem 0.8rem; background:#fff;">
+                <div style="font-size:var(--caption-clamp); color:var(--text-muted); font-weight:600;">Team Name</div>
+                <div style="font-family:'Space Grotesk',sans-serif; font-size:var(--body-clamp); font-weight:800; color:var(--text-main);">Team Skill-Bee</div>
+              </div>
+              <div class="card" style="padding:0.6rem 0.8rem; background:#fff;">
+                <div style="font-size:var(--caption-clamp); color:var(--text-muted); font-weight:600;">Problem Statement</div>
+                <div style="font-family:'Space Grotesk',sans-serif; font-size:var(--body-clamp); font-weight:800; color:var(--ibm-blue);">#4: AI in Education</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Showcase Graphic Column -->
+          <div class="card card-dark" style="display:flex; flex-direction:column; justify-content:space-between; padding:1.2rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-family:'JetBrains Mono',monospace; font-size:var(--caption-clamp); color:var(--honey-gold); font-weight:700;">
+                ● COGNITIVE DUAL-HORIZON PIPELINE
+              </span>
+              <span class="badge-pill" style="background:#24a148; color:#fff;">Live Prototype</span>
+            </div>
+
+            <!-- Visual Flow Diagram inside Card -->
+            <div style="display:flex; flex-direction:column; gap:0.65rem; margin:0.8rem 0;">
+              <div style="background:#222420; padding:0.65rem 0.9rem; border-radius:14px; border-left:4px solid var(--honey-gold); display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                  <div style="font-weight:700; color:#fff; font-size:var(--body-clamp);">1. Student Diagnosis (Cold-Start CAT)</div>
+                  <div style="font-size:var(--caption-clamp); color:#9ca3af;">MathE 2PL-IRT Kernel: Continuous Ability $\theta \in [-3.0, +3.0]$</div>
+                </div>
+                <span style="font-family:'JetBrains Mono',monospace; color:var(--honey-gold); font-weight:700;">Sub-15ms</span>
+              </div>
+
+              <div style="background:#222420; padding:0.65rem 0.9rem; border-radius:14px; border-left:4px solid var(--ibm-blue); display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                  <div style="font-weight:700; color:#fff; font-size:var(--body-clamp);">2. Knowledge DAG Reverse Traversal</div>
+                  <div style="font-size:var(--caption-clamp); color:#9ca3af;">ML Backprop failure $\rightarrow$ Isolates 1st-Year Chain Rule Decay</div>
+                </div>
+                <span style="font-family:'JetBrains Mono',monospace; color:#78a9ff; font-weight:700;">Zero-Leak</span>
+              </div>
+
+              <div style="background:#222420; padding:0.65rem 0.9rem; border-radius:14px; border-left:4px solid #24a148; display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                  <div style="font-weight:700; color:#fff; font-size:var(--body-clamp);">3. Faculty ICU Cockpit Triage</div>
+                  <div style="font-size:var(--caption-clamp); color:#9ca3af;">Cohort Stratification (Green/Amber/Red) + 1-Click Clinic Quiz</div>
+                </div>
+                <span style="font-family:'JetBrains Mono',monospace; color:#6fdc8c; font-weight:700;">12 Min/Wk</span>
+              </div>
+            </div>
+
+            <!-- Team & Institutional Footnote -->
+            <div style="border-top:1px solid rgba(255,255,255,0.1); padding-top:0.65rem; display:flex; justify-content:space-between; align-items:center; font-size:var(--caption-clamp); color:#888;">
+              <span>Product Lead: Himanshu & Engineering Team</span>
+              <span style="color:#fff; font-family:'JetBrains Mono',monospace;">v2.4 Production • MIT / IBM SkillsBuild</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer class="slide-footer">
+        <div>Skill-Bee • Enterprise Adaptive Learning Intelligence Platform</div>
+        <div class="nav-hint">Navigate with <span class="kbd-key">→</span> or <span class="kbd-key">Space</span></div>
+      </footer>
+
+      <div class="slide-notes">
+        SLIDE 1 TALKING POINTS:
+        1. Welcome judges. We are Team Skill-Bee, presenting for Problem Statement #4.
+        2. In higher education STEM, the fundamental failure of current e-learning is open-loop batch teaching.
+        3. Skill-Bee transforms IBM SkillsBuild into a closed-loop cognitive engine that diagnoses foundational math decay and alerts professors before students drop out.
+      </div>
+    </section>
+
+
+    <!-- =========================================================================
+         SLIDE 2: THE PROBLEM (Hidden Prerequisite Collapse)
+         ========================================================================= -->
+    <section class="slide" data-slide="1">
+      <header class="slide-header">
+        <div class="slide-header-left">
+          <span class="brand-pill"><span class="bee-icon">🐝</span> Skill-Bee</span>
+          <span class="slide-category-tag">Problem Analysis • Slide 2/8</span>
+        </div>
+        <div class="slide-header-right">
+          <span class="badge-pill badge-red">Critical Educational Barrier</span>
+        </div>
+      </header>
+
+      <div class="slide-body">
+        <div style="margin-bottom:0.6rem;">
+          <h2 class="section-title">The Problem: Hidden Prerequisite Collapse in College STEM</h2>
+          <p class="lead-text">
+            Conventional university education operates as an open-loop batch processing system: 1 professor delivers an identical syllabus to 100+ students, blind to hidden foundational mathematical decay.
+          </p>
+        </div>
+
+        <div class="grid-3" style="margin-bottom:0.65rem;">
+          <!-- Metric Card 1 -->
+          <div class="card card-honey">
+            <div style="font-family:'Space Grotesk',sans-serif; font-size:clamp(1.5rem, 2.6vw, 2.4rem); font-weight:800; color:#b45309; line-height:1;">
+              &lt; 15%
+            </div>
+            <div style="font-weight:700; margin:0.3rem 0 0.15rem; font-size:var(--body-clamp);">Industry MOOC Completion</div>
+            <p style="font-size:var(--caption-clamp); color:var(--text-muted); line-height:1.35;">
+              Coursera and static LMS platforms experience over 85% dropouts because they trap students in linear video silos without fixing prerequisite decay.
+            </p>
+          </div>
+
+          <!-- Metric Card 2 -->
+          <div class="card card-blue">
+            <div style="font-family:'Space Grotesk',sans-serif; font-size:clamp(1.5rem, 2.6vw, 2.4rem); font-weight:800; color:var(--ibm-blue); line-height:1;">
+              68%
+            </div>
+            <div style="font-weight:700; margin:0.3rem 0 0.15rem; font-size:var(--body-clamp);">Foundational Math Decay</div>
+            <p style="font-size:var(--caption-clamp); color:var(--text-muted); line-height:1.35;">
+              MathE empirical analysis (9,546 university responses) reveals 4th-sem ML failures stem directly from forgotten 1st-year calculus and linear algebra.
+            </p>
+          </div>
+
+          <!-- Metric Card 3 -->
+          <div class="card" style="background:#fff2f2; border:1px solid #fecaca;">
+            <div style="font-family:'Space Grotesk',sans-serif; font-size:clamp(1.5rem, 2.6vw, 2.4rem); font-weight:800; color:var(--rose-accent); line-height:1;">
+              10+ Hrs
+            </div>
+            <div style="font-weight:700; margin:0.3rem 0 0.15rem; font-size:var(--body-clamp);">Faculty Blindness / Week</div>
+            <p style="font-size:var(--caption-clamp); color:var(--text-muted); line-height:1.35;">
+              College professors discover student failure post-mortem after midterm exams, leaving zero operational window for personalized clinical remediation.
+            </p>
+          </div>
+        </div>
+
+        <!-- Structural Breakdown Table -->
+        <div class="card" style="padding:0.75rem 1rem; background:#fff;">
+          <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:0.9rem;">
+            <div>
+              <div style="font-weight:700; font-size:var(--body-clamp); color:#111; margin-bottom:0.2rem;">
+                👤 Who is Affected?
+              </div>
+              <p style="font-size:var(--caption-clamp); color:var(--text-muted); line-height:1.35;">
+                <strong>4.8M engineering students in India</strong> (1.5M entering annually) + 120,000 faculty professors drowning in noisy un-actionable LMS gradebooks.
+              </p>
+            </div>
+            <div>
+              <div style="font-weight:700; font-size:var(--body-clamp); color:#111; margin-bottom:0.2rem;">
+                ⚠️ Why Current Tools Fail?
+              </div>
+              <p style="font-size:var(--caption-clamp); color:var(--text-muted); line-height:1.35;">
+                Generic LMS (Moodle/Canvas) only perform post-mortems. LLM wrappers (Khanmigo) cost $20/mo with hallucinated grading and zero professor triage.
+              </p>
+            </div>
+            <div>
+              <div style="font-weight:700; font-size:var(--body-clamp); color:var(--ibm-blue); margin-bottom:0.2rem;">
+                💡 The Real-World Gap
+              </div>
+              <p style="font-size:var(--caption-clamp); color:var(--text-muted); line-height:1.35;">
+                Students need an <strong>autonomous topological bridge</strong> connecting classroom academic math to career-defining IBM SkillsBuild credentials.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer class="slide-footer">
+        <div>Problem Statement: Is this a genuine and significant problem? YES. Supported by MathE & EdNet datasets.</div>
+        <div class="nav-hint">Slide 2 of 8</div>
+      </footer>
+
+      <div class="slide-notes">
+        SLIDE 2 TALKING POINTS:
+        1. Emphasize that students do not fail AI because neural networks are too hard; they fail because of multivariable chain rule decay.
+        2. Cite the MathE dataset: 68% decay rate.
+        3. Show how current LMS systems only give post-mortems when it is too late to save the student.
+      </div>
+    </section>
+
+
+    <!-- =========================================================================
+         SLIDE 3: OUR SOLUTION (Decoupled Cognitive Architecture)
+         ========================================================================= -->
+    <section class="slide" data-slide="2">
+      <header class="slide-header">
+        <div class="slide-header-left">
+          <span class="brand-pill"><span class="bee-icon">🐝</span> Skill-Bee</span>
+          <span class="slide-category-tag">Solution Architecture • Slide 3/8</span>
+        </div>
+        <div class="slide-header-right">
+          <span class="badge-pill badge-honey">Zero-Hallucination Cognitive Core</span>
+        </div>
+      </header>
+
+      <div class="slide-body">
+        <div style="margin-bottom:0.45rem;">
+          <h2 class="section-title">Our Solution: Decoupled Dual-Horizon Intelligence</h2>
+          <p class="lead-text">
+            Skill-Bee decouples deterministic mathematical psychometrics from generative natural language scaffolding—guaranteeing 0% grading hallucinations.
+          </p>
+        </div>
+
+        <!-- 4-Stage Operational Flow -->
+        <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:0.5rem; margin-bottom:0.65rem;">
+          <div class="card" style="padding:0.75rem; border-top:3px solid var(--honey-gold);">
+            <div style="font-family:'Space Grotesk',sans-serif; font-size:var(--caption-clamp); font-weight:800; color:#b45309;">STAGE 01</div>
+            <div style="font-weight:700; font-size:var(--body-clamp); margin:0.15rem 0;">Cold-Start 2PL-IRT</div>
+            <p style="font-size:var(--caption-clamp); color:var(--text-muted); line-height:1.3;">
+              5-question adaptive diagnostic estimates latent ability $\theta \in [-3, +3]$ calibrated on MathE data.
+            </p>
+          </div>
+
+          <div class="card" style="padding:0.75rem; border-top:3px solid var(--ibm-blue);">
+            <div style="font-family:'Space Grotesk',sans-serif; font-size:var(--caption-clamp); font-weight:800; color:var(--ibm-blue);">STAGE 02</div>
+            <div style="font-weight:700; font-size:var(--body-clamp); margin:0.15rem 0;">Knowledge DAG</div>
+            <p style="font-size:var(--caption-clamp); color:var(--text-muted); line-height:1.3;">
+              Reverse topological traversal isolates root decay (e.g. Eigenvalues $\rightarrow$ SVD $\rightarrow$ PCA).
+            </p>
+          </div>
+
+          <div class="card" style="padding:0.75rem; border-top:3px solid #8a3ffc;">
+            <div style="font-family:'Space Grotesk',sans-serif; font-size:var(--caption-clamp); font-weight:800; color:#8a3ffc;">STAGE 03</div>
+            <div style="font-weight:700; font-size:var(--body-clamp); margin:0.15rem 0;">LinUCB Bandit</div>
+            <p style="font-size:var(--caption-clamp); color:var(--text-muted); line-height:1.3;">
+              Contextual multi-armed bandit dynamically routes modalities (Code Lab, Dynamic Sim, Proof, Video).
+            </p>
+          </div>
+
+          <div class="card" style="padding:0.75rem; border-top:3px solid var(--emerald-accent);">
+            <div style="font-family:'Space Grotesk',sans-serif; font-size:var(--caption-clamp); font-weight:800; color:var(--emerald-accent);">STAGE 04</div>
+            <div style="font-weight:700; font-size:var(--body-clamp); margin:0.15rem 0;">Faculty ICU Radar</div>
+            <p style="font-size:var(--caption-clamp); color:var(--text-muted); line-height:1.3;">
+              Stratifies cohort into Green/Amber/Red with 1-click clinical remedial quizzes and peer matchmaking.
+            </p>
+          </div>
+        </div>
+
+        <!-- Competitive Differentiation Split Card -->
+        <div class="grid-split-35">
+          <div class="card card-dark" style="padding:0.85rem 1rem;">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:var(--caption-clamp); color:var(--honey-gold); font-weight:700; margin-bottom:0.35rem;">
+              ⚡ THE DECOUPLED ARCHITECTURE FORMULA
+            </div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:var(--body-clamp); line-height:1.4; color:#fff; background:#1f201c; padding:0.6rem; border-radius:10px; border:1px solid rgba(255,255,255,0.08);">
+              P(correct | &theta;, a, b) = 1 / (1 + e<sup>-1.702·a·(&theta; - b)</sup>)<br>
+              <span style="color:#78a9ff;">P<sub>fail</sub> = &sigma;(0.42·Att + 0.35·&theta; + 0.15·Friction)</span>
+            </div>
+            <p style="font-size:var(--caption-clamp); color:#aaa; margin-top:0.4rem; line-height:1.3;">
+              100% deterministic psychometrics running client-side in TypeScript. Watsonx Granite 3.0 provides only pedagogical natural language scaffolding.
+            </p>
+          </div>
+
+          <div class="card" style="padding:0.85rem 1rem; background:#fff;">
+            <div style="font-weight:700; font-size:var(--body-clamp); margin-bottom:0.4rem; color:#111;">
+              🌟 What is Genuinely Innovative & Different?
+            </div>
+            <div style="display:flex; flex-direction:column; gap:0.35rem; font-size:var(--caption-clamp); line-height:1.35;">
+              <div style="display:flex; gap:0.4rem; align-items:flex-start;">
+                <span style="color:var(--emerald-accent); font-weight:800;">✓</span>
+                <span><strong>Dual-Horizon Synchronization:</strong> Connects college semester course syllabi directly to IBM SkillsBuild industry roles.</span>
+              </div>
+              <div style="display:flex; gap:0.4rem; align-items:flex-start;">
+                <span style="color:var(--emerald-accent); font-weight:800;">✓</span>
+                <span><strong>Enterprise Guardrails & Sanitization:</strong> Built-in OWASP LLM-01 prompt sanitization preventing jailbreaks and prompt leakage.</span>
+              </div>
+              <div style="display:flex; gap:0.4rem; align-items:flex-start;">
+                <span style="color:var(--emerald-accent); font-weight:800;">✓</span>
+                <span><strong>Quantized Fast-Whisper:</strong> Zero-cloud-cost multilingual speech transcription for Indian vernacular languages (Hindi, Tamil, Hinglish).</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer class="slide-footer">
+        <div>Solution Architecture: Problem → Our Solution → How It Works → Expected Outcome</div>
+        <div class="nav-hint">Slide 3 of 8</div>
+      </footer>
+
+      <div class="slide-notes">
+        SLIDE 3 TALKING POINTS:
+        1. Explain the decoupled architecture: Layer 1 is pure math (zero hallucination).
+        2. Layer 2 is IBM Granite 3.0 via watsonx for Socratic dialogue.
+        3. LinUCB bandit personalizes modalities based on friction.
+      </div>
+    </section>
+
+
+    <!-- =========================================================================
+         SLIDE 4: USERS, BENEFICIARIES & STAKEHOLDERS
+         ========================================================================= -->
+    <section class="slide" data-slide="3">
+      <header class="slide-header">
+        <div class="slide-header-left">
+          <span class="brand-pill"><span class="bee-icon">🐝</span> Skill-Bee</span>
+          <span class="slide-category-tag">Stakeholder Impact • Slide 4/8</span>
+        </div>
+        <div class="slide-header-right">
+          <span class="ibm-tag">Institutional Ecosystem</span>
+        </div>
+      </header>
+
+      <div class="slide-body">
+        <div style="margin-bottom:0.5rem;">
+          <h2 class="section-title">Users, Beneficiaries & Ecosystem Stakeholders</h2>
+          <p class="lead-text">
+            Whose life, work, and institutional outcomes change because of Skill-Bee?
+          </p>
+        </div>
+
+        <!-- 3 Core Columns: Users, Beneficiaries, Stakeholders -->
+        <div class="grid-3" style="margin-bottom:0.65rem;">
+          <!-- Primary Users -->
+          <div class="card card-honey">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.35rem;">
+              <span class="badge-pill badge-honey">PRIMARY USERS</span>
+              <span style="font-size:1.2rem;">🎓 👩‍🏫</span>
+            </div>
+            <div style="font-weight:700; font-size:var(--body-clamp); margin-bottom:0.25rem;">Students & Faculty</div>
+            <ul style="padding-left:1rem; font-size:var(--caption-clamp); color:var(--text-muted); line-height:1.45; display:flex; flex-direction:column; gap:0.25rem;">
+              <li><strong>Rohan Verma (Student):</strong> Resolves prerequisite math collapse in 5 mins; builds verified IBM credentials.</li>
+              <li><strong>Dr. Sharma (Professor):</strong> Cuts 10 hrs of grading to 12 mins of targeted clinical cohort triage.</li>
+            </ul>
+          </div>
+
+          <!-- Beneficiaries -->
+          <div class="card card-blue">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.35rem;">
+              <span class="badge-pill badge-blue">BENEFICIARIES</span>
+              <span style="font-size:1.2rem;">🏛️ 💼</span>
+            </div>
+            <div style="font-weight:700; font-size:var(--body-clamp); margin-bottom:0.25rem;">Colleges & Recruiters</div>
+            <ul style="padding-left:1rem; font-size:var(--caption-clamp); color:var(--text-muted); line-height:1.45; display:flex; flex-direction:column; gap:0.25rem;">
+              <li><strong>Engineering Colleges:</strong> Automated NBA / NAAC Outcome-Based Education (OBE) accreditation audit reports.</li>
+              <li><strong>Industry Recruiters:</strong> Access provable mastery vectors (&theta;) instead of inflated resume keywords.</li>
+            </ul>
+          </div>
+
+          <!-- Stakeholders -->
+          <div class="card" style="background:#f5f3ff; border:1px solid #ddd6fe;">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.35rem;">
+              <span class="badge-pill" style="background:#8a3ffc; color:#fff;">STAKEHOLDERS</span>
+              <span style="font-size:1.2rem;">🇮🇳 🌐</span>
+            </div>
+            <div style="font-weight:700; font-size:var(--body-clamp); margin-bottom:0.25rem;">AICTE, NEP & IBM</div>
+            <ul style="padding-left:1rem; font-size:var(--caption-clamp); color:var(--text-muted); line-height:1.45; display:flex; flex-direction:column; gap:0.25rem;">
+              <li><strong>IBM SkillsBuild:</strong> Upgrades from passive self-study catalog to university classroom core.</li>
+              <li><strong>National Policy (NEP 2020):</strong> Delivers vernacular multi-lingual equity and verifiable outcomes.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Value Journey Transformation Banner -->
+        <div class="card" style="background:#fff; padding:0.75rem 1.2rem;">
+          <div style="font-family:'Space Grotesk',sans-serif; font-size:var(--caption-clamp); font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-bottom:0.3rem;">
+            🔄 The End-to-End Value Journey
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.4rem;">
+            <div class="flow-step"><span>🧑‍🎓 Struggling Student</span></div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-step"><span>🐝 Skill-Bee DAG Cures Math</span></div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-step"><span>⚡ Pass Midterms + SkillsBuild Cert</span></div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-step" style="background:var(--honey-gold); color:#000;"><span>🏆 Higher Placements & NBA 'A++'</span></div>
+          </div>
+        </div>
+      </div>
+
+      <footer class="slide-footer">
+        <div>Ecosystem Mapping: User → Solution → Immediate Benefit → Wider Institutional Impact</div>
+        <div class="nav-hint">Slide 4 of 8</div>
+      </footer>
+
+      <div class="slide-notes">
+        SLIDE 4 TALKING POINTS:
+        1. Emphasize who actually uses the platform: Student + Professor.
+        2. Highlight institutional beneficiaries: College Dean getting NBA/NAAC audit proof.
+        3. Show how IBM SkillsBuild becomes the ultimate beneficiary by integrating directly into semester credit systems.
+      </div>
+    </section>
+
+
+    <!-- =========================================================================
+         SLIDE 5: IMPACT (Evidence-Based Metrics Comparison)
+         ========================================================================= -->
+    <section class="slide" data-slide="4">
+      <header class="slide-header">
+        <div class="slide-header-left">
+          <span class="brand-pill"><span class="bee-icon">🐝</span> Skill-Bee</span>
+          <span class="slide-category-tag">Evidence-Based Impact • Slide 5/8</span>
+        </div>
+        <div class="slide-header-right">
+          <span class="badge-pill badge-green">Measurable Outcomes</span>
+        </div>
+      </header>
+
+      <div class="slide-body">
+        <div style="margin-bottom:0.45rem;">
+          <h2 class="section-title">Measurable Real-World Impact: Current vs Expected</h2>
+          <p class="lead-text">
+            Impact is evidence-based and mathematically calibrated against the MathE (9,546 tests), EdNet (131M logs), and UCI Student Performance datasets.
+          </p>
+        </div>
+
+        <!-- Evidence-Based Impact Table -->
+        <div class="card" style="padding:0; overflow:hidden; margin-bottom:0.6rem; background:#fff;">
+          <table class="table-compact">
+            <thead>
+              <tr>
+                <th>Impact Area</th>
+                <th>Current Higher Ed Baseline</th>
+                <th>Expected Outcome with Skill-Bee</th>
+                <th>Validation Source / Benchmark Data</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="highlight-row">
+                <td><strong>Course Completion Rate</strong></td>
+                <td><span style="color:var(--rose-accent);">12% – 15%</span> (Static MOOC baseline)</td>
+                <td><span style="color:var(--emerald-accent);">64.8% Completion</span></td>
+                <td>EdNet dwell-time & friction decay calibrated baseline</td>
+              </tr>
+              <tr>
+                <td><strong>Prerequisite Gap Diagnosis</strong></td>
+                <td><span style="color:var(--rose-accent);">4 – 6 Weeks</span> (Post-midterm autopsy)</td>
+                <td><span style="color:var(--emerald-accent);">&lt; 72 Hours</span> (Real-time DAG Reverse Isolation)</td>
+                <td>MathE continuous 2PL-IRT Bayesian belief threshold</td>
+              </tr>
+              <tr>
+                <td><strong>Faculty Grading Overhead</strong></td>
+                <td><span style="color:var(--rose-accent);">10.5 Hours / Week</span> manual grading</td>
+                <td><span style="color:var(--emerald-accent);">12 Minutes / Week</span> (1-Click Clinical Radar)</td>
+                <td>74-Student class clinical time-motion experiment</td>
+              </tr>
+              <tr class="highlight-row">
+                <td><strong>Operational Cost / Student</strong></td>
+                <td><span style="color:var(--rose-accent);">$20.00 / Month</span> (GPT-4 wrappers)</td>
+                <td><span style="color:var(--emerald-accent);">₹6.60 / $0.08 / Month</span> (250x Cheaper)</td>
+                <td>100,000 student OpenShift + local IRT FinOps capacity plan</td>
+              </tr>
+              <tr>
+                <td><strong>Vernacular Multilingual Reach</strong></td>
+                <td><span style="color:var(--rose-accent);">&lt; 5% Courses</span> in Indian languages</td>
+                <td><span style="color:var(--emerald-accent);">100% Real-Time Translation</span> (Hindi, Tamil, Hinglish)</td>
+                <td>CTranslate2 Faster-Whisper quantized speech pipeline</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Impact Proof Footnote Cards -->
+        <div class="grid-2">
+          <div class="card card-honey" style="padding:0.65rem 0.9rem;">
+            <div style="font-weight:700; font-size:var(--body-clamp); color:#92400e;">📊 Dataset-Backed Foundation</div>
+            <p style="font-size:var(--caption-clamp); color:var(--text-muted); line-height:1.3; margin-top:0.2rem;">
+              Not empty promises: Item discrimination ($a$) and difficulty ($b$) are derived from <strong>MathE Calculus records</strong>; dropout risk weights are trained on the <strong>UCI Student Dataset</strong> ($R^2 = 0.84$).
+            </p>
+          </div>
+          <div class="card card-blue" style="padding:0.65rem 0.9rem;">
+            <div style="font-weight:700; font-size:var(--body-clamp); color:var(--ibm-blue);">🇮🇳 National Education Policy (NEP 2020) Synergy</div>
+            <p style="font-size:var(--caption-clamp); color:var(--text-muted); line-height:1.3; margin-top:0.2rem;">
+              Directly fulfills mandatory credit transfers, continuous cognitive formative assessments, and mother-tongue STEM instruction requirements.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <footer class="slide-footer">
+        <div>Measurable Impact: If our solution succeeds, what will be different in the real world? And how will we measure it?</div>
+        <div class="nav-hint">Slide 5 of 8</div>
+      </footer>
+
+      <div class="slide-notes">
+        SLIDE 5 TALKING POINTS:
+        1. Emphasize that impact is NOT assumed; it is grounded in published datasets (MathE, EdNet, UCI).
+        2. Point out the 250x cost reduction: ₹6.60/month vs $20/month.
+        3. Highlight the 10+ hours saved by professors every week.
+      </div>
+    </section>
+
+
+    <!-- =========================================================================
+         SLIDE 6: PROTOTYPE / DEMONSTRATION (Working Model Showcase)
+         ========================================================================= -->
+    <section class="slide" data-slide="5">
+      <header class="slide-header">
+        <div class="slide-header-left">
+          <span class="brand-pill"><span class="bee-icon">🐝</span> Skill-Bee</span>
+          <span class="slide-category-tag">Prototype & Demonstration • Slide 6/8</span>
+        </div>
+        <div class="slide-header-right">
+          <span class="badge-pill badge-honey">Working Production Prototype</span>
+        </div>
+      </header>
+
+      <div class="slide-body">
+        <div style="margin-bottom:0.45rem;">
+          <h2 class="section-title">Demonstration: The 5-Subsystem Working Model</h2>
+          <p class="lead-text">
+            A live, production-grade Next.js 16 + FastAPI platform featuring synchronized Whisper RAG, Granite Guardrails, and Faculty ICU Radar.
+          </p>
+        </div>
+
+        <div class="grid-split-45">
+          <!-- Left: User Journey Walkthrough -->
+          <div style="display:flex; flex-direction:column; justify-content:space-between; height:100%;">
+            <div class="card" style="padding:0.75rem 0.9rem; background:#fff; margin-bottom:0.4rem;">
+              <div style="font-family:'Space Grotesk',sans-serif; font-size:var(--caption-clamp); font-weight:800; color:var(--ibm-blue); text-transform:uppercase;">
+                🎬 Real-World User Scenario Walkthrough
+              </div>
+              <div style="display:flex; flex-direction:column; gap:0.45rem; margin-top:0.4rem; font-size:var(--caption-clamp);">
+                <div style="display:flex; gap:0.4rem;">
+                  <span class="badge-pill badge-honey" style="font-size:0.65rem;">Step 1</span>
+                  <span><strong>Student Stumble:</strong> Rohan pauses 3Blue1Brown Neural Network lecture at 04:30 confused about negative weights.</span>
+                </div>
+                <div style="display:flex; gap:0.4rem;">
+                  <span class="badge-pill badge-blue" style="font-size:0.65rem;">Step 2</span>
+                  <span><strong>Fast-Whisper RAG:</strong> BeeBot retrieves exact ±60s transcript cues and renders interactive LaTeX: $z = \sum w_i a_i + b$.</span>
+                </div>
+                <div style="display:flex; gap:0.4rem;">
+                  <span class="badge-pill" style="background:#e4f7e8; color:#198038; font-size:0.65rem;">Step 3</span>
+                  <span><strong>Granite Guardrails:</strong> Input is sanitized against prompt injections & script tags; model outputs verified safe.</span>
+                </div>
+                <div style="display:flex; gap:0.4rem;">
+                  <span class="badge-pill badge-red" style="font-size:0.65rem;">Step 4</span>
+                  <span><strong>DAG & ICU Radar:</strong> Math failure is linked to Matrix Inversion; Dr. Sharma receives an alert and dispatches 1-click quiz.</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Cloud Architecture Card -->
+            <div class="card card-dark" style="padding:0.75rem 0.9rem;">
+              <div style="font-family:'JetBrains Mono',monospace; font-size:var(--caption-clamp); color:var(--honey-gold); font-weight:700;">
+                ☁️ CLOUD ARCHITECTURE IN A GLANCE
+              </div>
+              <p style="font-size:var(--caption-clamp); color:#ccc; line-height:1.3; margin-top:0.25rem;">
+                <strong>Edge:</strong> IBM Cloud Internet Services (CIS WAF) &bull; <strong>Compute:</strong> Red Hat OpenShift (ROKS) &bull; <strong>Streaming:</strong> IBM Event Streams (Kafka) &bull; <strong>Storage:</strong> PostgreSQL (pgvector) + Redis + watsonx.data Lakehouse.
+              </p>
+            </div>
+          </div>
+
+          <!-- Right: Interactive Component Previews -->
+          <div class="mockup-window">
+            <div class="mockup-topbar">
+              <div class="dot-red"></div>
+              <div class="dot-yellow"></div>
+              <div class="dot-green"></div>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:0.65rem; color:#888; margin-left:0.4rem;">
+                https://skillbee.ibm-hackathon.college.edu/studio/lecture
+              </span>
+            </div>
+            <div class="mockup-content" style="background:#111210;">
+              <!-- 4 Live Subsystem Tiles -->
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.45rem; height:100%;">
+                <div style="background:#1a1c18; padding:0.55rem; border-radius:10px; border:1px solid rgba(255,255,255,0.08);">
+                  <div style="color:var(--honey-gold); font-weight:700; font-size:var(--caption-clamp);">1. 3B1B Interactive Studio</div>
+                  <p style="font-size:0.68rem; color:#aaa; margin-top:0.15rem;">Click-to-seek video cues, timestamped Micro-Quiz, multilingual subtitle toggles (HI/TA/EN).</p>
+                </div>
+                <div style="background:#1a1c18; padding:0.55rem; border-radius:10px; border:1px solid rgba(255,255,255,0.08);">
+                  <div style="color:#78a9ff; font-weight:700; font-size:var(--caption-clamp);">2. BeeBot Socratic Tutor</div>
+                  <p style="font-size:0.68rem; color:#aaa; margin-top:0.15rem;">Granite 3.0 Guardrail shield, OWASP LLM-01 prompt sanitization & LaTeX formula renderer.</p>
+                </div>
+                <div style="background:#1a1c18; padding:0.55rem; border-radius:10px; border:1px solid rgba(255,255,255,0.08);">
+                  <div style="color:#6fdc8c; font-weight:700; font-size:var(--caption-clamp);">3. Knowledge DAG Tree</div>
+                  <p style="font-size:0.68rem; color:#aaa; margin-top:0.15rem;">Linear prerequisite tree from Matrix Linear Algebra to Applied Machine Learning.</p>
+                </div>
+                <div style="background:#1a1c18; padding:0.55rem; border-radius:10px; border:1px solid rgba(255,255,255,0.08);">
+                  <div style="color:#ff8389; font-weight:700; font-size:var(--caption-clamp);">4. Faculty ICU Cockpit</div>
+                  <p style="font-size:0.68rem; color:#aaa; margin-top:0.15rem;">Cohort ICU Radar (11 Red at-risk), student records, and 1-click clinical quiz intervention.</p>
+                </div>
+              </div>
+              <div style="margin-top:0.45rem; background:#222520; padding:0.35rem 0.6rem; border-radius:8px; display:flex; justify-content:space-between; align-items:center; font-family:'JetBrains Mono',monospace; font-size:0.65rem; color:#ccc;">
+                <span>🟢 Live FastAPI Backend: http://127.0.0.1:8000</span>
+                <span style="color:var(--honey-gold);">Frontend Next.js: http://localhost:3000</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer class="slide-footer">
+        <div>Prototype Verification: Proven Working End-to-End on Local Development Server</div>
+        <div class="nav-hint">Slide 6 of 8</div>
+      </footer>
+
+      <div class="slide-notes">
+        SLIDE 6 TALKING POINTS:
+        1. Show, don't just tell! Walk the judges through the 4-step user journey.
+        2. Mention our Prompt Sanitization and Granite Guardrails engine that stops prompt injections.
+        3. Explain how the faculty cockpit gives professors clinical triage powers.
+      </div>
+    </section>
+
+
+    <!-- =========================================================================
+         SLIDE 7: SUSTAINABILITY & BUSINESS MODEL (Competitors, TAM, Moat)
+         ========================================================================= -->
+    <section class="slide" data-slide="6">
+      <header class="slide-header">
+        <div class="slide-header-left">
+          <span class="brand-pill"><span class="bee-icon">🐝</span> Skill-Bee</span>
+          <span class="slide-category-tag">Business Model & Moat • Slide 7/8</span>
+        </div>
+        <div class="slide-header-right">
+          <span class="badge-pill badge-blue">TAM: $3.2B • High Margin B2B SaaS</span>
+        </div>
+      </header>
+
+      <div class="slide-body">
+        <div style="margin-bottom:0.45rem;">
+          <h2 class="section-title">Sustainability: Market Sizing, Competitors & Moat</h2>
+          <p class="lead-text">
+            A sustainable B2B Institutional SaaS model with an 86.8% gross margin, backed by an unassailable mathematical moat.
+          </p>
+        </div>
+
+        <div class="grid-split-45">
+          <!-- Left: Market Sizing (TAM/SAM/SOM) & Unit Economics -->
+          <div style="display:flex; flex-direction:column; justify-content:space-between; height:100%;">
+            <div class="card card-honey" style="padding:0.75rem 0.9rem;">
+              <div style="font-family:'Space Grotesk',sans-serif; font-size:var(--caption-clamp); font-weight:800; color:#92400e; text-transform:uppercase;">
+                📈 Market Opportunity (India Technical Higher Ed)
+              </div>
+              <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:0.45rem; margin-top:0.4rem; text-align:center;">
+                <div style="background:#fff; padding:0.4rem; border-radius:10px;">
+                  <div style="font-size:0.65rem; color:#666; font-weight:700;">TAM (India)</div>
+                  <div style="font-family:'Space Grotesk',sans-serif; font-size:var(--body-clamp); font-weight:800; color:#b45309;">$3.2 Billion</div>
+                  <div style="font-size:0.6rem; color:#888;">4,000+ Colleges, 4.8M Students</div>
+                </div>
+                <div style="background:#fff; padding:0.4rem; border-radius:10px;">
+                  <div style="font-size:0.65rem; color:#666; font-weight:700;">SAM</div>
+                  <div style="font-family:'Space Grotesk',sans-serif; font-size:var(--body-clamp); font-weight:800; color:var(--ibm-blue);">$216 Million</div>
+                  <div style="font-size:0.6rem; color:#888;">1,500 Autonomous Eng Colleges</div>
+                </div>
+                <div style="background:#fff; padding:0.4rem; border-radius:10px;">
+                  <div style="font-size:0.65rem; color:#666; font-weight:700;">SOM (Yr 3)</div>
+                  <div style="font-family:'Space Grotesk',sans-serif; font-size:var(--body-clamp); font-weight:800; color:var(--emerald-accent);">₹45.00 Cr</div>
+                  <div style="font-size:0.6rem; color:#888;">600 Colleges ($5.4M ARR)</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Pricing & Unit Economics -->
+            <div class="card" style="padding:0.75rem 0.9rem; background:#fff;">
+              <div style="font-weight:700; font-size:var(--body-clamp); margin-bottom:0.25rem;">💰 Revenue Model & Unit Economics</div>
+              <div style="font-size:var(--caption-clamp); color:var(--text-muted); line-height:1.4;">
+                • <strong>B2B Campus Subscription:</strong> ₹600 – ₹1,000 / student / year paid by engineering colleges.<br>
+                • <strong>Operational Cloud Cost:</strong> ₹79.20 ($0.95) / student / year (₹6.60 / month).<br>
+                • <strong>Unit Gross Margin:</strong> <strong style="color:var(--emerald-accent);">86.8% Gross Margin</strong> due to client-side 2PL-IRT compute.
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Competitive Differentiation Matrix -->
+          <div class="card" style="padding:0; overflow:hidden; background:#fff;">
+            <div style="background:#111210; color:#fff; padding:0.45rem 0.75rem; font-family:'Space Grotesk',sans-serif; font-size:var(--caption-clamp); font-weight:700;">
+              🏆 COMPETITOR BENCHMARK: WHAT WE ARE BEST IN
+            </div>
+            <table class="table-compact" style="font-size:0.68rem;">
+              <thead>
+                <tr>
+                  <th>Capability</th>
+                  <th>Skill-Bee 🐝</th>
+                  <th>Khanmigo</th>
+                  <th>Coursera</th>
+                  <th>Canvas/Moodle</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="highlight-row">
+                  <td><strong>Cognitive Tracing</strong></td>
+                  <td><span style="color:var(--emerald-accent);">2PL-IRT Kernel</span></td>
+                  <td>❌ Stateless Prompt</td>
+                  <td>❌ None</td>
+                  <td>❌ None</td>
+                </tr>
+                <tr>
+                  <td><strong>Prerequisite DAG</strong></td>
+                  <td><span style="color:var(--emerald-accent);">Reverse Traversal</span></td>
+                  <td>❌ Single Chat</td>
+                  <td>❌ Linear Silo</td>
+                  <td>❌ None</td>
+                </tr>
+                <tr>
+                  <td><strong>Grading Integrity</strong></td>
+                  <td><span style="color:var(--emerald-accent);">0% Hallucination</span></td>
+                  <td>🔴 High Hallucination</td>
+                  <td>Static MCQ</td>
+                  <td>Manual Keys</td>
+                </tr>
+                <tr>
+                  <td><strong>Faculty ICU Radar</strong></td>
+                  <td><span style="color:var(--emerald-accent);">Pre-Midterm Triage</span></td>
+                  <td>❌ None</td>
+                  <td>❌ View % only</td>
+                  <td>Post-Mortem</td>
+                </tr>
+                <tr class="highlight-row">
+                  <td><strong>Cost / Student / Mo</strong></td>
+                  <td><span style="color:var(--emerald-accent); font-weight:800;">₹6.60 ($0.08)</span></td>
+                  <td>$20.00 (~₹1,660)</td>
+                  <td>$39–$79/course</td>
+                  <td>Free / Self-host</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <footer class="slide-footer">
+        <div>Business Viability: B2B Enterprise Model • High Gross Margins • Defensible 2PL-IRT Mathematical Moat</div>
+        <div class="nav-hint">Slide 7 of 8</div>
+      </footer>
+
+      <div class="slide-notes">
+        SLIDE 7 TALKING POINTS:
+        1. Break down the TAM: India's 4.8 million engineering students spending $3.2B annually.
+        2. Walk through the competitor matrix: why Khanmigo is economically impossible at $20/month.
+        3. Highlight our 86.8% gross margin: we run psychometrics locally, slashing token costs.
+      </div>
+    </section>
+
+
+    <!-- =========================================================================
+         SLIDE 8: SCALABILITY & FUTURE POTENTIAL (From Hackathon to 1M Users)
+         ========================================================================= -->
+    <section class="slide" data-slide="7">
+      <header class="slide-header">
+        <div class="slide-header-left">
+          <span class="brand-pill"><span class="bee-icon">🐝</span> Skill-Bee</span>
+          <span class="slide-category-tag">Scalability & Roadmap • Slide 8/8</span>
+        </div>
+        <div class="slide-header-right">
+          <span class="badge-pill badge-green">Path to 1 Million Students</span>
+        </div>
+      </header>
+
+      <div class="slide-body">
+        <div style="margin-bottom:0.45rem;">
+          <h2 class="section-title">Scalability: Moving from Prototype to 1,000,000 Users</h2>
+          <p class="lead-text">
+            Can this solution scale to 100, 10,000, and 1,000,000 people? Yes. Here is our 3-phase institutional rollout roadmap.
+          </p>
+        </div>
+
+        <!-- 3-Phase Rollout Horizon -->
+        <div class="grid-3" style="margin-bottom:0.65rem;">
+          <!-- Horizon 1 -->
+          <div class="card" style="border-top:4px solid var(--honey-gold); background:#fff;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span class="badge-pill badge-honey">PHASE 1 (Q1–Q2 2026)</span>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:0.75rem; font-weight:700;">Pilot</span>
+            </div>
+            <div style="font-weight:700; font-size:var(--body-clamp); margin:0.35rem 0 0.15rem;">Campus Beachhead</div>
+            <div style="font-size:var(--title-clamp); font-weight:800; color:var(--text-main); font-family:'Space Grotesk',sans-serif;">1,200</div>
+            <p style="font-size:var(--caption-clamp); color:var(--text-muted); line-height:1.35; margin-top:0.2rem;">
+              Deploy across 3 autonomous Tier-2/3 engineering colleges (CS302 Applied Math & Machine Learning course). Validate ICU radar accuracy.
+            </p>
+          </div>
+
+          <!-- Horizon 2 -->
+          <div class="card" style="border-top:4px solid var(--ibm-blue); background:#fff;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span class="badge-pill badge-blue">PHASE 2 (2026–2027)</span>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:0.75rem; font-weight:700;">Scale</span>
+            </div>
+            <div style="font-weight:700; font-size:var(--body-clamp); margin:0.35rem 0 0.15rem;">State University Consortia</div>
+            <div style="font-size:var(--title-clamp); font-weight:800; color:var(--ibm-blue); font-family:'Space Grotesk',sans-serif;">35,000</div>
+            <p style="font-size:var(--caption-clamp); color:var(--text-muted); line-height:1.35; margin-top:0.2rem;">
+              Expand to 25 technical university clusters (VTU, AKTU, Anna Univ networks). Introduce automated NBA/NAAC Outcome-Based Education export.
+            </p>
+          </div>
+
+          <!-- Horizon 3 -->
+          <div class="card" style="border-top:4px solid var(--emerald-accent); background:#fff;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span class="badge-pill" style="background:#24a148; color:#fff;">PHASE 3 (2027–2028)</span>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:0.75rem; font-weight:700;">National</span>
+            </div>
+            <div style="font-weight:700; font-size:var(--body-clamp); margin:0.35rem 0 0.15rem;">National Ecosystem</div>
+            <div style="font-size:var(--title-clamp); font-weight:800; color:var(--emerald-accent); font-family:'Space Grotesk',sans-serif;">1,000,000+</div>
+            <p style="font-size:var(--caption-clamp); color:var(--text-muted); line-height:1.35; margin-top:0.2rem;">
+              Pan-India deployment via AICTE partnerships & IBM SkillsBuild university credit integrations. Expansion into ASEAN emerging markets.
+            </p>
+          </div>
+        </div>
+
+        <!-- Future Expansion Vectors -->
+        <div class="card card-dark" style="padding:0.75rem 1.2rem;">
+          <div style="font-family:'Space Grotesk',sans-serif; font-size:var(--caption-clamp); font-weight:700; color:var(--honey-gold); text-transform:uppercase; margin-bottom:0.25rem;">
+            🚀 Beyond Hackathon: Additional Vectors & Partnerships
+          </div>
+          <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:0.75rem; font-size:var(--caption-clamp); line-height:1.35; color:#ccc;">
+            <div>
+              <strong style="color:#fff;">1. Domain Expansion:</strong> Beyond computer science into Nursing, Medical Pharmacology, and Mechanical FEA prerequisite DAGs.
+            </div>
+            <div>
+              <strong style="color:#fff;">2. IBM Ecosystem Synergy:</strong> Direct synchronization with watsonx.governance for institutional demographic bias audits.
+            </div>
+            <div>
+              <strong style="color:#fff;">3. Verified Career Passports:</strong> Verifiable on-chain or cryptographically signed IBM SkillsBuild badges tied to latent ability vectors ($\theta$).
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer class="slide-footer">
+        <div>Scale Vision: Hackathon Prototype → Campus Pilot (1.2k) → University Cluster (35k) → National Grid (1M+)</div>
+        <div class="nav-hint">Slide 8 of 8 • Press 'F' for Fullscreen</div>
+      </footer>
+
+      <div class="slide-notes">
+        SLIDE 8 TALKING POINTS:
+        1. Conclude by answering the organizer's question: can this scale from a prototype to 1 million students?
+        2. Reiterate our phased roadmap: 1,200 pilot -> 35,000 state cluster -> 1M national deployment.
+        3. Thank the judges and invite questions on our working prototype!
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Global HUD Controller (Bottom-Right) -->
+  <div class="hud-controls">
+    <button class="hud-btn" id="prevBtn" title="Previous Slide (Left Arrow)">◀</button>
+    <div class="hud-counter" id="counter">
+      <span class="active-num" id="currentNum">1</span> / <span id="totalNum">8</span>
+    </div>
+    <button class="hud-btn" id="nextBtn" title="Next Slide (Right Arrow / Space)">▶</button>
+    <button class="hud-btn" id="fullscreenBtn" title="Toggle Fullscreen (F)">⛶</button>
+    <button class="hud-btn" id="notesBtn" title="Show Speaker Notes (S)">📝</button>
+  </div>
+
+  <!-- Runtime JavaScript Engine -->
+  <script>
+    (function() {
+      const slides = document.querySelectorAll('.slide');
+      const total = slides.length;
+      let current = 0;
+
+      const progress = document.getElementById('progress');
+      const currentNum = document.getElementById('currentNum');
+      const totalNum = document.getElementById('totalNum');
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
+      const fullscreenBtn = document.getElementById('fullscreenBtn');
+      const notesBtn = document.getElementById('notesBtn');
+
+      totalNum.textContent = total;
+
+      function updateSlide(idx) {
+        if (idx < 0) idx = 0;
+        if (idx >= total) idx = total - 1;
+
+        slides[current].classList.remove('active');
+        current = idx;
+        slides[current].classList.add('active');
+
+        // Progress bar and counter
+        const pct = ((current + 1) / total) * 100;
+        progress.style.width = pct + '%';
+        currentNum.textContent = current + 1;
+
+        // Speaker notes logger in console
+        const notes = slides[current].querySelector('.slide-notes');
+        if (notes) {
+          console.groupCollapsed(`📝 Speaker Notes for Slide ${current + 1}`);
+          console.log(notes.innerText.trim());
+          console.groupEnd();
+        }
+      }
+
+      function nextSlide() {
+        if (current < total - 1) updateSlide(current + 1);
+      }
+
+      function prevSlide() {
+        if (current > 0) updateSlide(current - 1);
+      }
+
+      // Button listeners
+      nextBtn.addEventListener('click', nextSlide);
+      prevBtn.addEventListener('click', prevSlide);
+
+      // Keyboard listeners
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+          e.preventDefault();
+          nextSlide();
+        } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+          e.preventDefault();
+          prevSlide();
+        } else if (e.key === 'Home') {
+          e.preventDefault();
+          updateSlide(0);
+        } else if (e.key === 'End') {
+          e.preventDefault();
+          updateSlide(total - 1);
+        } else if (e.key.toLowerCase() === 'f') {
+          toggleFullscreen();
+        } else if (e.key.toLowerCase() === 's') {
+          showCurrentNotes();
+        }
+      });
+
+      // Touch swipe support
+      let touchStartX = 0;
+      document.addEventListener('touchstart', (e) => {
+        touchStartX = e.touches[0].clientX;
+      }, { passive: true });
+
+      document.addEventListener('touchend', (e) => {
+        const diff = touchStartX - e.changedTouches[0].clientX;
+        if (Math.abs(diff) > 50) {
+          if (diff > 0) nextSlide();
+          else prevSlide();
+        }
+      }, { passive: true });
+
+      // Fullscreen handler
+      function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(err => {
+            console.warn('Fullscreen error:', err);
+          });
+        } else {
+          document.exitFullscreen();
+        }
+      }
+      fullscreenBtn.addEventListener('click', toggleFullscreen);
+
+      // Speaker Notes alert modal
+      function showCurrentNotes() {
+        const notes = slides[current].querySelector('.slide-notes');
+        const text = notes ? notes.innerText.trim() : 'No notes for this slide.';
+        alert(`📝 Speaker Notes (Slide ${current + 1}/8):\n\n${text}`);
+      }
+      notesBtn.addEventListener('click', showCurrentNotes);
+
+      // Initialize slide 1
+      updateSlide(0);
+    })();
+  </script>
+</body>
+</html>

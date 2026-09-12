@@ -18,6 +18,8 @@ export function calculateProbabilityOfCorrect(theta: number, a: number, b: numbe
   return 1 / (1 + Math.exp(z));
 }
 
+export const calculate2PLProbability = calculateProbabilityOfCorrect;
+
 /**
  * Update student latent ability (theta) using Bayesian maximum a posteriori (MAP)
  * with a standard normal prior N(0, 1).

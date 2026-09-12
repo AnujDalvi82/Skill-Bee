@@ -1,7 +1,8 @@
-from typing import List, Optional
-from datetime import datetime
+import threading
+from typing import List, Optional, Literal
+from datetime import datetime, timezone
 from fastapi import APIRouter, HTTPException, Depends
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 from database import get_db
 import models, security
@@ -131,25 +132,38 @@ COHORT_STUDENTS = [
     }
 ]
 
-# Intervention History log
-INTERVENTIONS_LOG = []
+
+# Intervention History log with Thread Lock and Size Bounding (M-02)
+INTERVENTIONS_LOCK = threading.Lock()
+INTERVENTIONS_LOG: List[dict] = []
+MAX_INTERVENTIONS_HISTORY = 100
 
 class InterventionRequest(BaseModel):
-    intervention_type: str  # 'MICRO_BRIDGE' | 'AI_TA_OFFICE_HOUR' | 'PARENT_STUDENT_NUDGE'
-    student_ids: List[str]
-    concept_key: str
-    note: Optional[str] = None
+    # H-05: Strict Literal validation to prevent arbitrary string injection
+    intervention_type: Literal["MICRO_BRIDGE", "AI_TA_OFFICE_HOUR", "PARENT_STUDENT_NUDGE"]
+    student_ids: List[str] = Field(min_length=1, max_length=50)
+    concept_key: str = Field(min_length=2, max_length=100)
+    note: Optional[str] = Field(default=None, max_length=500)
 
 @router.get("/cohort/triage")
-def get_cohort_triage():
-    """Returns real-time ICU Triage Radar metrics for 45-student cohort"""
+def get_cohort_triage(
+    current_faculty: models.User = Depends(security.require_faculty)
+):
+    """
+    Returns real-time ICU Triage Radar metrics for 45-student cohort.
+    - C-04 & H-03: Gated by require_faculty dependency to prevent unauthenticated PII leakage.
+    """
     red_count = sum(1 for s in COHORT_STUDENTS if s["tier"] == "RED")
     amber_count = sum(1 for s in COHORT_STUDENTS if s["tier"] == "AMBER")
     green_count = sum(1 for s in COHORT_STUDENTS if s["tier"] == "GREEN")
     avg_mastery = sum(s["mastery_score"] for s in COHORT_STUDENTS) / len(COHORT_STUDENTS)
 
+    with INTERVENTIONS_LOCK:
+        recent_logs = list(INTERVENTIONS_LOG)
+
     return {
         "cohort_name": "CS302: Applied Mathematics & AI Engineering",
+        "faculty_supervisor": current_faculty.name,
         "total_enrolled": 45,
         "displayed_sample_count": len(COHORT_STUDENTS),
         "triage_summary": {
@@ -160,15 +174,24 @@ def get_cohort_triage():
         },
         "critical_bottleneck_cluster": "Characteristic Polynomial & Eigenvalues (82% of RED tier failure source)",
         "students": COHORT_STUDENTS,
-        "recent_interventions": INTERVENTIONS_LOG
+        "recent_interventions": recent_logs
     }
 
 @router.post("/intervene")
-def execute_intervention(payload: InterventionRequest):
-    """Executes 1-Click Faculty Action (Micro-Bridge, AI TA, or Nudge)"""
+def execute_intervention(
+    payload: InterventionRequest,
+    current_faculty: models.User = Depends(security.require_faculty)
+):
+    """
+    Executes 1-Click Faculty Action (Micro-Bridge, AI TA, or Nudge).
+    - C-04: Requires authenticated FACULTY or ADMIN caller.
+    - H-05: Validated intervention_type Literal.
+    - M-02: Bounded in-memory queue with max 100 records and thread safety.
+    """
     record = {
         "id": f"intv_{len(INTERVENTIONS_LOG) + 1}",
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "dispatched_by": current_faculty.email,
         "type": payload.intervention_type,
         "student_ids": payload.student_ids,
         "students_count": len(payload.student_ids),
@@ -176,7 +199,12 @@ def execute_intervention(payload: InterventionRequest):
         "note": payload.note or "Auto-dispatched via Skill-Bee Faculty ICU Command Center",
         "status": "DISPATCHED"
     }
-    INTERVENTIONS_LOG.insert(0, record)
+
+    with INTERVENTIONS_LOCK:
+        INTERVENTIONS_LOG.insert(0, record)
+        # Cap memory to avoid DoS memory leak
+        if len(INTERVENTIONS_LOG) > MAX_INTERVENTIONS_HISTORY:
+            del INTERVENTIONS_LOG[MAX_INTERVENTIONS_HISTORY:]
 
     # Return informative confirmation
     if payload.intervention_type == "MICRO_BRIDGE":

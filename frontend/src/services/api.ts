@@ -127,7 +127,8 @@ export class ApiClient {
 
   static async checkBackendHealth(): Promise<boolean> {
     try {
-      const res = await fetch('http://127.0.0.1:8000/', { method: 'GET', signal: AbortSignal.timeout(1500) });
+      const healthUrl = API_BASE.replace(/\/api\/?$/, '');
+      const res = await fetch(`${healthUrl}/`, { method: 'GET', signal: AbortSignal.timeout(1500) });
       return res.ok;
     } catch {
       return false;
@@ -170,6 +171,36 @@ export class ApiClient {
     note?: string;
   }) {
     return this.request<any>('/faculty/intervene', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  }
+
+  // --- In-Video RAG AI Tutor (BeeBot with OpenRouter / IBM watsonx) ---
+  static async askVideoQuestion(payload: {
+    query: string;
+    video_id?: string;
+    timestamp_sec?: number;
+    language?: string;
+  }): Promise<{
+    answer: string;
+    timestamp_str: string;
+    timestamp_sec: number;
+    model_used: string;
+    status: string;
+    guardrails?: {
+      passed: boolean;
+      policy?: string;
+      reason?: string;
+      action?: string;
+      sanitized?: boolean;
+      truncated?: boolean;
+      control_chars_removed?: boolean;
+      html_stripped?: boolean;
+      off_topic_warning?: boolean;
+    };
+  }> {
+    return this.request('/studio/video-qa', {
       method: 'POST',
       body: JSON.stringify(payload),
     });
