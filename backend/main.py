@@ -1,54 +1,35 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from contextlib import asynccontextmanager
-import logging
+from database import engine, Base
+import models
+from routers import auth_router
 
-from backend.config import settings
-from backend.routers import scamper_router
-from backend.database import engine, Base
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    """Application lifespan events"""
-    logger.info("Starting application...")
-    Base.metadata.create_all(bind=engine)
-    yield
-    logger.info("Shutting down application...")
-
+# Initialize database tables
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
-    title="SCAMPER Innovation Platform",
-    description="Digital platform for structured creative thinking using SCAMPER methodology",
-    version="1.0.0",
-    lifespan=lifespan
+    title="Skill-Bee API",
+    description="Cognitive Mastery Engine & Adaptive Learning Intelligence Platform extending IBM SkillsBuild",
+    version="1.0.0"
 )
 
+# CORS Configuration for Next.js Frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000", "*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-app.include_router(scamper_router.router, prefix="/api/v1", tags=["SCAMPER"])
-
+# Register Routers
+app.include_router(auth_router.router)
 
 @app.get("/")
-async def root():
-    """Root endpoint"""
+def health_check():
     return {
-        "message": "SCAMPER Innovation Platform API",
-        "version": "1.0.0",
-        "docs": "/docs"
+        "status": "online",
+        "app": "Skill-Bee Cognitive Mastery Engine",
+        "hackathon": "IBM National Hackathon (BOB)",
+        "track": "Problem Statement 4 (Adaptive Learning)"
     }
-
-
-@app.get("/health")
-async def health_check():
-    """Health check endpoint"""
-    return {"status": "healthy"}

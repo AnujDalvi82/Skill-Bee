@@ -227,6 +227,43 @@ The React application is structured around a top-level **Pitch Presenter Bar** a
 
 ---
 
+
+### 5.5 Advanced Interactive Learning & Retention Suite (The 8 High-Impact Features)
+Skill-Bee incorporates 8 specialized features engineered to combat cognitive fatigue, language barriers, and passive learning drop-off:
+
+1. **Multilingual Translation (Lightweight Fast-Whisper Model):**
+   - Real-time vernacular subtitles (Hindi, Tamil, Telugu, Marathi, Hinglish) bridging the language barrier for Tier-2/Tier-3 engineering students.
+   - 1-click language switcher pill on the media player toolbar.
+
+2. **Multilingual Synchronized Transcription (Fast-Whisper):**
+   - Full interactive transcript feed side-by-side with video lectures.
+   - Click-to-seek functionality: clicking any word/phrase jumps the video to that exact timestamp.
+
+3. **Graph-View Progress Bar (Honeycomb Roadmap Trail):**
+   - Non-linear curriculum progress visualizer replacing traditional percentage bars.
+   - Interactive nodes show dependency relationships and milestones (from Foundations `01` to `? IBM Credential`).
+
+4. **BeeBook ? Live AI Video Lecture Notes Side Panel:**
+   - Synchronized digital notebook auto-generating timestamped conceptual summaries, LaTeX formulas, and runnable code blocks as the video advances.
+   - Allows personal student annotations and includes a 1-click 'Clarify with Skillbee' prompt trigger.
+
+5. **In-Video Active Recall Quizzes:**
+   - Mid-video pop-up checkpoints at key concept transitions to break passive watching.
+   - Immediate feedback: reinforces memory encoding, awards Honey XP, or suggests a 20-second rewind on incorrect attempts.
+
+6. **End-of-Week Elongated Milestone Assessment:**
+   - 10?15 question cumulative diagnostic after each module completion.
+   - Feeds directly into the 2PL-IRT Bayesian Latent Ability Engine (theta) to update university Course Outcome (CO) attainment.
+
+7. **Pre-Lecture Recall Flashcards ('Honey Memory Warm-Up'):**
+   - 3-card 3D flip deck presented before commencing a new lecture to reactivate previous lecture concepts and prevent prerequisite decay.
+
+8. **Daily Study Hours & Streak Goal Tracker:**
+   - Persistent daily working hours ring (e.g., '1.5 hrs / 2.0 hrs') anchored in the UCI Higher Education dataset study-habit correlations.
+   - Daily streak fire counter (??) tied to EdNet persistence telemetry.
+
+---
+
 ## 6. Non-Functional & Technical Requirements
 
 1. **Zero External Runtime Dependencies:** The entire application runs smoothly in modern web browsers using client-side execution.

@@ -1,0 +1,1427 @@
+<!DOCTYPE html>
+
+<html lang="en" style=""><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Space+Grotesk:wght@500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"on-tertiary-fixed":"#1b1735","on-error-container":"#93000a","primary-container":"#1b1b1e","primary":"#000000","primary-fixed-dim":"#c8c5ca","on-primary":"#ffffff","on-primary-fixed":"#1b1b1e","tertiary-container":"#1b1735","on-tertiary-fixed-variant":"#474363","tertiary-fixed-dim":"#c8c2e9","on-surface-variant":"#47464b","surface-variant":"#e4e2df","surface-container-highest":"#e4e2df","surface-container":"#efeeeb","outline":"#77767b","on-secondary-fixed-variant":"#524600","secondary-fixed":"#ffe24c","on-error":"#ffffff","on-secondary":"#ffffff","on-surface":"#1b1c1a","secondary-container":"#fcdf46","background":"#fbf9f6","primary-fixed":"#e4e1e6","secondary":"#6d5e00","on-background":"#1b1c1a","surface-dim":"#dbdad7","surface-tint":"#5f5e61","error":"#ba1a1a","on-primary-container":"#858387","surface-container-low":"#f5f3f0","on-secondary-fixed":"#211b00","secondary-fixed-dim":"#e2c62d","on-primary-fixed-variant":"#47464a","tertiary-fixed":"#e5deff","outline-variant":"#c8c5cb","tertiary":"#000000","on-tertiary":"#ffffff","inverse-primary":"#c8c5ca","error-container":"#ffdad6","on-tertiary-container":"#8580a3","inverse-on-surface":"#f2f0ed","surface-bright":"#fbf9f6","on-secondary-container":"#726200","surface-container-high":"#eae8e5","surface-container-lowest":"#ffffff","surface":"#fbf9f6","inverse-surface":"#30312f"},borderRadius:{DEFAULT:"0.25rem",lg:"0.5rem",xl:"0.75rem",full:"9999px"},spacing:{"gutter-mobile":"0.75rem","space-md":"1rem","margin-mobile":"1rem","space-2xl":"3rem","space-xs":"0.25rem","space-lg":"1.5rem",margin:"2.5rem",gutter:"1.25rem","space-xl":"2rem","space-sm":"0.5rem"},fontFamily:{"display-hero":["Space Grotesk"],"body-sm":["Plus Jakarta Sans"],"body-lg":["Plus Jakarta Sans"],"stat-counter":["Space Grotesk"],"label-caps":["Space Grotesk"],"display-hero-mobile":["Space Grotesk"],"label-pill":["Plus Jakarta Sans"],"headline-md":["Space Grotesk"],"headline-xl":["Space Grotesk"],"headline-lg":["Space Grotesk"],"body-md":["Plus Jakarta Sans"]},fontSize:{"display-hero":["72px",{lineHeight:"78px",letterSpacing:"-0.04em",fontWeight:"700"}],"body-sm":["13px",{lineHeight:"18px",fontWeight:"500"}],"body-lg":["18px",{lineHeight:"28px",fontWeight:"400"}],"stat-counter":["32px",{lineHeight:"36px",letterSpacing:"-0.02em",fontWeight:"700"}],"label-caps":["12px",{lineHeight:"16px",letterSpacing:"0.08em",fontWeight:"700"}],"display-hero-mobile":["44px",{lineHeight:"48px",letterSpacing:"-0.03em",fontWeight:"700"}],"label-pill":["13px",{lineHeight:"16px",fontWeight:"600"}],"headline-md":["20px",{lineHeight:"26px",letterSpacing:"-0.01em",fontWeight:"700"}],"headline-xl":["40px",{lineHeight:"46px",letterSpacing:"-0.03em",fontWeight:"700"}],"headline-lg":["28px",{lineHeight:"34px",letterSpacing:"-0.02em",fontWeight:"700"}],"body-md":["15px",{lineHeight:"22px",fontWeight:"400"}]}}}};</script>
+<style>
+  /* =========================================================================
+     CHOREOGRAPHED HERO BEE ENTRANCE SEQUENCE (Total duration: 4.5s then idle):
+     - 0.0s - 0.4s: Initial clean stage, bee not in position
+     - 0.4s - 2.5s (Step 1 & 2): Bee flies in from top-left WITHOUT laptop along curved sinusoidal path with banking (±6°-8°)
+     - 2.5s - 3.0s (Step 3): Floating silver laptop emerges; Bee halts/decelerates, turns eagerly, reacts
+     - 3.0s - 3.8s (Step 4): Catch interaction: laptop glides to bee, bee swoops forward, grabs laptop, recoil tilt (-5°) and bounce
+     - 3.8s - 4.5s (Step 5): Bee glides into exact center spotlight holding laptop, soft cushion bounce, ground shadow settles
+     - 4.5s+ (Infinite Idle): Calm idle floating hover (4-6px), gentle flutter, natural tilt
+     ========================================================================= */
+
+  /* 1. Trajectory for Bee Without Laptop (0.4s to ~3.5s) */
+  @keyframes beeFlyInTrajectory {
+    0% {
+      opacity: 0;
+      transform: translate3d(-340px, -180px, 0) scale(0.48) rotate(-16deg);
+    }
+    9% {
+      opacity: 1;
+      transform: translate3d(-260px, -120px, 0) scale(0.62) rotate(8deg);
+    }
+    24% {
+      transform: translate3d(-170px, -150px, 0) scale(0.72) rotate(-7deg);
+    }
+    40% {
+      transform: translate3d(-90px, -50px, 0) scale(0.82) rotate(6deg);
+    }
+    54% {
+      transform: translate3d(-25px, -80px, 0) scale(0.88) rotate(-6deg);
+    }
+    60% {
+      /* Step 3: Spots floating laptop - brief deceleration/pause, head eager forward */
+      transform: translate3d(-5px, -60px, 0) scale(0.92) rotate(4deg);
+    }
+    68% {
+      /* Eager buzz reaction */
+      transform: translate3d(2px, -65px, 0) scale(0.94) rotate(7deg);
+    }
+    78% {
+      /* Step 4: Swoops down-right to intercept and catch laptop */
+      transform: translate3d(22px, -24px, 0) scale(0.98) rotate(4deg);
+    }
+    88% {
+      /* Catch impact / momentum absorption: slight backward tilt (-5°) and recoil */
+      transform: translate3d(12px, -12px, 0) scale(1.02) rotate(-5deg);
+      opacity: 1;
+    }
+    96%, 100% {
+      /* Hand-off to final holding pose */
+      transform: translate3d(8px, -6px, 0) scale(1.0) rotate(-2deg);
+      opacity: 0;
+    }
+  }
+
+  /* Rapid Wing Flutter / Buzz for Free Flyer */
+  @keyframes beeWingBuzz {
+    0%, 100% { transform: scaleX(1) scaleY(1); }
+    50% { transform: scaleX(1.03) scaleY(0.97) translateY(-1.5px); }
+  }
+
+  /* 2. Floating Laptop Flight & Interception */
+  @keyframes floatingLaptopCatch {
+    0%, 54% {
+      opacity: 0;
+      transform: translate3d(95px, 25px, 0) scale(0.35) rotate(18deg);
+    }
+    60% {
+      /* 2.5s: Laptop appears floating in front of bee */
+      opacity: 1;
+      transform: translate3d(58px, 6px, 0) scale(0.82) rotate(10deg);
+    }
+    72% {
+      /* Hovering bob in air waiting */
+      transform: translate3d(46px, -4px, 0) scale(0.88) rotate(-4deg);
+    }
+    82% {
+      /* 3.0s - 3.4s: Glides smoothly into bee's paws */
+      transform: translate3d(18px, -16px, 0) scale(0.95) rotate(-2deg);
+      opacity: 1;
+    }
+    88% {
+      /* Interception catch point */
+      transform: translate3d(10px, -8px, 0) scale(0.98) rotate(0deg);
+      opacity: 0.85;
+    }
+    94%, 100% {
+      opacity: 0;
+      transform: translate3d(0, 0, 0) scale(0.98);
+    }
+  }
+
+  /* 3. Final Bee With Laptop (Appears at catch ~3.4s, settles 3.8s-4.5s with cushion bounce) */
+  @keyframes finalBeeSettleSequence {
+    0%, 75% {
+      opacity: 0;
+      transform: translate3d(12px, -12px, 0) scale(0.96) rotate(-5deg);
+    }
+    78% {
+      /* Hand-off instant: holding laptop with backward tilt (-5°) recoil */
+      opacity: 1;
+      transform: translate3d(12px, -12px, 0) scale(1.03) rotate(-5deg);
+    }
+    86% {
+      /* Glide toward spotlight center */
+      transform: translate3d(4px, 6px, 0) scale(0.98) rotate(2deg);
+    }
+    92% {
+      /* Soft cushion bounce on arrival */
+      transform: translate3d(0px, -4px, 0) scale(1.01) rotate(-1deg);
+    }
+    100% {
+      opacity: 1;
+      transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+    }
+  }
+
+  /* 4. Ambient Ground Shadow */
+  @keyframes groundShadowSettle {
+    0%, 65% {
+      opacity: 0;
+      transform: scale(0.3);
+    }
+    75% {
+      opacity: 0.12;
+      transform: scale(0.6);
+    }
+    86% {
+      opacity: 0.32;
+      transform: scale(1.08);
+    }
+    100% {
+      opacity: 0.25;
+      transform: scale(1);
+    }
+  }
+
+  /* 5. Infinite Idle Hover (Starts after 4.5s) */
+  @keyframes beeIdleHoverLoop {
+    0%, 100% {
+      transform: translateY(0px) rotate(0deg);
+    }
+    33% {
+      transform: translateY(-5px) rotate(1.2deg);
+    }
+    66% {
+      transform: translateY(4px) rotate(-0.8deg);
+    }
+  }
+
+  @keyframes shadowIdlePulseLoop {
+    0%, 100% {
+      transform: scaleX(1) scaleY(1);
+      opacity: 0.25;
+    }
+    50% {
+      transform: scaleX(0.88) scaleY(0.86);
+      opacity: 0.16;
+    }
+  }
+
+  /* Delicate Golden Dotted SVG Flight Trail */
+  @keyframes dottedTrailFlight {
+    0% {
+      stroke-dashoffset: 950;
+      opacity: 0;
+    }
+    8% {
+      opacity: 0.85;
+    }
+    68% {
+      stroke-dashoffset: 0;
+      opacity: 0.75;
+    }
+    84% {
+      stroke-dashoffset: 0;
+      opacity: 0.35;
+    }
+    100% {
+      stroke-dashoffset: 0;
+      opacity: 0;
+    }
+  }
+
+  @keyframes laptopGlowShine {
+    0%, 100% { filter: drop-shadow(0 4px 12px rgba(0,0,0,0.16)) drop-shadow(0 0 10px rgba(255, 226, 76, 0.4)); }
+    50% { filter: drop-shadow(0 6px 16px rgba(0,0,0,0.22)) drop-shadow(0 0 18px rgba(255, 226, 76, 0.75)); }
+  }
+
+  .bee-flyer-anim {
+    animation: beeFlyInTrajectory 3.6s cubic-bezier(0.22, 1, 0.36, 1) 0.4s forwards;
+    will-change: transform, opacity;
+  }
+
+  .bee-flyer-flutter {
+    animation: beeWingBuzz 0.16s ease-in-out infinite;
+  }
+
+  .floating-laptop-anim {
+    animation: floatingLaptopCatch 3.6s cubic-bezier(0.25, 1, 0.5, 1) 0.4s forwards, laptopGlowShine 1.8s ease-in-out infinite;
+    will-change: transform, opacity;
+  }
+
+  .final-bee-wrap {
+    animation: finalBeeSettleSequence 4.5s cubic-bezier(0.25, 1, 0.5, 1) 0.4s forwards;
+    will-change: transform, opacity;
+  }
+
+  .final-bee-float {
+    animation: beeIdleHoverLoop 4s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  .ground-shadow-enter {
+    animation: groundShadowSettle 4.5s cubic-bezier(0.25, 1, 0.5, 1) 0.4s forwards;
+  }
+
+  .ground-shadow-pulse {
+    animation: shadowIdlePulseLoop 4s ease-in-out infinite;
+  }
+
+  .flight-trail-line {
+    stroke-dasharray: 950;
+    stroke-dashoffset: 950;
+    animation: dottedTrailFlight 3.4s cubic-bezier(0.25, 1, 0.5, 1) 0.4s forwards;
+  }
+
+  /* Accessible Reduced Motion */
+  @media (prefers-reduced-motion: reduce) {
+    .bee-flyer-anim,
+    .floating-laptop-anim,
+    #hero-flight-trail {
+      display: none !important;
+    }
+    .final-bee-wrap {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+    .final-bee-float,
+    .ground-shadow-enter,
+    .ground-shadow-pulse {
+      animation: none !important;
+      opacity: 0.25 !important;
+    }
+  }
+</style>
+</head><body class="bg-surface font-body-md text-on-surface antialiased min-h-screen"><header class="fixed top-0 left-0 right-0 z-50 bg-surface/90 backdrop-blur-xl border-b border-outline-variant/40"><div class="h-20 max-w-[1440px] mx-auto px-margin flex items-center justify-between"><div class="flex items-center gap-space-md"><div class="w-10 h-10 rounded-xl bg-secondary-container flex items-center justify-center text-primary shadow-sm"><span class="material-symbols-outlined text-[24px]">electric_bolt</span></div><div class="flex items-center gap-space-xs"><span class="font-headline-md text-headline-md tracking-tight text-primary">Skillora</span><span class="px-space-xs py-0.5 rounded-full bg-surface-container-high border border-outline-variant/60 font-label-caps text-[10px] tracking-wider uppercase text-on-surface-variant">by IBM</span></div></div><nav class="hidden xl:flex items-center gap-space-lg" data-active-classes="text-primary font-headline-md font-bold"><a aria-current="page" class="transition-colors text-primary font-headline-md font-bold" data-path="home" href="#">Home</a><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" data-path="courses" href="#">Courses</a><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" data-path="career-paths" href="#">Career Paths</a><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" data-path="projects" href="#">Projects</a><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" data-path="ai-mentor" href="#">AI Mentor</a><a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" data-path="for-institutions" href="#">For Institutions</a></nav><div class="flex items-center gap-space-sm"><button aria-label="Search catalog" class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-container transition-all"><span class="material-symbols-outlined text-[22px]">search</span></button><a class="hidden sm:inline-flex items-center px-space-md py-space-xs rounded-full font-label-pill text-label-pill text-on-surface-variant hover:text-primary transition-colors" data-path="login" href="#">Log in</a><a class="inline-flex items-center px-space-lg py-space-sm rounded-full bg-primary text-on-primary font-label-pill text-label-pill shadow-sm hover:scale-[1.02] transition-transform" data-path="get-started" href="#">Get Started</a><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center ml-space-xs"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-20 bg-surface"><div class="flex flex-col w-full">
+<!-- Top Ambient Glow -->
+<div class="relative w-full overflow-hidden">
+<div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[920px] h-[340px] bg-gradient-to-r from-secondary-fixed/40 via-tertiary-fixed/40 to-surface-container-high/60 blur-3xl pointer-events-none -z-10 rounded-full"></div>
+<!-- 1. HERO SECTION -->
+<section class="max-w-[1440px] mx-auto px-margin pt-space-xl pb-space-2xl overflow-hidden relative">
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-gutter items-center">
+<!-- Hero Left Column (7 cols) -->
+<div class="xl:col-span-7 flex flex-col items-start">
+<!-- Overline Badge -->
+<div class="inline-flex items-center gap-2 px-space-md py-1.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-caps text-label-caps tracking-wider shadow-sm mb-space-lg transition-transform hover:scale-105">
+<span class="w-2 h-2 rounded-full bg-secondary-fixed animate-pulse"></span>
+            LEARN · BUILD · GROW  •  POWERED BY IBM SKILLSBUILD &amp; AI
+          </div>
+<!-- Hero Display Typography -->
+<h1 class="font-display-hero text-display-hero text-primary tracking-tight leading-[1.08] mb-space-md">
+            Build 
+            <span class="inline-flex items-center px-3.5 py-1 bg-tertiary-fixed text-on-tertiary-fixed rounded-2xl mx-1 shadow-sm transform -rotate-2 hover:rotate-0 transition-transform cursor-pointer select-none">
+              your
+            </span>
+<br/>
+            skills
+            <span class="inline-flex items-center justify-center w-14 h-14 bg-secondary-container text-primary rounded-2xl mx-1.5 shadow-sm transform rotate-3 hover:scale-110 transition-transform cursor-pointer select-none align-middle">
+<span class="material-symbols-outlined text-[32px]">auto_awesome</span>
+</span>
+            online.
+          </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-xl mb-space-xl">
+            Personalized learning roadmaps, empathetic AI mentorship, and verified IBM credentials — structured to launch tomorrow’s tech leaders.
+          </p>
+<!-- Interactive Search Pill Container -->
+<div class="w-full max-w-2xl bg-surface-container-lowest rounded-full p-2 shadow-md flex items-center gap-space-sm mb-space-md transition-shadow hover:shadow-lg relative">
+<div class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant pl-2">
+<span class="material-symbols-outlined text-[24px]">search</span>
+</div>
+<input class="w-full bg-transparent font-body-md text-body-md text-primary placeholder:text-on-surface-variant/70 focus:outline-none px-2" id="hero-search-input" placeholder="What do you want to learn? (e.g. AI Engineer, Python, Cloud...)" type="text"/>
+<button class="h-12 px-space-lg rounded-full bg-primary text-on-primary font-label-pill text-label-pill flex items-center gap-2 hover:scale-[1.02] active:scale-95 transition-all shrink-0" id="hero-search-btn">
+<span class="">Explore</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+<!-- Quick Topic Pills -->
+<div class="flex flex-wrap items-center gap-2 pt-space-xs">
+<span class="font-label-caps text-label-caps text-on-surface-variant/80 mr-1 uppercase">Trending:</span>
+<button class="topic-chip px-3.5 py-1.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-pill text-label-pill hover:-translate-y-0.5 transition-transform" data-query="Artificial Intelligence">AI &amp; Watsonx</button>
+<button class="topic-chip px-3.5 py-1.5 rounded-full bg-error-container text-on-error-container font-label-pill text-label-pill hover:-translate-y-0.5 transition-transform" data-query="Full Stack Web Development">Web Dev</button>
+<button class="topic-chip px-3.5 py-1.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-pill text-label-pill hover:-translate-y-0.5 transition-transform" data-query="Data Science &amp; Machine Learning">Data Science</button>
+<button class="topic-chip px-3.5 py-1.5 rounded-full bg-surface-container-high text-on-surface font-label-pill text-label-pill hover:-translate-y-0.5 transition-transform" data-query="Cybersecurity Operations">Cybersecurity</button>
+<button class="topic-chip px-3.5 py-1.5 rounded-full bg-tertiary-fixed-dim text-on-tertiary-fixed font-label-pill text-label-pill hover:-translate-y-0.5 transition-transform" data-query="Cloud Architecture">Cloud Kubernetes</button>
+</div>
+</div>
+<!-- Hero Right Column / Mascot Interactive Stage (5 cols) -->
+<div class="xl:col-span-5 relative flex items-center justify-center mt-space-xl xl:mt-0"><div class="w-full max-w-xl min-h-[580px] rounded-[48px] bg-gradient-to-br from-tertiary-fixed/60 via-surface-container-low to-secondary-container/40 p-space-xl flex flex-col justify-between relative shadow-xl overflow-visible"><div class="absolute -top-10 -left-6 z-30 max-w-[320px] bg-surface-container-lowest/95 backdrop-blur-md px-4 py-3.5 rounded-2xl border border-outline-variant/40 shadow-xl transition-transform hover:-translate-y-1 flex flex-col gap-1" id="mascot-speech"><div class="flex items-center justify-between gap-2"><div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-secondary-fixed animate-ping"></span><span class="font-label-caps text-[11px] text-primary uppercase tracking-wider font-bold">IBM SkillsBuild AI</span></div><div class="flex items-center gap-0.5 text-secondary-fixed text-xs"><span class="material-symbols-outlined text-[16px]">star</span><span class="font-stat-counter text-[12px] text-primary font-bold">4.9/5</span></div></div><p class="font-body-sm text-[14px] text-primary font-semibold leading-snug" id="speech-text">Hi, I'm Skillbee! Let's craft your learning path ✦</p></div><div class="absolute -top-8 -right-6 z-30 hidden sm:flex items-center gap-2.5 bg-surface-container-lowest/95 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-outline-variant/40 shadow-lg"><span class="material-symbols-outlined text-secondary text-[24px]">verified</span><div><p class="font-headline-md text-[13px] text-primary leading-tight font-bold">Verifiable Badges</p><p class="font-body-sm text-[11px] text-on-surface-variant">Instant 1-click Credly</p></div></div><!-- Replay Button for user inspection --><button aria-label="Replay flight animation" class="absolute top-4 right-4 z-40 px-3 py-1.5 rounded-full bg-surface-container-lowest/80 hover:bg-surface-container-lowest backdrop-blur-md border border-outline-variant/40 text-on-surface-variant hover:text-primary font-label-caps text-[11px] flex items-center gap-1.5 shadow-sm transition-all hover:scale-105 active:scale-95" id="replay-flight-btn"><span class="material-symbols-outlined text-[15px]">refresh</span> Replay flight</button><!-- Interactive Bee Canvas Stage with Choreographed Sequence: Free Flight -> Sees Laptop -> Catches Laptop -> Settles Into Final Pose --><div class="relative my-auto flex items-center justify-center cursor-pointer py-2 group w-full min-h-[380px]" id="bee-character"><!-- SVG Dotted Flight Path Trail with golden gradient --><svg class="absolute pointer-events-none -inset-x-20 -inset-y-12 w-[calc(100%+160px)] h-[calc(100%+96px)] z-10 overflow-visible" fill="none" id="hero-flight-trail" viewbox="0 0 540 380"><defs><lineargradient id="beeTrailGrad" x1="0%" x2="100%" y1="0%"><stop offset="0%" stop-color="#e2c62d" stop-opacity="0.25"></stop><stop offset="35%" stop-color="#ffe24c" stop-opacity="0.95"></stop><stop offset="100%" stop-color="#fcdf46" stop-opacity="0.95"></stop></lineargradient><filter height="150%" id="glowTrail" width="150%" x="-25%" y="-25%"><fegaussianblur result="blur" stddeviation="2.5"></fegaussianblur><fecomposite in="SourceGraphic" in2="blur" operator="over"></fecomposite></filter></defs><path class="flight-trail-line" d="M 20 60 C 80 15, 110 170, 190 120 C 260 80, 275 230, 340 180 C 375 150, 400 130, 435 150 C 470 170, 460 215, 410 215" filter="url(#glowTrail)" stroke="url(#beeTrailGrad)" stroke-dasharray="4 8" stroke-linecap="round" stroke-width="3.5"></path></svg><!-- Multi-layer Bee Choreography Stage --><div class="relative w-full max-w-md h-[340px] md:h-[380px] flex items-center justify-center z-20" id="mascot-stage"><!-- 1. PHASE 1 & 2: BEE WITHOUT LAPTOP FLYER (Extracted from reference sprite sheet IMAGE_2 top row) --><div class="bee-flyer-anim absolute inset-0 z-20 flex items-center justify-center pointer-events-none" id="bee-flyer-without-laptop"><div class="bee-flyer-flutter relative flex items-center justify-center"><div class="w-56 h-56 md:w-64 md:h-64 rounded-full overflow-hidden relative drop-shadow-2xl flex items-center justify-center"><img alt="Skillbee Flying Free" class="w-[300%] h-[300%] max-w-none object-cover absolute" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBmJXRtNWhLDVJRdZWJTeka4Eh03uk5SocTT9tA6rellKz6or5YiT-_RCFcQcWvG1qkwuX6DY8Y1ebyPzu5f2n-Y3_IMbEFmfnsMbNlFQwajX8Yj7pEsaZvUszhod7TnVdoQsgItY364Gpir4t3dS0DX0S0-6pEYONM6d1g0cgonvq9zwyEpO7HpND519xj_RpK-hHCvZp6QuZ-Nnktd-ip_Vhz7DMO7GrTgOzYlEk_Ma137Df2BkusqRspopcMLNVl" style="top: -6%; left: -98%;"/></div></div></div><!-- 2. PHASE 2 & 3: FLOATING IBM SILVER TECH LAPTOP --><div class="floating-laptop-anim absolute z-25 pointer-events-none flex items-center justify-center" id="floating-laptop"><div class="relative w-28 h-20 md:w-32 md:h-24"><svg class="w-full h-full drop-shadow-xl" fill="none" viewbox="0 0 160 120"><defs><lineargradient id="laptopLid" x1="0%" x2="100%" y1="0%" y2="100%"><stop offset="0%" stop-color="#94a3b8"></stop><stop offset="50%" stop-color="#64748b"></stop><stop offset="100%" stop-color="#475569"></stop></lineargradient><lineargradient id="screenGlow" x1="0%" x2="0%" y1="0%" y2="100%"><stop offset="0%" stop-color="#38bdf8"></stop><stop offset="100%" stop-color="#1e293b"></stop></lineargradient><lineargradient id="baseMetal" x1="0%" x2="100%" y1="0%" y2="0%"><stop offset="0%" stop-color="#cbd5e1"></stop><stop offset="50%" stop-color="#94a3b8"></stop><stop offset="100%" stop-color="#64748b"></stop></lineargradient></defs><!-- Laptop Open Display Screen --><polygon fill="url(#laptopLid)" points="30,22 130,22 122,86 38,86" rx="4"></polygon><polygon fill="url(#screenGlow)" points="34,26 126,26 119,82 41,82"></polygon><circle cx="80" cy="54" fill="#f8fafc" opacity="0.85" r="5"></circle><!-- IBM 8-bar inspired mini detail --><rect fill="#38bdf8" height="2" opacity="0.8" rx="1" width="24" x="68" y="64"></rect><!-- Keyboard Base Surface --><polygon fill="url(#baseMetal)" points="20,86 140,86 152,106 8,106"></polygon><polygon fill="#334155" points="26,88 134,88 144,103 16,103"></polygon><rect fill="#64748b" height="4" rx="2" width="36" x="62" y="98"></rect></svg><!-- Sparkle indicator --><span class="material-symbols-outlined text-secondary-fixed text-[20px] absolute -top-2 -right-1 animate-ping">auto_awesome</span></div></div><!-- 3. PHASE 4 & 5: FINAL BEE HOLDING LAPTOP (Catches, settles into spotlight position, then calms into idle) --><div class="final-bee-wrap absolute inset-0 z-30 flex items-center justify-center" id="bee-final-holding"><div class="final-bee-float w-full h-full relative flex items-center justify-center transition-transform duration-500 group-hover:scale-105 group-hover:-translate-y-2"><img alt="Skillbee AI Mascot with Laptop" class="w-full h-full object-contain drop-shadow-2xl select-none relative z-20" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmpcMT19qAK6nzGxFGfavHez0hEVLg8b3hvN5S5nw_h7exMKSr9YZcvPJNMhhE70KFWFpCBEBjXhW7T2bA0uB0HnRE6SEXlzCcFhmrpZnYDPkfZ8yGY4RLqYUb1bPjTl4OBFLWByXNYPBAa8f1ej4JlN0q9pK8DtC7XDiyh05o-RKQZ4d-l1TLuT_-scFvUdvMOnxFMSwU3W7bNRJSNp4SBk3pNsGSTessFLScnRwPcbuMbSSgNrpOgiLy5a7VozFD"/><!-- Ambient dynamic ground shadow --><div class="ground-shadow-enter ground-shadow-pulse absolute bottom-4 w-44 h-7 rounded-full bg-primary/30 blur-md pointer-events-none -z-10 mx-auto"></div></div></div></div></div><div class="z-20 bg-surface-container-lowest/95 backdrop-blur-md rounded-2xl p-space-md shadow-md border border-outline-variant/30 flex items-center justify-between"><div class="flex items-center gap-3"><div class="w-11 h-11 rounded-xl bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed shadow-sm"><span class="material-symbols-outlined text-[24px]">group</span></div><div><div class="font-headline-md text-headline-md leading-none text-primary">500K+</div><div class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Learners worldwide</div></div></div><div class="flex -space-x-2.5"><div class="w-9 h-9 rounded-full bg-primary text-on-primary flex items-center justify-center text-xs font-bold ring-2 ring-surface">JD</div><div class="w-9 h-9 rounded-full bg-secondary-fixed text-on-secondary-fixed flex items-center justify-center text-xs font-bold ring-2 ring-surface">SK</div><div class="w-9 h-9 rounded-full bg-tertiary-fixed text-on-tertiary-fixed flex items-center justify-center text-xs font-bold ring-2 ring-surface">+12k</div></div></div></div><div class="absolute -bottom-6 -right-6 hidden sm:flex items-center gap-3 bg-surface-container-lowest px-4 py-3 rounded-2xl shadow-xl border border-outline-variant/40 transition-transform hover:-translate-y-1 z-30"><div class="w-10 h-10 rounded-xl bg-secondary-container/60 flex items-center justify-center text-primary"><span class="material-symbols-outlined text-[22px]">auto_awesome</span></div><div><p class="font-headline-md text-[13px] text-primary leading-tight font-bold">Personalized AI Roadmaps</p><p class="font-body-sm text-[11px] text-on-surface-variant">Backed by IBM SkillsBuild</p></div></div></div>
+</div>
+</section>
+</div>
+<!-- 2. POPULAR COURSES BENTO MARKETPLACE -->
+<section class="w-full bg-surface-container-low py-space-2xl">
+<div class="max-w-[1440px] mx-auto px-margin">
+<!-- Section Header + Filter Tabs -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-lg mb-space-xl">
+<div>
+<div class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider mb-2">
+            Curated Knowledge Engine
+          </div>
+<h2 class="font-headline-xl text-headline-xl text-primary tracking-tight">
+            Explore industry-vetted courses
+          </h2>
+</div>
+<!-- Filter Tabs -->
+<div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none" id="course-filter-group">
+<button class="course-filter-btn px-4 py-2 rounded-full font-label-pill text-label-pill bg-primary text-on-primary shadow-sm transition-all" data-category="all">All Modules</button>
+<button class="course-filter-btn px-4 py-2 rounded-full font-label-pill text-label-pill bg-surface-container-lowest text-on-surface hover:bg-surface-container transition-all" data-category="ai">Artificial Intelligence</button>
+<button class="course-filter-btn px-4 py-2 rounded-full font-label-pill text-label-pill bg-surface-container-lowest text-on-surface hover:bg-surface-container transition-all" data-category="data">Data Science</button>
+<button class="course-filter-btn px-4 py-2 rounded-full font-label-pill text-label-pill bg-surface-container-lowest text-on-surface hover:bg-surface-container transition-all" data-category="cloud">Cloud &amp; DevOps</button>
+<button class="course-filter-btn px-4 py-2 rounded-full font-label-pill text-label-pill bg-surface-container-lowest text-on-surface hover:bg-surface-container transition-all" data-category="design">Product Design</button>
+</div>
+</div>
+<!-- Course Cards Bento Grid (6 Bespoke Tiles) -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter" id="courses-container">
+<!-- Tile 1: Honey Yellow Generative AI -->
+<div class="course-card group relative bg-secondary-fixed text-on-secondary-fixed rounded-[32px] p-space-lg flex flex-col justify-between h-[360px] shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden" data-category="ai">
+<!-- Background Watermark shape -->
+<div class="absolute -right-8 -bottom-8 w-44 h-44 rounded-full bg-secondary-container/60 pointer-events-none group-hover:scale-125 transition-transform duration-500"></div>
+<div>
+<div class="flex items-center justify-between mb-space-md">
+<span class="px-3 py-1 rounded-full bg-primary text-on-primary font-label-caps text-label-caps uppercase">IBM SkillsBuild</span>
+<div class="flex items-center gap-1 font-headline-md text-[14px]">
+<span class="material-symbols-outlined text-[18px]">star</span>
+<span class="">4.9</span>
+</div>
+</div>
+<h3 class="font-headline-lg text-headline-lg text-on-secondary-fixed leading-snug group-hover:text-primary transition-colors">
+              Generative AI Fundamentals &amp; watsonx
+            </h3>
+<p class="font-body-sm text-body-sm text-on-secondary-fixed-variant mt-2">
+              Master prompt engineering, LLM architectures, fine-tuning, and enterprise ethical AI governance.
+            </p>
+</div>
+<div class="flex items-center justify-between pt-space-md border-t border-on-secondary-fixed-variant/20 z-10">
+<div class="flex items-center gap-space-sm font-label-pill text-label-pill">
+<span class="inline-flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">schedule</span> 6 Weeks
+              </span>
+<span class="">•</span>
+<span class="">Beginner</span>
+</div>
+<div class="w-11 h-11 rounded-full bg-primary text-on-primary flex items-center justify-center group-hover:rotate-45 transition-transform duration-300 shadow-md">
+<span class="material-symbols-outlined text-[20px]">arrow_outward</span>
+</div>
+</div>
+</div>
+<!-- Tile 2: Mint / Green Data Analysis -->
+<div class="course-card group relative bg-surface-container-lowest text-primary rounded-[32px] p-space-lg flex flex-col justify-between h-[360px] shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden" data-category="data">
+<div class="absolute top-0 right-0 w-32 h-32 bg-surface-container-high/60 rounded-bl-[80px] pointer-events-none"></div>
+<div>
+<div class="flex items-center justify-between mb-space-md">
+<span class="px-3 py-1 rounded-full bg-surface-container text-on-surface font-label-caps text-label-caps uppercase">Data Science</span>
+<div class="flex items-center gap-1 font-headline-md text-[14px] text-on-surface-variant">
+<span class="material-symbols-outlined text-secondary-fixed text-[18px]">star</span>
+<span class="">4.8</span>
+</div>
+</div>
+<h3 class="font-headline-lg text-headline-lg text-primary leading-snug">
+              Data Analysis with Python &amp; Pandas
+            </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-2">
+              Clean raw telemetry datasets, design predictive analytics pipelines, and construct executive dashboards.
+            </p>
+</div>
+<div class="flex items-center justify-between pt-space-md border-t border-outline-variant/30 z-10">
+<div class="flex items-center gap-space-sm font-label-pill text-label-pill text-on-surface-variant">
+<span class="inline-flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">schedule</span> 8 Weeks
+              </span>
+<span class="">•</span>
+<span class="">Intermediate</span>
+</div>
+<div class="w-11 h-11 rounded-full bg-primary text-on-primary flex items-center justify-center group-hover:rotate-45 transition-transform duration-300 shadow-md">
+<span class="material-symbols-outlined text-[20px]">arrow_outward</span>
+</div>
+</div>
+</div>
+<!-- Tile 3: Lavender Pastel Cybersecurity -->
+<div class="course-card group relative bg-tertiary-fixed text-on-tertiary-fixed rounded-[32px] p-space-lg flex flex-col justify-between h-[360px] shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden" data-category="ai">
+<div class="absolute -right-6 -top-6 w-36 h-36 rounded-full bg-tertiary-fixed-dim/40 pointer-events-none group-hover:scale-110 transition-transform"></div>
+<div>
+<div class="flex items-center justify-between mb-space-md">
+<span class="px-3 py-1 rounded-full bg-primary text-on-primary font-label-caps text-label-caps uppercase">IBM Security</span>
+<div class="flex items-center gap-1 font-headline-md text-[14px]">
+<span class="material-symbols-outlined text-[18px]">star</span>
+<span class="">4.9</span>
+</div>
+</div>
+<h3 class="font-headline-lg text-headline-lg text-on-tertiary-fixed leading-snug">
+              Cybersecurity Defense &amp; Threat Intelligence
+            </h3>
+<p class="font-body-sm text-body-sm text-on-tertiary-fixed-variant mt-2">
+              Hands-on SOC simulation labs, cryptographic key management, and zero-trust perimeter enforcement.
+            </p>
+</div>
+<div class="flex items-center justify-between pt-space-md border-t border-on-tertiary-fixed-variant/20 z-10">
+<div class="flex items-center gap-space-sm font-label-pill text-label-pill">
+<span class="inline-flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">schedule</span> 10 Weeks
+              </span>
+<span class="">•</span>
+<span class="">Advanced</span>
+</div>
+<div class="w-11 h-11 rounded-full bg-primary text-on-primary flex items-center justify-center group-hover:rotate-45 transition-transform duration-300 shadow-md">
+<span class="material-symbols-outlined text-[20px]">arrow_outward</span>
+</div>
+</div>
+</div>
+<!-- Tile 4: Sky Blue Kubernetes / Cloud -->
+<div class="course-card group relative bg-surface-container-lowest text-primary rounded-[32px] p-space-lg flex flex-col justify-between h-[360px] shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden" data-category="cloud">
+<div class="absolute -bottom-10 -right-10 w-40 h-40 bg-secondary-fixed/20 rounded-full blur-xl pointer-events-none"></div>
+<div>
+<div class="flex items-center justify-between mb-space-md">
+<span class="px-3 py-1 rounded-full bg-surface-container text-on-surface font-label-caps text-label-caps uppercase">Cloud Ops</span>
+<div class="flex items-center gap-1 font-headline-md text-[14px] text-on-surface-variant">
+<span class="material-symbols-outlined text-secondary-fixed text-[18px]">star</span>
+<span class="">4.7</span>
+</div>
+</div>
+<h3 class="font-headline-lg text-headline-lg text-primary leading-snug">
+              Cloud Architecture with Kubernetes &amp; RedHat
+            </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-2">
+              Deploy fault-tolerant container clusters, automate CI/CD pipelines, and configure service meshes.
+            </p>
+</div>
+<div class="flex items-center justify-between pt-space-md border-t border-outline-variant/30 z-10">
+<div class="flex items-center gap-space-sm font-label-pill text-label-pill text-on-surface-variant">
+<span class="inline-flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">schedule</span> 5 Weeks
+              </span>
+<span class="">•</span>
+<span class="">Intermediate</span>
+</div>
+<div class="w-11 h-11 rounded-full bg-primary text-on-primary flex items-center justify-center group-hover:rotate-45 transition-transform duration-300 shadow-md">
+<span class="material-symbols-outlined text-[20px]">arrow_outward</span>
+</div>
+</div>
+</div>
+<!-- Tile 5: Soft Peach Coral Product Design -->
+<div class="course-card group relative bg-error-container text-on-error-container rounded-[32px] p-space-lg flex flex-col justify-between h-[360px] shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden" data-category="design">
+<div class="absolute right-2 top-2 w-28 h-28 rounded-full bg-surface-container-lowest/30 pointer-events-none"></div>
+<div>
+<div class="flex items-center justify-between mb-space-md">
+<span class="px-3 py-1 rounded-full bg-on-error-container text-error-container font-label-caps text-label-caps uppercase">IBM Carbon Design</span>
+<div class="flex items-center gap-1 font-headline-md text-[14px]">
+<span class="material-symbols-outlined text-[18px]">star</span>
+<span class="">4.9</span>
+</div>
+</div>
+<h3 class="font-headline-lg text-headline-lg leading-snug">
+              Product Design &amp; Systems from Scratch
+            </h3>
+<p class="font-body-sm text-body-sm opacity-90 mt-2">
+              Craft responsive design tokens, accessible components, micro-interactions, and design-to-code pipelines.
+            </p>
+</div>
+<div class="flex items-center justify-between pt-space-md border-t border-on-error-container/20 z-10">
+<div class="flex items-center gap-space-sm font-label-pill text-label-pill">
+<span class="inline-flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">schedule</span> 7 Weeks
+              </span>
+<span class="">•</span>
+<span class="">All Levels</span>
+</div>
+<div class="w-11 h-11 rounded-full bg-on-error-container text-error-container flex items-center justify-center group-hover:rotate-45 transition-transform duration-300 shadow-md">
+<span class="material-symbols-outlined text-[20px]">arrow_outward</span>
+</div>
+</div>
+</div>
+<!-- Tile 6: Carbon Dark Inverted ML Core Card -->
+<div class="course-card group relative bg-primary text-on-primary rounded-[32px] p-space-lg flex flex-col justify-between h-[360px] shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden" data-category="ai">
+<!-- Starburst decorative glyph in background -->
+<div class="absolute -right-12 -bottom-12 opacity-15 pointer-events-none">
+<span class="material-symbols-outlined text-[180px]">flare</span>
+</div>
+<div>
+<div class="flex items-center justify-between mb-space-md">
+<span class="px-3 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-caps text-label-caps uppercase">Fast Track</span>
+<div class="flex items-center gap-1 font-headline-md text-[14px] text-secondary-fixed">
+<span class="material-symbols-outlined text-[18px]">bolt</span>
+<span class="">Career Ready</span>
+</div>
+</div>
+<h3 class="font-headline-lg text-headline-lg text-on-primary leading-snug">
+              Machine Learning Systems &amp; Neural Nets
+            </h3>
+<p class="font-body-sm text-body-sm text-on-primary-container mt-2">
+              Linear algebra to backpropagation in PyTorch, embedding vectors, and real-time model serving.
+            </p>
+</div>
+<div class="flex items-center justify-between pt-space-md border-t border-surface-variant/20 z-10">
+<div class="flex items-center gap-space-sm font-label-pill text-label-pill text-primary-fixed">
+<span class="inline-flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">schedule</span> 8 Weeks
+              </span>
+<span class="">•</span>
+<span class="">Core Track</span>
+</div>
+<div class="w-11 h-11 rounded-full bg-on-primary text-primary flex items-center justify-center group-hover:rotate-45 transition-transform duration-300 shadow-md">
+<span class="material-symbols-outlined text-[20px]">arrow_outward</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 3. INTERACTIVE AI ROADMAP GENERATOR -->
+<section class="max-w-[1440px] mx-auto px-margin py-space-2xl w-full">
+<div class="bg-surface-container-lowest rounded-[40px] p-space-lg md:p-space-2xl shadow-lg relative overflow-hidden">
+<div class="max-w-2xl mb-space-xl">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-caps text-label-caps mb-3">
+<span class="material-symbols-outlined text-[16px]">route</span>
+          DYNAMIC CURRICULUM SYNTHESIZER
+        </div>
+<h2 class="font-headline-xl text-headline-xl text-primary tracking-tight">
+          Not sure where to start? Let AI engineer your path.
+        </h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-2">
+          Select a dream ambition or type your goal. Skillbee computes the optimal sequence of courses, milestones, and verifiable certificates.
+        </p>
+</div>
+<!-- Roadmap Tab Switchers -->
+<div class="flex flex-wrap items-center gap-space-sm mb-space-lg">
+<button class="path-btn px-space-md py-2 rounded-full font-label-pill text-label-pill bg-primary text-on-primary shadow-sm transition-transform active:scale-95" data-path="ai-eng">
+          AI Engineer Track
+        </button>
+<button class="path-btn px-space-md py-2 rounded-full font-label-pill text-label-pill bg-surface-container-high text-on-surface hover:bg-surface-container transition-transform active:scale-95" data-path="fullstack">
+          Full-Stack Cloud Architect
+        </button>
+<button class="path-btn px-space-md py-2 rounded-full font-label-pill text-label-pill bg-surface-container-high text-on-surface hover:bg-surface-container transition-transform active:scale-95" data-path="cyber">
+          Cyber Incident Responder
+        </button>
+</div>
+<!-- Animated Path Canvas Node Visualization -->
+<div class="w-full bg-surface-container-low rounded-3xl p-space-lg md:p-space-xl overflow-x-auto relative">
+<div class="min-w-[860px] relative">
+<!-- Node Trail Header Progress -->
+<div class="flex items-center justify-between mb-space-lg">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-secondary-fixed animate-ping"></span>
+<span class="font-headline-md text-headline-md text-primary" id="active-path-label">Target: AI Systems Engineer (6 Milestones)</span>
+</div>
+<span class="px-3 py-1 rounded-full bg-surface-container-highest text-on-surface font-label-caps text-label-caps">Est. Duration: 18 Weeks</span>
+</div>
+<!-- Dynamic Nodes Strip -->
+<div class="grid grid-cols-6 gap-3 relative py-4" id="roadmap-nodes-container">
+<!-- Step 1 -->
+<div class="roadmap-node group bg-surface-container-lowest p-space-md rounded-2xl shadow-sm hover:shadow-md transition-all flex flex-col justify-between h-44 relative">
+<div class="w-7 h-7 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-caps text-label-caps flex items-center justify-center mb-2">01</div>
+<div>
+<p class="font-label-caps text-[10px] text-on-surface-variant uppercase">Foundations</p>
+<p class="font-headline-md text-[15px] text-primary mt-1">Python &amp; Linear Algebra</p>
+</div>
+<span class="text-xs text-on-surface-variant/80 flex items-center gap-1 font-body-sm">
+<span class="material-symbols-outlined text-[14px]">check_circle</span> Verified
+              </span>
+</div>
+<!-- Step 2 -->
+<div class="roadmap-node group bg-surface-container-lowest p-space-md rounded-2xl shadow-sm hover:shadow-md transition-all flex flex-col justify-between h-44 relative">
+<div class="w-7 h-7 rounded-full bg-surface-container-high text-on-surface font-label-caps text-label-caps flex items-center justify-center mb-2">02</div>
+<div>
+<p class="font-label-caps text-[10px] text-on-surface-variant uppercase">Data Core</p>
+<p class="font-headline-md text-[15px] text-primary mt-1">Algorithms &amp; Pipelines</p>
+</div>
+<span class="text-xs text-on-surface-variant/80 flex items-center gap-1 font-body-sm">
+<span class="material-symbols-outlined text-[14px]">play_circle</span> Active
+              </span>
+</div>
+<!-- Step 3 -->
+<div class="roadmap-node group bg-surface-container-lowest p-space-md rounded-2xl shadow-sm hover:shadow-md transition-all flex flex-col justify-between h-44 relative">
+<div class="w-7 h-7 rounded-full bg-surface-container-high text-on-surface font-label-caps text-label-caps flex items-center justify-center mb-2">03</div>
+<div>
+<p class="font-label-caps text-[10px] text-on-surface-variant uppercase">Analytics</p>
+<p class="font-headline-md text-[15px] text-primary mt-1">Probabilistic Models</p>
+</div>
+<span class="text-xs text-on-surface-variant/80 flex items-center gap-1 font-body-sm">
+<span class="material-symbols-outlined text-[14px]">lock</span> Next
+              </span>
+</div>
+<!-- Step 4 -->
+<div class="roadmap-node group bg-surface-container-lowest p-space-md rounded-2xl shadow-md hover:shadow-md transition-all flex flex-col justify-between h-44 relative">
+<div class="w-7 h-7 rounded-full bg-surface-container-high text-on-surface font-label-caps text-label-caps flex items-center justify-center mb-2">04</div>
+<div>
+<p class="font-label-caps text-[10px] text-on-surface-variant uppercase">Machine Learning</p>
+<p class="font-headline-md text-[15px] text-primary mt-1">PyTorch &amp; Watsonx</p>
+</div>
+<span class="text-xs text-on-surface-variant/80 flex items-center gap-1 font-body-sm">
+<span class="material-symbols-outlined text-[14px]">lock</span> Milestone
+              </span>
+</div>
+<!-- Step 5 -->
+<div class="roadmap-node group bg-surface-container-lowest p-space-md rounded-2xl shadow-sm hover:shadow-md transition-all flex flex-col justify-between h-44 relative">
+<div class="w-7 h-7 rounded-full bg-surface-container-high text-on-surface font-label-caps text-label-caps flex items-center justify-center mb-2">05</div>
+<div>
+<p class="font-label-caps text-[10px] text-on-surface-variant uppercase">LLMs &amp; Ops</p>
+<p class="font-headline-md text-[15px] text-primary mt-1">RAG &amp; Vector Embeddings</p>
+</div>
+<span class="text-xs text-on-surface-variant/80 flex items-center gap-1 font-body-sm">
+<span class="material-symbols-outlined text-[14px]">lock</span> Advanced
+              </span>
+</div>
+<!-- Step 6 (Final Capstone) -->
+<div class="roadmap-node group bg-primary text-on-primary p-space-md rounded-2xl shadow-md hover:shadow-xl transition-all flex flex-col justify-between h-44 relative">
+<div class="w-7 h-7 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-caps text-label-caps flex items-center justify-center mb-2">★</div>
+<div>
+<p class="font-label-caps text-[10px] text-secondary-fixed uppercase">IBM Credential</p>
+<p class="font-headline-md text-[15px] text-on-primary mt-1">Full AI Capstone Defense</p>
+</div>
+<span class="text-xs text-secondary-fixed flex items-center gap-1 font-body-sm">
+<span class="material-symbols-outlined text-[14px]">verified</span> Certificate
+              </span>
+</div>
+</div>
+<!-- Bottom Action strip -->
+<div class="mt-space-lg flex flex-col sm:flex-row items-center justify-between gap-space-md bg-surface-container-lowest p-space-md rounded-2xl">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">psychology</span>
+</div>
+<div>
+<p class="font-headline-md text-[14px] text-primary">Personalized by IBM watsonx AI</p>
+<p class="font-body-sm text-[12px] text-on-surface-variant">Based on 140,000+ real tech hiring rubrics updated weekly</p>
+</div>
+</div>
+<button class="px-space-lg py-2.5 rounded-full bg-primary text-on-primary font-label-pill text-label-pill hover:scale-105 transition-transform flex items-center gap-2">
+<span class="">Enroll in This Custom Track</span>
+<span class="material-symbols-outlined text-[18px]">bolt</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 4. MEET YOUR AI MENTOR CONSOLE SECTION -->
+<section class="w-full bg-surface-container-low py-space-2xl">
+<div class="max-w-[1440px] mx-auto px-margin">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-center">
+<!-- Left Explainer (5 cols) -->
+<div class="lg:col-span-5 flex flex-col items-start">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-caps text-label-caps mb-space-md">
+<span class="material-symbols-outlined text-[16px]">support_agent</span>
+            24/7 INTERACTIVE LEARNING COMPANION
+          </div>
+<h2 class="font-headline-xl text-headline-xl text-primary tracking-tight mb-space-md">
+            Stuck on a concept? Meet your on-demand AI Mentor.
+          </h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-space-lg">
+            Skillbee unpacks convoluted code syntax, generates intuitive metaphors, produces instant quizzes, and debugs your logic step-by-step.
+          </p>
+<!-- Quick Test Prompt Triggers -->
+<div class="w-full flex flex-col gap-2.5 mb-space-lg">
+<p class="font-label-caps text-label-caps text-on-surface-variant uppercase">Try instant prompts:</p>
+<button class="mentor-prompt-btn w-full text-left p-3 rounded-2xl bg-surface-container-lowest hover:bg-surface-container text-primary font-body-sm text-body-sm flex items-center justify-between transition-colors" data-prompt="Explain Transformers attention mechanism like I am 12 years old.">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary-fixed text-[18px]">lightbulb</span>
+                "Explain Self-Attention like I am 12"
+              </span>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">send</span>
+</button>
+<button class="mentor-prompt-btn w-full text-left p-3 rounded-2xl bg-surface-container-lowest hover:bg-surface-container text-primary font-body-sm text-body-sm flex items-center justify-between transition-colors" data-prompt="Give me a 3-question quiz on Python list comprehensions with answers.">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary-fixed-dim text-[18px]">quiz</span>
+                "Quiz me on Python List Comprehensions"
+              </span>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">send</span>
+</button>
+<button class="mentor-prompt-btn w-full text-left p-3 rounded-2xl bg-surface-container-lowest hover:bg-surface-container text-primary font-body-sm text-body-sm flex items-center justify-between transition-colors" data-prompt="Show me how to connect a PyTorch model to IBM Watsonx Runtime.">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">code</span>
+                "Deploy PyTorch to watsonx runtime"
+              </span>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">send</span>
+</button>
+</div>
+</div>
+<!-- Right Live Simulated Dialogue Console (7 cols) -->
+<div class="lg:col-span-7 bg-surface-container-lowest rounded-[36px] shadow-xl p-space-lg flex flex-col h-[520px] justify-between border-2 border-surface-container">
+<!-- Console Top bar -->
+<div class="flex items-center justify-between pb-space-sm border-b border-surface-container-high">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-full bg-secondary-fixed overflow-hidden flex items-center justify-center border-2 border-secondary-container shadow-md shrink-0 p-0.5"><img alt="Skillbee Mascot" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXghiEjMuremFi-WbsFVsZJosRSIGRZfkjqsat7qLJtoE8b7rgkZD8Jmpe5CIqUf1cGV_LKTTZGZz2zvSxg0vup2bR53Rigv80o0h94vE5oQrW7FvCiCbDg1QMkC5I9v5gQwcb56GFejmvdxc7saTJnW0r9pNg8UcabAibbZKJ8SBOztIX0QD5vkRt9LjSR6LM3xoxCq_F9gfJROWM81b9v_DTOyogSNo34GZkl6WLZCiuZq0SLhxLQeK6d3eSxv9y"/></div>
+<div>
+<p class="font-headline-md text-[15px] text-primary">Skillbee Companion</p>
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-secondary-container"></span>
+<span class="font-body-sm text-[11px] text-on-surface-variant">Online · watsonx Assistant Core</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="px-2.5 py-1 rounded-full bg-surface-container text-[11px] font-label-caps text-on-surface">Python 3.12</span>
+<button class="text-on-surface-variant hover:text-primary transition-colors text-xs font-label-caps" id="clear-chat-btn">Reset</button>
+</div>
+</div>
+<!-- Chat Conversation Log -->
+<div class="flex-1 overflow-y-auto py-space-md flex flex-col gap-3.5 pr-2" id="chat-messages">
+<!-- Bee Initial Message -->
+<div class="flex items-start gap-2.5 max-w-[85%]">
+<div class="w-7 h-7 rounded-full bg-secondary-fixed overflow-hidden flex items-center justify-center shrink-0 mt-1 shadow-sm"><img alt="Skillbee" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCha2rMw_LUPCiUpFOPLhO6HNnlxP8aF8HnnCBwpphCspF3EYlAE1PogvnFOfyX65Jk96P9Ao-G17QjnuklsyHUyoGoDUW8VZaW6BlRKcO3nNEr9aJvSfPSyRcjXNB5yZ6gqL6tpUyTS6LNj08Y4NmVu4jwLxptls8ABulh4wzI6tMm-yNXTVGQ-mULEC8HvlRmh9-AUdloCUKySIAYkfAZyGnm-xori6kwr5MBMcE3zaGrukyYa3e6dAaGzgIhXnWo"/></div>
+<div class="bg-surface-container-low p-space-md rounded-2xl rounded-tl-sm text-primary font-body-md text-[14px]">
+                Buzz buzz! 🍯 I’m your dedicated Skillora mentor. Ask me to demystify complex code, review project submissions, or generate interactive test challenges!
+              </div>
+</div>
+<!-- Learner Simulated Bubble -->
+<div class="flex items-start justify-end gap-2.5 max-w-[85%] ml-auto">
+<div class="bg-primary text-on-primary p-space-md rounded-2xl rounded-tr-sm font-body-md text-[14px]">
+                What’s the exact difference between a Transformer encoder and decoder in LLMs?
+              </div>
+</div>
+<!-- Bee Response with Code Block -->
+<div class="flex items-start gap-2.5 max-w-[92%]">
+<div class="w-7 h-7 rounded-full bg-secondary-fixed overflow-hidden flex items-center justify-center shrink-0 mt-1 shadow-sm"><img alt="Skillbee" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4qX_eVZ-ItTXS8XViO1eXFGAISzyBD5wcyKUgVUgHQNq_NPgzMY-bZwTlzLMMHZ_yUfN31C8k8ciLa6XxhDRw4aMA3Ind807hi318jR2OaMd-OAlsiE4eiiG7fzIFDPF21jbsn-4jQcMXSgmOVkbddzzLmZ4GUOpfGy9RNBqGLLaUB8rFUaiDVwMW3qWjCauW-4Yf6t_9FQ04dlrs-ZgTxE99zYEW7qROv7CuskExmUS3GJqlmRACPvOoj9GWMV6r"/></div>
+<div class="bg-surface-container-low p-space-md rounded-2xl rounded-tl-sm text-primary font-body-md text-[14px] flex flex-col gap-2">
+<p class="">Great question! Think of it like a reader and a writer:</p>
+<ul class="list-disc pl-4 space-y-1 text-[13px] text-on-surface-variant">
+<li class=""><strong>Encoder:</strong> Reads the whole paragraph simultaneously to build deep context (e.g. BERT for classification).</li>
+<li class=""><strong>Decoder:</strong> Predicts the very next token sequentially using causal masking (e.g. GPT, watsonx Granite).</li>
+</ul>
+<div class="bg-primary-container text-on-primary rounded-xl p-3 font-mono text-[12px] overflow-x-auto">
+<code># Causal Masking in Decoder attention<br/>mask = torch.triu(torch.ones(seq_len, seq_len), diagonal=1).bool()<br/>scores = scores.masked_fill(mask, -float('inf'))</code>
+</div>
+</div>
+</div>
+</div>
+<!-- Console Interactive Input Bar -->
+<div class="pt-space-sm border-t border-surface-container-high flex items-center gap-2">
+<input class="flex-1 bg-surface-container-low px-4 py-3 rounded-full text-primary placeholder:text-on-surface-variant font-body-md text-body-md focus:outline-none focus:ring-1 focus:ring-primary" id="mentor-input" placeholder="Ask Skillbee anything about code, math, or career..." type="text"/>
+<button class="w-11 h-11 rounded-full bg-primary text-on-primary flex items-center justify-center hover:scale-105 active:scale-95 transition-transform shrink-0" id="send-mentor-btn">
+<span class="material-symbols-outlined text-[20px]">send</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 5. REAL-TIME SKILL GAP BENCHMARK ANALYSIS -->
+<section class="max-w-[1440px] mx-auto px-margin py-space-2xl w-full">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md mb-space-xl">
+<div>
+<div class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider mb-2">
+          Intelligent Telemetry
+        </div>
+<h2 class="font-headline-xl text-headline-xl text-primary tracking-tight">
+          Know exactly what to learn next
+        </h2>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-md">
+        Skillora continuously tests your code submissions and benchmarks your skill vector against 10,000+ open enterprise roles.
+      </p>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-stretch">
+<!-- Skill Meters Column (7 cols) -->
+<div class="lg:col-span-7 bg-surface-container-lowest rounded-[32px] p-space-lg shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between mb-space-md pb-space-sm border-b border-outline-variant/30">
+<span class="font-headline-md text-headline-md text-primary">Your Verified Readiness Profile</span>
+<span class="font-label-pill text-label-pill px-3 py-1 bg-surface-container rounded-full text-on-surface">Target: Sr. AI Engineer</span>
+</div>
+<!-- 5 Live Skill Bar Visuals -->
+<div class="flex flex-col gap-space-md py-2">
+<!-- Skill 1 -->
+<div>
+<div class="flex justify-between text-body-sm font-semibold text-primary mb-1">
+<span class="">Python &amp; Async Architectures</span>
+<span class="font-stat-counter text-[15px]">92% · Mastered</span>
+</div>
+<div class="w-full h-3.5 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full transition-all duration-1000" style="width: 92%"></div>
+</div>
+</div>
+<!-- Skill 2 -->
+<div>
+<div class="flex justify-between text-body-sm font-semibold text-primary mb-1">
+<span class="">Statistical Inference &amp; Probability</span>
+<span class="font-stat-counter text-[15px]">68% · Proficient</span>
+</div>
+<div class="w-full h-3.5 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-secondary-fixed rounded-full transition-all duration-1000" style="width: 68%"></div>
+</div>
+</div>
+<!-- Skill 3 -->
+<div>
+<div class="flex justify-between text-body-sm font-semibold text-primary mb-1">
+<span class="">Machine Learning &amp; Feature Pipelines</span>
+<span class="font-stat-counter text-[15px]">51% · In Progress</span>
+</div>
+<div class="w-full h-3.5 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-tertiary-fixed text-on-tertiary-fixed rounded-full transition-all duration-1000" style="width: 51%"></div>
+</div>
+</div>
+<!-- Skill 4 -->
+<div>
+<div class="flex justify-between text-body-sm font-semibold text-primary mb-1">
+<span class="">Deep Learning &amp; LLM Fine-Tuning</span>
+<span class="font-stat-counter text-[15px]">34% · Developing</span>
+</div>
+<div class="w-full h-3.5 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-outline-variant rounded-full transition-all duration-1000" style="width: 34%"></div>
+</div>
+</div>
+<!-- Skill 5 (Identified Gap) -->
+<div>
+<div class="flex justify-between text-body-sm font-semibold text-error mb-1">
+<span class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">priority_high</span>
+                MLOps, Containerization &amp; Deployment
+              </span>
+<span class="font-stat-counter text-[15px]">19% · Primary Skill Gap</span>
+</div>
+<div class="w-full h-3.5 bg-error-container/40 rounded-full overflow-hidden">
+<div class="h-full bg-error rounded-full transition-all duration-1000" style="width: 19%"></div>
+</div>
+</div>
+</div>
+<div class="pt-space-md border-t border-outline-variant/30 flex items-center justify-between text-on-surface-variant font-body-sm">
+<span class="">Overall Match Score: <strong>72%</strong></span>
+<span class="flex items-center gap-1 text-primary font-semibold">
+<span class="material-symbols-outlined text-[16px]">trending_up</span> +14% this month
+          </span>
+</div>
+</div>
+<!-- Spotlight Recommendation Card (5 cols) -->
+<div class="lg:col-span-5 bg-secondary-container text-on-secondary-container rounded-[32px] p-space-lg md:p-space-xl flex flex-col justify-between shadow-md">
+<div>
+<div class="w-12 h-12 rounded-2xl bg-primary text-on-primary flex items-center justify-center mb-space-md">
+<span class="material-symbols-outlined text-[26px]">flag</span>
+</div>
+<span class="font-label-caps text-label-caps uppercase text-on-secondary-container/80 tracking-wider">AI Recommendation</span>
+<h3 class="font-headline-lg text-headline-lg text-on-secondary-container leading-tight mt-1 mb-space-sm">
+            Close the MLOps Gap &amp; Elevate Job Readiness by +42%
+          </h3>
+<p class="font-body-md text-body-md text-on-secondary-container/90">
+            Our algorithm identified that senior roles require Docker, Kubernetes, and model registry monitoring. Take our accelerated 2-week mini-sprint to close this gap today.
+          </p>
+</div>
+<div class="mt-space-lg pt-space-md border-t border-on-secondary-container/20 flex flex-col sm:flex-row items-center justify-between gap-space-sm">
+<div class="font-label-pill text-label-pill">
+<p class="font-bold">2-Week MLOps FastTrack</p>
+<p class="text-xs opacity-75">12 real hands-on lab credits</p>
+</div>
+<button class="w-full sm:w-auto px-space-lg py-3 rounded-full bg-primary text-on-primary font-label-pill text-label-pill hover:scale-105 transition-transform flex items-center justify-center gap-2">
+<span class="">Learn This Next</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- 6. LEARN BY BUILDING (PROJECT-BASED EXPERIENCES) -->
+<section class="w-full bg-surface-container-low py-space-2xl">
+<div class="max-w-[1440px] mx-auto px-margin">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md mb-space-xl">
+<div>
+<div class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider mb-2">
+            Applied Portfolio Construction
+          </div>
+<h2 class="font-headline-xl text-headline-xl text-primary tracking-tight">
+            Learn by building real software
+          </h2>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-md">
+          Don’t just watch video lectures. Ship battle-tested code repositories verified directly by automated test suites and peer code reviews.
+        </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<!-- Project 1 -->
+<div class="bg-surface-container-lowest rounded-[32px] p-space-lg shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all flex flex-col justify-between group">
+<div>
+<div class="w-full h-44 rounded-2xl bg-gradient-to-br from-tertiary-fixed via-surface-container-high to-surface-container p-space-md flex flex-col justify-between mb-space-md relative overflow-hidden">
+<div class="flex justify-between items-center z-10">
+<span class="px-2.5 py-1 bg-surface-container-lowest/90 backdrop-blur-md rounded-full font-label-caps text-[11px] text-primary">IBM watsonx.ai</span>
+<span class="px-2.5 py-1 bg-secondary-fixed text-on-secondary-fixed font-label-caps text-[11px] rounded-full">Intermediate</span>
+</div>
+<div class="z-10 font-mono text-xs text-primary bg-surface-container-lowest/80 backdrop-blur-sm p-2 rounded-lg">
+<code>agent.stream(query, context)</code>
+</div>
+</div>
+<h3 class="font-headline-md text-headline-md text-primary leading-snug group-hover:text-secondary transition-colors">
+              Autonomous AI Customer Support Agent
+            </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-2">
+              Construct a multi-tool LangGraph agent connected to vector memory and live CRM APIs with guardrails.
+            </p>
+</div>
+<div class="pt-space-md border-t border-outline-variant/30 mt-space-lg flex items-center justify-between">
+<span class="font-label-caps text-xs text-on-surface-variant">Est. 14 Hours · Python</span>
+<div class="w-10 h-10 rounded-full bg-surface-container group-hover:bg-primary group-hover:text-on-primary flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-[18px]">terminal</span>
+</div>
+</div>
+</div>
+<!-- Project 2 -->
+<div class="bg-surface-container-lowest rounded-[32px] p-space-lg shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all flex flex-col justify-between group">
+<div>
+<div class="w-full h-44 rounded-2xl bg-gradient-to-br from-secondary-container via-surface-container-high to-surface-container-lowest p-space-md flex flex-col justify-between mb-space-md relative overflow-hidden">
+<div class="flex justify-between items-center z-10">
+<span class="px-2.5 py-1 bg-surface-container-lowest/90 backdrop-blur-md rounded-full font-label-caps text-[11px] text-primary">Apache Kafka</span>
+<span class="px-2.5 py-1 bg-error-container text-on-error-container font-label-caps text-[11px] rounded-full">Advanced</span>
+</div>
+<div class="z-10 font-mono text-xs text-primary bg-surface-container-lowest/80 backdrop-blur-sm p-2 rounded-lg">
+<code>predict_stream(latency &lt; 12ms)</code>
+</div>
+</div>
+<h3 class="font-headline-md text-headline-md text-primary leading-snug group-hover:text-secondary transition-colors">
+              Real-Time Predictive Fraud Detection Pipeline
+            </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-2">
+              Ingest 50,000 synthetic banking events/sec, detect anomalies with XGBoost, and alert via Webhooks.
+            </p>
+</div>
+<div class="pt-space-md border-t border-outline-variant/30 mt-space-lg flex items-center justify-between">
+<span class="font-label-caps text-xs text-on-surface-variant">Est. 20 Hours · Docker</span>
+<div class="w-10 h-10 rounded-full bg-surface-container group-hover:bg-primary group-hover:text-on-primary flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-[18px]">terminal</span>
+</div>
+</div>
+</div>
+<!-- Project 3 -->
+<div class="bg-surface-container-lowest rounded-[32px] p-space-lg shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all flex flex-col justify-between group">
+<div>
+<div class="w-full h-44 rounded-2xl bg-gradient-to-br from-error-container via-surface-container-low to-surface-container p-space-md flex flex-col justify-between mb-space-md relative overflow-hidden">
+<div class="flex justify-between items-center z-10">
+<span class="px-2.5 py-1 bg-surface-container-lowest/90 backdrop-blur-md rounded-full font-label-caps text-[11px] text-primary">Next.js &amp; Tailwind</span>
+<span class="px-2.5 py-1 bg-surface-container-high text-on-surface font-label-caps text-[11px] rounded-full">Beginner</span>
+</div>
+<div class="z-10 font-mono text-xs text-primary bg-surface-container-lowest/80 backdrop-blur-sm p-2 rounded-lg">
+<code>renderDesignTokens(figmaApi)</code>
+</div>
+</div>
+<h3 class="font-headline-md text-headline-md text-primary leading-snug group-hover:text-secondary transition-colors">
+              Full-Stack Accessible Design System
+            </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-2">
+              Connect Figma variables with automated GitHub Actions, publish an npm package, and achieve WCAG AAA compliance.
+            </p>
+</div>
+<div class="pt-space-md border-t border-outline-variant/30 mt-space-lg flex items-center justify-between">
+<span class="font-label-caps text-xs text-on-surface-variant">Est. 8 Hours · React</span>
+<div class="w-10 h-10 rounded-full bg-surface-container group-hover:bg-primary group-hover:text-on-primary flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-[18px]">terminal</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 7. HONEYCOMB GAMIFICATION COUNTERS -->
+<section class="max-w-[1440px] mx-auto px-margin py-space-2xl w-full">
+<div class="bg-primary text-on-primary rounded-[40px] p-space-lg md:p-space-2xl relative overflow-hidden">
+<!-- Starburst Background Glyph -->
+<div class="absolute -right-20 -top-20 opacity-10 pointer-events-none">
+<span class="material-symbols-outlined text-[280px]">flare</span>
+</div>
+<div class="relative z-10 mb-space-xl">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-caps text-label-caps mb-3">
+<span class="material-symbols-outlined text-[16px]">local_fire_department</span>
+          HONEYCOMB LEARNING STREAK
+        </div>
+<h2 class="font-headline-xl text-headline-xl text-on-primary tracking-tight">
+          Momentum is your greatest unfair advantage.
+        </h2>
+<p class="font-body-lg text-body-lg text-on-primary-container max-w-xl mt-2">
+          Daily bite-sized challenges cultivate muscle memory. Unlock rare badges, honey multipliers, and leaderboard recognition.
+        </p>
+</div>
+<!-- Gamification Stat Blocks -->
+<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-space-md relative z-10">
+<div class="bg-primary-container/80 backdrop-blur-md rounded-2xl p-space-md flex flex-col justify-between">
+<div class="text-secondary-fixed text-2xl mb-1">🔥</div>
+<div class="font-stat-counter text-stat-counter text-on-primary">12 Days</div>
+<div class="font-body-sm text-body-sm text-on-primary-container">Current Streak</div>
+</div>
+<div class="bg-primary-container/80 backdrop-blur-md rounded-2xl p-space-md flex flex-col justify-between">
+<div class="text-secondary-fixed text-2xl mb-1">⚡</div>
+<div class="font-stat-counter text-stat-counter text-on-primary">4,820</div>
+<div class="font-body-sm text-body-sm text-on-primary-container">XP Earned</div>
+</div>
+<div class="bg-primary-container/80 backdrop-blur-md rounded-2xl p-space-md flex flex-col justify-between">
+<div class="text-secondary-fixed text-2xl mb-1">📚</div>
+<div class="font-stat-counter text-stat-counter text-on-primary">8 Courses</div>
+<div class="font-body-sm text-body-sm text-on-primary-container">Finished Modules</div>
+</div>
+<div class="bg-primary-container/80 backdrop-blur-md rounded-2xl p-space-md flex flex-col justify-between">
+<div class="text-secondary-fixed text-2xl mb-1">🛠️</div>
+<div class="font-stat-counter text-stat-counter text-on-primary">5 Deployed</div>
+<div class="font-body-sm text-body-sm text-on-primary-container">Live Repositories</div>
+</div>
+<div class="bg-primary-container/80 backdrop-blur-md rounded-2xl p-space-md flex flex-col justify-between col-span-2 sm:col-span-1">
+<div class="text-secondary-fixed text-2xl mb-1">🎓</div>
+<div class="font-stat-counter text-stat-counter text-on-primary">14 Skills</div>
+<div class="font-body-sm text-body-sm text-on-primary-container">Verified by IBM</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 8. VERIFIABLE CREDENTIALS / CERTIFICATES PROOF -->
+<section class="w-full bg-surface-container-low py-space-2xl">
+<div class="max-w-[1440px] mx-auto px-margin">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-center">
+<!-- Explainer (5 cols) -->
+<div class="lg:col-span-5">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-high text-on-surface font-label-caps text-label-caps mb-space-md">
+<span class="material-symbols-outlined text-[16px]">verified</span>
+            GLOBALLY RECOGNIZED CREDENTIALS
+          </div>
+<h2 class="font-headline-xl text-headline-xl text-primary tracking-tight mb-space-md">
+            Turn learning into verifiable career currency.
+          </h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-space-lg">
+            Every track completed awards a cryptographic Credly digital badge backed directly by IBM SkillsBuild — instantly shareable on LinkedIn, GitHub, and resumes.
+          </p>
+<div class="flex items-center gap-space-md">
+<button class="px-space-lg py-3 rounded-full bg-primary text-on-primary font-label-pill text-label-pill hover:scale-105 transition-transform flex items-center gap-2 shadow-sm">
+<span class="">View Credential Catalog</span>
+<span class="material-symbols-outlined text-[18px]">open_in_new</span>
+</button>
+</div>
+</div>
+<!-- Realistic Certificate Showcase Card (7 cols) -->
+<div class="lg:col-span-7 flex justify-center">
+<div class="w-full max-w-lg bg-surface-container-lowest rounded-[32px] p-space-xl shadow-2xl relative border-4 border-surface-container">
+<!-- Certificate Header -->
+<div class="flex items-center justify-between pb-space-md border-b border-surface-container-high">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-lg bg-primary text-on-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">bolt</span>
+</div>
+<span class="font-headline-md text-headline-md text-primary">IBM SkillsBuild</span>
+</div>
+<span class="font-label-caps text-[11px] text-on-surface-variant tracking-widest">ID: SKL-9048-2025</span>
+</div>
+<!-- Certificate Body -->
+<div class="py-space-lg text-center flex flex-col items-center">
+<p class="font-label-caps text-[11px] uppercase tracking-widest text-on-surface-variant mb-1">THIS CERTIFIES THAT</p>
+<p class="font-headline-lg text-[26px] text-primary font-bold">Alexandria Chen</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 max-w-xs">
+                has demonstrated applied mastery in enterprise-grade generative intelligence:
+              </p>
+<div class="my-4 px-4 py-2 bg-secondary-container text-on-secondary-container rounded-2xl font-headline-md text-[16px] shadow-sm">
+                Generative AI Systems Architect · watsonx Core
+              </div>
+<!-- Skills Badges on Certificate -->
+<div class="flex flex-wrap items-center justify-center gap-1.5 my-2">
+<span class="px-2.5 py-0.5 rounded-md bg-surface-container text-xs font-mono text-primary">PyTorch</span>
+<span class="px-2.5 py-0.5 rounded-md bg-surface-container text-xs font-mono text-primary">RAG</span>
+<span class="px-2.5 py-0.5 rounded-md bg-surface-container text-xs font-mono text-primary">watsonx.ai</span>
+<span class="px-2.5 py-0.5 rounded-md bg-surface-container text-xs font-mono text-primary">LangChain</span>
+</div>
+</div>
+<!-- Certificate Footer / Verification Bar -->
+<div class="pt-space-md border-t border-surface-container-high flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-10 h-10 bg-surface-container rounded-lg flex items-center justify-center text-primary font-mono text-xs">
+                  [QR]
+                </div>
+<div>
+<p class="text-[12px] font-bold text-primary">Cryptographically Signed</p>
+<p class="text-[11px] text-on-surface-variant">Verify on Credly</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-secondary text-[28px]">verified</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 9. FINAL HIGH-IMPACT IMPACT BANNER -->
+<section class="max-w-[1440px] mx-auto px-margin py-space-2xl w-full">
+<div class="bg-secondary-fixed text-on-secondary-fixed rounded-[48px] p-space-lg md:p-space-2xl shadow-xl relative overflow-hidden flex flex-col items-center text-center">
+<!-- Decorative Background Blooms -->
+<div class="absolute -left-16 -bottom-16 w-64 h-64 rounded-full bg-secondary-container pointer-events-none"></div>
+<div class="absolute -right-16 -top-16 w-64 h-64 rounded-full bg-secondary-container pointer-events-none"></div>
+<!-- Mascot Badge Micro -->
+<div class="w-20 h-20 rounded-3xl bg-primary text-on-primary flex items-center justify-center shadow-xl mb-space-md transform hover:rotate-12 transition-transform select-none p-1.5"><img alt="Skillbee Mascot" class="w-full h-full object-contain drop-shadow-md" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAiXlf9eUcFU-MTTw-3Enkb2nNhJZTYYItcH99a5AY3ONgFgvlITxqJaj3hEuM--NEeXnN6Kv6FCOnyMQLnsQV2UOSQh79kmgZ0RP7fg8IuBjekxJ1TETCEjBFoYfaLrTKbUios2JPYiey-QLS1Ht5nNT0TPF3apXqADZSusZbzczaildNmL16nigxfmjDrtdUqqnNyBcBwMqrMfXpmkgq4-0mw80ysUkbXpHDo1FsRTbpQfOXLrmVKo0SEJcCrzRgw"/></div>
+<div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-primary text-on-primary font-label-caps text-label-caps mb-space-md">
+        JOIN OVER 500,000+ TECH INNOVATORS
+      </div>
+<h2 class="font-display-hero text-headline-xl md:text-display-hero text-primary tracking-tight max-w-3xl leading-[1.08] mb-space-md">
+        Your next career leap begins with one module.
+      </h2>
+<p class="font-body-lg text-body-lg text-on-secondary-fixed-variant max-w-xl mb-space-xl">
+        No credit card required. Free tier access to 250+ IBM SkillsBuild labs, AI roadmap simulation, and community study pods.
+      </p>
+<div class="flex flex-col sm:flex-row items-center gap-space-md z-10">
+<button class="w-full sm:w-auto px-8 py-4 rounded-full bg-primary text-on-primary font-label-pill text-[16px] shadow-lg hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2">
+<span class="">Get Started Free Today</span>
+<span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+<button class="w-full sm:w-auto px-8 py-4 rounded-full bg-surface-container-lowest text-primary font-label-pill text-[16px] hover:bg-surface-container-low transition-colors">
+          Explore Enterprise Solutions
+        </button>
+</div>
+<!-- Footer Micro Trust Note -->
+<p class="font-body-sm text-[12px] text-on-secondary-fixed-variant mt-space-lg">
+        ✦ Free access sponsored in collaboration with the IBM Academic Initiative.
+      </p>
+</div>
+</section>
+</div>
+<script>
+  // Skillbee Mascot Interactive Reaction Logic & Flight Trail Settle
+  const searchInput = document.getElementById('hero-search-input');
+  const searchBtn = document.getElementById('hero-search-btn');
+  const speechBubble = document.getElementById('mascot-speech');
+  const speechText = document.getElementById('speech-text');
+  const beeCharacter = document.getElementById('bee-character');
+  const flightTrail = document.getElementById('hero-flight-trail');
+  const topicChips = document.querySelectorAll('.topic-chip');
+  const replayBtn = document.getElementById('replay-flight-btn');
+  const mascotStage = document.getElementById('mascot-stage');
+
+  let trailTimer = null;
+  let cleanTimer = null;
+
+  function scheduleEntranceCleanup() {
+    if (trailTimer) clearTimeout(trailTimer);
+    if (cleanTimer) clearTimeout(cleanTimer);
+
+    if (flightTrail) {
+      flightTrail.style.display = 'block';
+      flightTrail.style.opacity = '1';
+      trailTimer = setTimeout(() => {
+        flightTrail.style.transition = 'opacity 0.8s ease-out';
+        flightTrail.style.opacity = '0';
+        setTimeout(() => {
+          flightTrail.style.display = 'none';
+        }, 850);
+      }, 3900);
+    }
+
+    cleanTimer = setTimeout(() => {
+      const flyer = document.getElementById('bee-flyer-without-laptop');
+      const laptop = document.getElementById('floating-laptop');
+      if (flyer) flyer.style.display = 'none';
+      if (laptop) laptop.style.display = 'none';
+    }, 4500);
+  }
+
+  scheduleEntranceCleanup();
+
+  // Replay flight animation trigger
+  if (replayBtn) {
+    replayBtn.addEventListener('click', () => {
+      const flyer = document.getElementById('bee-flyer-without-laptop');
+      const laptop = document.getElementById('floating-laptop');
+      const finalBee = document.getElementById('bee-final-holding');
+      const shadowEl = document.querySelector('.ground-shadow-enter');
+
+      if (flyer) flyer.style.display = '';
+      if (laptop) laptop.style.display = '';
+      if (flightTrail) {
+        flightTrail.style.display = 'block';
+        flightTrail.style.opacity = '1';
+      }
+
+      // Force animation restart via reflow
+      const elementsToRestart = [
+        flyer,
+        laptop,
+        finalBee,
+        shadowEl,
+        flightTrail ? flightTrail.querySelector('path') : null
+      ];
+
+      elementsToRestart.forEach(el => {
+        if (!el) return;
+        const currentAnimation = el.style.animation;
+        el.style.animation = 'none';
+        void el.offsetWidth; // trigger reflow
+        el.style.animation = '';
+      });
+
+      speechText.innerHTML = "Wheee! Watch me catch the tech laptop! 🐝✨";
+      setTimeout(() => {
+        speechText.innerHTML = "Hi, I'm Skillbee! Let's craft your learning path ✦";
+      }, 4500);
+
+      scheduleEntranceCleanup();
+    });
+  }
+
+  if (searchInput && speechText && speechBubble && beeCharacter) {
+    searchInput.addEventListener('focus', () => {
+      speechText.innerHTML = "Tell me your dream role! 🚀";
+      beeCharacter.classList.add('rotate-3');
+      speechBubble.classList.add('scale-105');
+    });
+
+    searchInput.addEventListener('blur', () => {
+      speechText.innerHTML = "Hi, I'm Skillbee! Let&rsquo;s craft your path ✦";
+      beeCharacter.classList.remove('rotate-3');
+      speechBubble.classList.remove('scale-105');
+    });
+
+    if (searchBtn) {
+      searchBtn.addEventListener('click', () => {
+        const val = searchInput.value.trim();
+        if (val) {
+          speechText.innerHTML = `Scanning 1,000+ resources for "${val}"... 🐝`;
+          beeCharacter.classList.add('-translate-y-2');
+          setTimeout(() => {
+            beeCharacter.classList.remove('-translate-y-2');
+            speechText.innerHTML = `Found 6 verified modules for "${val}"! 🎯`;
+          }, 800);
+        } else {
+          speechText.innerHTML = "Type a topic or job title above! 👆";
+        }
+      });
+    }
+
+    topicChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        const query = chip.getAttribute('data-query');
+        searchInput.value = query;
+        searchInput.focus();
+        speechText.innerHTML = `Great choice! Computing "${query}" roadmap... ✨`;
+      });
+    });
+  }
+
+  // Course Marketplace Category Filtering
+  const courseFilterBtns = document.querySelectorAll('.course-filter-btn');
+  const courseCards = document.querySelectorAll('.course-card');
+
+  courseFilterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      courseFilterBtns.forEach(b => {
+        b.classList.remove('bg-primary', 'text-on-primary');
+        b.classList.add('bg-surface-container-lowest', 'text-on-surface');
+      });
+      btn.classList.add('bg-primary', 'text-on-primary');
+      btn.classList.remove('bg-surface-container-lowest', 'text-on-surface');
+
+      const cat = btn.getAttribute('data-category');
+      courseCards.forEach(card => {
+        if (cat === 'all' || card.getAttribute('data-category') === cat) {
+          card.style.display = 'flex';
+          card.classList.add('animate-fadeIn');
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    });
+  });
+
+  // Roadmap Dynamic Switcher
+  const pathButtons = document.querySelectorAll('.path-btn');
+  const activePathLabel = document.getElementById('active-path-label');
+  const roadmapContainer = document.getElementById('roadmap-nodes-container');
+
+  const roadmapData = {
+    'ai-eng': {
+      title: 'Target: AI Systems Engineer (6 Milestones)',
+      nodes: [
+        { step: '01', category: 'Foundations', title: 'Python & Linear Algebra', status: 'Verified', active: true },
+        { step: '02', category: 'Data Core', title: 'Algorithms & Pipelines', status: 'Active', active: true },
+        { step: '03', category: 'Analytics', title: 'Probabilistic Models', status: 'Next' },
+        { step: '04', category: 'Machine Learning', title: 'PyTorch & Watsonx', status: 'Milestone' },
+        { step: '05', category: 'LLMs & Ops', title: 'RAG & Vector Embeddings', status: 'Advanced' },
+        { step: '★', category: 'IBM Credential', title: 'Full AI Capstone Defense', status: 'Certificate', final: true }
+      ]
+    },
+    'fullstack': {
+      title: 'Target: Full-Stack Cloud Architect (6 Milestones)',
+      nodes: [
+        { step: '01', category: 'Client Core', title: 'TypeScript & React Architecture', status: 'Verified', active: true },
+        { step: '02', category: 'Server Ops', title: 'Node microservices & GraphQL', status: 'Active', active: true },
+        { step: '03', category: 'Databases', title: 'PostgreSQL & Redis Caching', status: 'Next' },
+        { step: '04', category: 'Containers', title: 'Docker & Kubernetes Pods', status: 'Milestone' },
+        { step: '05', category: 'Cloud Native', title: 'RedHat OpenShift & CI/CD', status: 'Advanced' },
+        { step: '★', category: 'IBM Credential', title: 'Enterprise Cloud Certification', status: 'Certificate', final: true }
+      ]
+    },
+    'cyber': {
+      title: 'Target: Cyber Incident Responder (6 Milestones)',
+      nodes: [
+        { step: '01', category: 'Networking', title: 'OSI Model & Packet Forensics', status: 'Verified', active: true },
+        { step: '02', category: 'Security Ops', title: 'SOC Triage & Log Ingestion', status: 'Active', active: true },
+        { step: '03', category: 'Pen-Testing', title: 'Vulnerability Exploitation', status: 'Next' },
+        { step: '04', category: 'Defenses', title: 'Zero Trust & IAM Governance', status: 'Milestone' },
+        { step: '05', category: 'Threat Intel', title: 'IBM QRadar & MITRE ATT&CK', status: 'Advanced' },
+        { step: '★', category: 'IBM Credential', title: 'SOC Defense Master Certification', status: 'Certificate', final: true }
+      ]
+    }
+  };
+
+  pathButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      pathButtons.forEach(b => {
+        b.classList.remove('bg-primary', 'text-on-primary');
+        b.classList.add('bg-surface-container-high', 'text-on-surface');
+      });
+      btn.classList.add('bg-primary', 'text-on-primary');
+      btn.classList.remove('bg-surface-container-high', 'text-on-surface');
+
+      const pathKey = btn.getAttribute('data-path');
+      const data = roadmapData[pathKey];
+      if (data && activePathLabel && roadmapContainer) {
+        activePathLabel.textContent = data.title;
+        roadmapContainer.innerHTML = data.nodes.map(node => `
+          <div class="roadmap-node group ${node.final ? 'bg-primary text-on-primary' : 'bg-surface-container-lowest text-primary'} p-space-md rounded-2xl shadow-sm hover:shadow-md transition-all flex flex-col justify-between h-44 relative">
+            <div class="w-7 h-7 rounded-full ${node.final ? 'bg-secondary-fixed text-on-secondary-fixed' : (node.active ? 'bg-secondary-fixed text-on-secondary-fixed' : 'bg-surface-container-high text-on-surface')} font-label-caps text-label-caps flex items-center justify-center mb-2">
+              ${node.step}
+            </div>
+            <div>
+              <p class="font-label-caps text-[10px] ${node.final ? 'text-secondary-fixed' : 'text-on-surface-variant'} uppercase">${node.category}</p>
+              <p class="font-headline-md text-[15px] ${node.final ? 'text-on-primary' : 'text-primary'} mt-1">${node.title}</p>
+            </div>
+            <span class="text-xs ${node.final ? 'text-secondary-fixed' : 'text-on-surface-variant/80'} flex items-center gap-1 font-body-sm">
+              <span class="material-symbols-outlined text-[14px]">${node.status === 'Verified' ? 'check_circle' : (node.status === 'Active' ? 'play_circle' : 'lock')}</span> ${node.status}
+            </span>
+          </div>
+        `).join('');
+      }
+    });
+  });
+
+  // AI Mentor Interactive Simulated Dialogue
+  const sendMentorBtn = document.getElementById('send-mentor-btn');
+  const mentorInput = document.getElementById('mentor-input');
+  const chatMessages = document.getElementById('chat-messages');
+  const clearChatBtn = document.getElementById('clear-chat-btn');
+  const promptButtons = document.querySelectorAll('.mentor-prompt-btn');
+
+  function appendUserMessage(text) {
+    const userBubble = document.createElement('div');
+    userBubble.className = 'flex items-start justify-end gap-2.5 max-w-[85%] ml-auto';
+    userBubble.innerHTML = `
+      <div class="bg-primary text-on-primary p-space-md rounded-2xl rounded-tr-sm font-body-md text-[14px]">
+        ${text}
+      </div>
+    `;
+    chatMessages.appendChild(userBubble);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  function appendBeeResponse(text, codeSnippet = '') {
+    const beeBubble = document.createElement('div');
+    beeBubble.className = 'flex items-start gap-2.5 max-w-[92%]';
+    beeBubble.innerHTML = `
+      <div class="w-7 h-7 rounded-full bg-secondary-fixed flex items-center justify-center text-xs shrink-0 mt-1">🐝</div>
+      <div class="bg-surface-container-low p-space-md rounded-2xl rounded-tl-sm text-primary font-body-md text-[14px] flex flex-col gap-2">
+        <p>${text}</p>
+        ${codeSnippet ? `<div class="bg-primary-container text-on-primary rounded-xl p-3 font-mono text-[12px] overflow-x-auto"><code>${codeSnippet}</code></div>` : ''}
+      </div>
+    `;
+    chatMessages.appendChild(beeBubble);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  function handleUserQuery(msg) {
+    if (!msg) return;
+    appendUserMessage(msg);
+    mentorInput.value = '';
+
+    // Typing simulation
+    setTimeout(() => {
+      if (msg.toLowerCase().includes('quiz')) {
+        appendBeeResponse(
+          "Here is your fast 2-question comprehension check! 💡<br/>1. What does <code>[x**2 for x in range(5)]</code> output?<br/>2. How do you add an if-condition filtering only even numbers?",
+          "answers = [x for x in range(10) if x % 2 == 0]"
+        );
+      } else if (msg.toLowerCase().includes('watsonx') || msg.toLowerCase().includes('pytorch')) {
+        appendBeeResponse(
+          "Connecting PyTorch to IBM watsonx Runtime requires just 3 lines using the ibm-watsonx-ai SDK:",
+          "from ibm_watsonx_ai import APIClient<br/>client = APIClient({'url': 'https://us-south.ml.cloud.ibm.com', 'apikey': 'YOUR_KEY'})<br/>client.repository.store_model(model=my_pytorch_model, meta_props={'name': 'Granite-Tuned'})"
+        );
+      } else {
+        appendBeeResponse(
+          `Buzzed through the docs for: "${msg}"! 🍯<br/>Remember: break this down into inputs, internal transformation, and expected outputs. Try running tests with edge cases first!`
+        );
+      }
+    }, 700);
+  }
+
+  if (sendMentorBtn && mentorInput) {
+    sendMentorBtn.addEventListener('click', () => {
+      const txt = mentorInput.value.trim();
+      handleUserQuery(txt);
+    });
+
+    mentorInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        const txt = mentorInput.value.trim();
+        handleUserQuery(txt);
+      }
+    });
+  }
+
+  promptButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const p = btn.getAttribute('data-prompt');
+      if (p) handleUserQuery(p);
+    });
+  });
+
+  if (clearChatBtn && chatMessages) {
+    clearChatBtn.addEventListener('click', () => {
+      chatMessages.innerHTML = `
+        <div class="flex items-start gap-2.5 max-w-[85%]">
+          <div class="w-7 h-7 rounded-full bg-secondary-fixed flex items-center justify-center text-xs shrink-0 mt-1">🐝</div>
+          <div class="bg-surface-container-low p-space-md rounded-2xl rounded-tl-sm text-primary font-body-md text-[14px]">
+            Chat reset! Ask Skillbee anything to kickstart your next breakthrough.
+          </div>
+        </div>
+      `;
+    });
+  }
+</script></main><footer class="w-full bg-surface-container-low border-t border-outline-variant/30 py-space-2xl"><div class="max-w-[1440px] mx-auto px-margin"><div class="flex flex-col md:flex-row items-center justify-between gap-space-md text-on-surface-variant font-body-sm text-body-sm"><div class="flex items-center gap-space-xs"><span class="font-headline-md text-headline-md text-primary">Skillora</span><span class="font-label-caps text-label-caps text-on-surface-variant">Education Initiative © IBM Corp.</span></div><div class="flex items-center gap-space-lg"><a class="hover:text-primary transition-colors" href="#">Privacy Policy</a><a class="hover:text-primary transition-colors" href="#">Terms of Service</a><a class="hover:text-primary transition-colors" href="#">Enterprise Solutions</a></div></div></div></footer>
+</body></html>

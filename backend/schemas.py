@@ -1,90 +1,50 @@
-from pydantic import BaseModel, Field
+from typing import Optional
+from pydantic import BaseModel, EmailStr
 from datetime import datetime
-from typing import Optional, List
 
+class UserRole(str):
+    STUDENT = "STUDENT"
+    FACULTY = "FACULTY"
+    ADMIN = "ADMIN"
 
-class ProjectBase(BaseModel):
-    """Base project schema"""
-    name: str = Field(..., min_length=1, max_length=255)
-    description: Optional[str] = None
+class UserBase(BaseModel):
+    email: EmailStr
+    name: str
+    role: str = "STUDENT"
+    college: Optional[str] = "Indian Institute of Technology"
+    classroom_code: Optional[str] = "CS302"
+    career_track: Optional[str] = "ai-engineer"
 
+class UserCreate(UserBase):
+    password: str
 
-class ProjectCreate(ProjectBase):
-    """Schema for creating a project"""
-    pass
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str
 
+class DemoLoginRequest(BaseModel):
+    role: str  # "STUDENT" or "FACULTY"
 
-class ProjectUpdate(BaseModel):
-    """Schema for updating a project"""
-    name: Optional[str] = Field(None, min_length=1, max_length=255)
-    description: Optional[str] = None
-
-
-class ProjectResponse(ProjectBase):
-    """Schema for project response"""
-    id: int
+class UserResponse(UserBase):
+    id: str
+    avatar: str
+    latent_ability_theta: float
+    streak_days: int
+    daily_hours_done: float
+    daily_hours_target: float
+    xp_points: int
+    preferred_modality: str
+    is_active: bool
     created_at: datetime
-    updated_at: datetime
-    
+
     class Config:
         from_attributes = True
 
+class Token(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    user: UserResponse
 
-class ScamperSessionBase(BaseModel):
-    """Base SCAMPER session schema"""
-    technique: str = Field(..., pattern="^(S|C|A|M|P|E|R)$")
-    question: str = Field(..., min_length=1)
-    answer: Optional[str] = None
-
-
-class ScamperSessionCreate(ScamperSessionBase):
-    """Schema for creating a SCAMPER session"""
-    project_id: int
-
-
-class ScamperSessionUpdate(BaseModel):
-    """Schema for updating a SCAMPER session"""
-    technique: Optional[str] = Field(None, pattern="^(S|C|A|M|P|E|R)$")
-    question: Optional[str] = Field(None, min_length=1)
-    answer: Optional[str] = None
-
-
-class ScamperSessionResponse(ScamperSessionBase):
-    """Schema for SCAMPER session response"""
-    id: int
-    project_id: int
-    created_at: datetime
-    updated_at: datetime
-    
-    class Config:
-        from_attributes = True
-
-
-class IdeaBase(BaseModel):
-    """Base idea schema"""
-    title: str = Field(..., min_length=1, max_length=255)
-    description: Optional[str] = None
-    status: str = Field(default="draft", pattern="^(draft|reviewed|approved|rejected)$")
-
-
-class IdeaCreate(IdeaBase):
-    """Schema for creating an idea"""
-    session_id: int
-
-
-class IdeaUpdate(BaseModel):
-    """Schema for updating an idea"""
-    title: Optional[str] = Field(None, min_length=1, max_length=255)
-    description: Optional[str] = None
-    status: Optional[str] = Field(None, pattern="^(draft|reviewed|approved|rejected)$")
-
-
-class IdeaResponse(IdeaBase):
-    """Schema for idea response"""
-    id: int
-    session_id: int
-    created_at: datetime
-    updated_at: datetime
-    
-    class Config:
-        from_attributes = True
+class TokenPayload(BaseModel):
+    sub: Optional[str] = None
+    role: Optional[str] = None

@@ -1,0 +1,219 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --background: #fbf9f6;
+    --foreground: #1b1c1a;
+  }
+}
+
+body {
+  background-color: #fbf9f6;
+  color: #1b1c1a;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  overflow-x: hidden;
+}
+
+.font-display {
+  font-family: "Space Grotesk", sans-serif;
+}
+
+/* =========================================================================
+   SKILLBEE FLIGHT CHOREOGRAPHY KEYFRAMES (Extracted from code.html)
+   ========================================================================= */
+
+@keyframes beeFlyInTrajectory {
+  0% {
+    opacity: 0;
+    transform: translate3d(-340px, -180px, 0) scale(0.48) rotate(-16deg);
+  }
+  9% {
+    opacity: 1;
+    transform: translate3d(-260px, -120px, 0) scale(0.62) rotate(8deg);
+  }
+  24% {
+    transform: translate3d(-170px, -150px, 0) scale(0.72) rotate(-7deg);
+  }
+  40% {
+    transform: translate3d(-90px, -50px, 0) scale(0.82) rotate(6deg);
+  }
+  54% {
+    transform: translate3d(-25px, -80px, 0) scale(0.88) rotate(-6deg);
+  }
+  60% {
+    transform: translate3d(-5px, -60px, 0) scale(0.92) rotate(4deg);
+  }
+  68% {
+    transform: translate3d(2px, -65px, 0) scale(0.94) rotate(7deg);
+  }
+  78% {
+    transform: translate3d(22px, -24px, 0) scale(0.98) rotate(4deg);
+  }
+  88% {
+    transform: translate3d(12px, -12px, 0) scale(1.02) rotate(-5deg);
+    opacity: 1;
+  }
+  96%, 100% {
+    transform: translate3d(8px, -6px, 0) scale(1.0) rotate(-2deg);
+    opacity: 0;
+  }
+}
+
+@keyframes beeWingBuzz {
+  0%, 100% { transform: scaleX(1) scaleY(1); }
+  50% { transform: scaleX(1.03) scaleY(0.97) translateY(-1.5px); }
+}
+
+@keyframes floatingLaptopCatch {
+  0%, 54% {
+    opacity: 0;
+    transform: translate3d(95px, 25px, 0) scale(0.35) rotate(18deg);
+  }
+  60% {
+    opacity: 1;
+    transform: translate3d(58px, 6px, 0) scale(0.82) rotate(10deg);
+  }
+  72% {
+    transform: translate3d(46px, -4px, 0) scale(0.88) rotate(-4deg);
+  }
+  82% {
+    transform: translate3d(18px, -16px, 0) scale(0.95) rotate(-2deg);
+    opacity: 1;
+  }
+  88% {
+    transform: translate3d(10px, -8px, 0) scale(0.98) rotate(0deg);
+    opacity: 0.85;
+  }
+  94%, 100% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) scale(0.98);
+  }
+}
+
+@keyframes finalBeeSettleSequence {
+  0%, 75% {
+    opacity: 0;
+    transform: translate3d(12px, -12px, 0) scale(0.96) rotate(-5deg);
+  }
+  78% {
+    opacity: 1;
+    transform: translate3d(12px, -12px, 0) scale(1.03) rotate(-5deg);
+  }
+  86% {
+    transform: translate3d(4px, 6px, 0) scale(0.98) rotate(2deg);
+  }
+  92% {
+    transform: translate3d(0px, -4px, 0) scale(1.01) rotate(-1deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+  }
+}
+
+@keyframes groundShadowSettle {
+  0%, 65% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  75% {
+    opacity: 0.12;
+    transform: scale(0.6);
+  }
+  86% {
+    opacity: 0.32;
+    transform: scale(1.08);
+  }
+  100% {
+    opacity: 0.25;
+    transform: scale(1);
+  }
+}
+
+@keyframes beeIdleHoverLoop {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  33% {
+    transform: translateY(-5px) rotate(1.2deg);
+  }
+  66% {
+    transform: translateY(4px) rotate(-0.8deg);
+  }
+}
+
+@keyframes shadowIdlePulseLoop {
+  0%, 100% {
+    transform: scaleX(1) scaleY(1);
+    opacity: 0.25;
+  }
+  50% {
+    transform: scaleX(0.88) scaleY(0.86);
+    opacity: 0.16;
+  }
+}
+
+@keyframes dottedTrailFlight {
+  0% {
+    stroke-dashoffset: 950;
+    opacity: 0;
+  }
+  8% {
+    opacity: 0.85;
+  }
+  70% {
+    stroke-dashoffset: 0;
+    opacity: 0.75;
+  }
+  85% {
+    stroke-dashoffset: 0;
+    opacity: 0.35;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
+}
+
+@keyframes laptopGlowShine {
+  0%, 100% { filter: drop-shadow(0 4px 12px rgba(0,0,0,0.16)) drop-shadow(0 0 10px rgba(255, 226, 76, 0.4)); }
+  50% { filter: drop-shadow(0 6px 16px rgba(0,0,0,0.22)) drop-shadow(0 0 18px rgba(255, 226, 76, 0.75)); }
+}
+
+.bee-flyer-anim {
+  animation: beeFlyInTrajectory 3.6s cubic-bezier(0.22, 1, 0.36, 1) 0.4s forwards;
+  will-change: transform, opacity;
+}
+
+.bee-flyer-flutter {
+  animation: beeWingBuzz 0.16s ease-in-out infinite;
+}
+
+.floating-laptop-anim {
+  animation: floatingLaptopCatch 3.6s cubic-bezier(0.25, 1, 0.5, 1) 0.4s forwards, laptopGlowShine 1.8s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.final-bee-wrap {
+  animation: finalBeeSettleSequence 4.5s cubic-bezier(0.25, 1, 0.5, 1) 0.4s forwards;
+  will-change: transform, opacity;
+}
+
+.final-bee-float {
+  animation: beeIdleHoverLoop 4s ease-in-out infinite;
+  will-change: transform;
+}
+
+.ground-shadow-enter {
+  animation: groundShadowSettle 4.5s cubic-bezier(0.25, 1, 0.5, 1) 0.4s forwards;
+}
+
+.ground-shadow-pulse {
+  animation: shadowIdlePulseLoop 4s ease-in-out infinite;
+}
+
+.flight-trail-line {
+  stroke-dasharray: 950;
+  stroke-dashoffset: 950;
+  animation: dottedTrailFlight 3.4s cubic-bezier(0.25, 1, 0.5, 1) 0.4s forwards;
+}

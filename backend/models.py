@@ -1,48 +1,35 @@
-from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey
-from sqlalchemy.orm import relationship
+import uuid
 from datetime import datetime
+from enum import Enum as PyEnum
+from sqlalchemy import Column, String, Float, Integer, Boolean, DateTime, ForeignKey, Enum, Text
+from database import Base
 
-from backend.database import Base
+class UserRole(str, PyEnum):
+    STUDENT = "STUDENT"
+    FACULTY = "FACULTY"
+    ADMIN = "ADMIN"
 
+class User(Base):
+    __tablename__ = "users"
 
-class Project(Base):
-    """Project model for innovation projects"""
-    __tablename__ = "projects"
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    email = Column(String(255), unique=True, index=True, nullable=False)
+    hashed_password = Column(String(255), nullable=False)
+    name = Column(String(100), nullable=False)
+    role = Column(Enum(UserRole), default=UserRole.STUDENT, nullable=False)
+    avatar = Column(String(10), default="RV")
+    college = Column(String(150), default="Indian Institute of Technology")
+    classroom_code = Column(String(50), default="CS302")
+    career_track = Column(String(50), default="ai-engineer")
     
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(255), nullable=False, index=True)
-    description = Column(Text, nullable=True)
+    # Cognitive Latent State (theta)
+    latent_ability_theta = Column(Float, default=0.0)
+    streak_days = Column(Integer, default=12)
+    daily_hours_done = Column(Float, default=1.5)
+    daily_hours_target = Column(Float, default=2.0)
+    xp_points = Column(Integer, default=4820)
+    preferred_modality = Column(String(20), default="simulation")
+    
+    is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    
-    scamper_sessions = relationship("ScamperSession", back_populates="project", cascade="all, delete-orphan")
-
-
-class ScamperSession(Base):
-    """SCAMPER session model for creative thinking sessions"""
-    __tablename__ = "scamper_sessions"
-    
-    id = Column(Integer, primary_key=True, index=True)
-    project_id = Column(Integer, ForeignKey("projects.id"), nullable=False)
-    technique = Column(String(50), nullable=False)  # S, C, A, M, P, E, R
-    question = Column(Text, nullable=False)
-    answer = Column(Text, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    
-    project = relationship("Project", back_populates="scamper_sessions")
-
-
-class Idea(Base):
-    """Idea model for generated ideas"""
-    __tablename__ = "ideas"
-    
-    id = Column(Integer, primary_key=True, index=True)
-    session_id = Column(Integer, ForeignKey("scamper_sessions.id"), nullable=False)
-    title = Column(String(255), nullable=False)
-    description = Column(Text, nullable=True)
-    status = Column(String(50), default="draft")  # draft, reviewed, approved, rejected
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    
-    session = relationship("ScamperSession")
