@@ -1,0 +1,35 @@
+{
+  "model_architecture": "MultiModalRiskNet (Dual-Stream Static + Psychometric/Telemetry Fusion)",
+  "hardware_device": "auto",
+  "trained_date": "2026-09-13",
+  "datasets_integrated": [
+    "UCI Student Performance",
+    "MathE IRT Psychometrics",
+    "EdNet Telemetry"
+  ],
+  "input_static_dim": 44,
+  "input_dynamic_dim": 4,
+  "dynamic_feature_names": [
+    "math_latent_theta",
+    "friction_index",
+    "dwell_ratio",
+    "hint_consumption_rate"
+  ],
+  "metrics": {
+    "accuracy": 0.896551724137931,
+    "roc_auc": 0.9711538461538461,
+    "precision": 0.8571428571428571,
+    "recall": 0.9230769230769231,
+    "f1": 0.8888888888888888,
+    "confusion_matrix": [
+      [
+        14,
+        2
+      ],
+      [
+        1,
+        12
+      ]
+    ]
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "model": "Two-Parameter Logistic Item Response Theory (2PL-IRT)",
+  "hardware_device": "auto",
+  "total_responses_fitted": 9546,
+  "unique_students": 372,
+  "unique_questions_calibrated": 833,
+  "topic_summary": {
+    "Analytic Geometry": {
+      "count": 40,
+      "b_sum": -1.7234999999999994,
+      "a_sum": 51.158300000000004,
+      "acc_sum": 18.241200000000003
+    },
+    "Complex Numbers": {
+      "count": 52,
+      "b_sum": -7.6227000000000045,
+      "a_sum": 73.91640000000002,
+      "acc_sum": 27.114
+    },
+    "Differential Equations": {
+      "count": 33,
+      "b_sum": -0.9033000000000055,
+      "a_sum": 60.9323,
+      "acc_sum": 16.1335
+    },
+    "Differentiation": {
+      "count": 98,
+      "b_sum": 40.978999999999985,
+      "a_sum": 165.47130000000004,
+      "acc_sum": 37.5504
+    },
+    "Fundamental Mathematics": {
+      "count": 84,
+      "b_sum": 3.328199999999994,
+      "a_sum": 108.67330000000004,
+      "acc_sum": 41.0708
+    },
+    "Graph Theory": {
+      "count": 38,
+      "b_sum": -11.256800000000009,
+      "a_sum": 72.3055,
+      "acc_sum": 20.4167
+    },
+    "Integration": {
+      "count": 54,
+      "b_sum": -4.380699999999992,
+      "a_sum": 105.3686,
+      "acc_sum": 26.538299999999996
+    },
+    "Linear Algebra": {
+      "count": 198,
+      "b_sum": -28.620799999999928,
+      "a_sum": 283.7138999999998,
+      "acc_sum": 102.44460000000001
+    },
+    "Numerical Methods": {
+      "count": 41,
+      "b_sum": 9.197000000000003,
+      "a_sum": 51.9035,
+      "acc_sum": 16.1225
+    },
+    "Optimization": {
+      "count": 62,
+      "b_sum": 20.103400000000008,
+      "a_sum": 89.94069999999999,
+      "acc_sum": 22.045100000000005
+    },
+    "Probability ": {
+      "count": 42,
+      "b_sum": 11.200499999999996,
+      "a_sum": 72.1156,
+      "acc_sum": 15.640299999999996
+    },
+    "Real Functions of a single variable": {
+      "count": 40,
+      "b_sum": 8.6533,
+      "a_sum": 57.64799999999998,
+      "acc_sum": 14.851199999999999
+    },
+    "Set Theory": {
+      "count": 25,
+      "b_sum": -15.334200000000003,
+      "a_sum": 44.779199999999996,
+      "acc_sum": 16.2667
+    },
+    "Statistics": {
+      "count": 26,
+      "b_sum": 0.5273999999999976,
+      "a_sum": 33.6274,
+      "acc_sum": 12.685799999999999
+    }
+  }
+}

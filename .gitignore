@@ -1,0 +1,32 @@
+# Virtual Environment
+venv/
+backend/venv/
+.venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Databases
+backend/*.db
+backend/*.sqlite3
+
+# Node dependencies
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# ML Training Scripts & Raw Datasets (Only trained model artifacts are committed)
+backend/ml/datasets/
+backend/ml/trainers/
+backend/ml/orchestrator.py
+backend/ml/cognitive_predictor.py
+backend/routers/ml_router.py
+backend/ml/__init__.py

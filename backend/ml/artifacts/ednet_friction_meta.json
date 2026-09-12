@@ -1,0 +1,48 @@
+{
+  "model_architecture": "EdNetFrictionNet (Multi-Task State Classification + Friction Index Regression)",
+  "hardware_device": "auto",
+  "classes": [
+    "Normal Engagement",
+    "Frustrated Block",
+    "Blind Guessing"
+  ],
+  "input_features": [
+    "dwell_time_sec",
+    "dwell_ratio",
+    "hint_count",
+    "attempt_count",
+    "item_difficulty_b"
+  ],
+  "scaler_mean": [
+    63.8490627650577,
+    1.4349662663808798,
+    0.88375,
+    1.5777083333333333,
+    -0.024982075424013508
+  ],
+  "scaler_scale": [
+    62.86970480718104,
+    1.1764466333940058,
+    1.2732121860998782,
+    0.9799037784040835,
+    1.158420404986366
+  ],
+  "accuracy": 1.0,
+  "confusion_matrix": [
+    [
+      737,
+      0,
+      0
+    ],
+    [
+      0,
+      283,
+      0
+    ],
+    [
+      0,
+      0,
+      180
+    ]
+  ]
+}
