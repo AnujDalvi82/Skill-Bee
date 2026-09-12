@@ -1,0 +1,32 @@
+Problem Statement No-4 – Making Learning Intelligent using AI
+Engineering colleges typically deliver the same curriculum, learning resources and assessment
+schedule to an entire class, even though students differ significantly in:
+• Prior knowledge
+• Learning speed
+• Conceptual understanding
+• Study behaviour
+
+• Preferred learning resources
+• Assessment performance
+• Areas of difficulty
+• Engagement with learning material
+The challenge is to build an AI-powered Learning Intelligence Platform that continuously
+analyses student learning data and recommends what a student should learn next, how they
+should learn it, and when faculty intervention may be required.
+Dataset Starter Pack
+EdNet — Recommended flagship dataset -EdNet is one of the strongest datasets for this
+hackathon. It contains more than 131 million student interactions from 784,309 students
+collected over more than two years. It includes question-solving and other learning behaviours.
+MathE — Higher Education Mathematics- The UCI repository includes the MathE dataset with
+9,546 answers to mathematics questions in higher education.
+UCI Higher Education Students Performance -The UCI Higher Education Students
+Performance Evaluation dataset contains data from engineering and educational-science
+students and was specifically collected to predict end-of-term performance. It has 145
+instances and 31 features
+UCI Student Academics Performance- Another useful benchmark is the UCI Student
+Academics Performance dataset, available under CC BY 4.0
+Indian Government Education Data- For an India-specific dimension, teams can use the
+Government of India's Open Government Data platform.
+Expected Outcomes:
+“What does the student actually understand, what are they likely to struggle with next, and what
+learning intervention will help?”
