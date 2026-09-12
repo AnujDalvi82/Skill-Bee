@@ -1,57 +1,29 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { Latex } from '@/components/common/Latex';
 import { ApiClient } from '@/services/api';
+import { CURRICULUM_COURSES } from '@/data/curriculumCourses';
+import { CourseTrack, CourseLecture } from '@/lib/types';
+import { DemoView } from '@/components/layout/PitchNavigatorBar';
 import {
   BookOpen,
-  Video,
   Play,
   Pause,
   Sparkles,
-  CheckCircle2,
   RotateCw,
   Globe,
-  ChevronRight,
   Bookmark,
-  Clock,
-  Award,
-  Layers,
-  FileText,
-  Flame,
   Zap,
-  Volume2,
-  Maximize2,
   ListVideo,
   Bot,
   Send,
-  HelpCircle,
-  RefreshCw,
-  ArrowRight,
-  CornerDownLeft,
-  Shield,
   ShieldCheck,
   ShieldAlert,
-  Lock
+  Brain,
+  ChevronRight
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-
-interface LectureItem {
-  id: string;
-  number: string;
-  title: string;
-  duration: string;
-  durationSec: number;
-  youtubeId: string;
-  completed: boolean;
-  active: boolean;
-}
-
-interface Chapter {
-  id: string;
-  title: string;
-  lectures: LectureItem[];
-}
 
 interface ChatMessage {
   id: string;
@@ -142,112 +114,50 @@ const RenderChatMessage: React.FC<{ content: string; onSeek: (sec: number) => vo
   );
 };
 
-export const VideoLectureStudioView: React.FC<{ onNavigate?: (view: any) => void }> = ({ onNavigate }) => {
-  // Course curriculum state
-  const [chapters, setChapters] = useState<Chapter[]>([
-    {
-      id: 'ch_01',
-      title: 'Chapter 1: Neural Networks & Biological Inspiration',
-      lectures: [
-        {
-          id: 'lec_01',
-          number: '01',
-          title: 'What is a Neural Network? Deep Learning Foundations',
-          duration: '19:13',
-          durationSec: 1153,
-          youtubeId: 'aircAruvnKk',
-          completed: true,
-          active: true,
-        },
-        {
-          id: 'lec_02',
-          number: '02',
-          title: 'Gradient Descent & Cost Optimization Landscapes',
-          duration: '15:20',
-          durationSec: 920,
-          youtubeId: 'IHZwWFHWa-w',
-          completed: false,
-          active: false,
-        },
-        {
-          id: 'lec_03',
-          number: '03',
-          title: 'What is Backpropagation Really Doing? Intuitive Proof',
-          duration: '14:15',
-          durationSec: 855,
-          youtubeId: 'Ilg3gGewQ5U',
-          completed: false,
-          active: false,
-        },
-        {
-          id: 'lec_04',
-          number: '04',
-          title: 'Backpropagation Calculus: Multivariate Chain Rule',
-          duration: '18:40',
-          durationSec: 1120,
-          youtubeId: 'tIeHLn3557U',
-          completed: false,
-          active: false,
-        }
-      ]
-    },
-    {
-      id: 'ch_02',
-      title: 'Chapter 2: Linear Algebra & Matrix Geometry',
-      lectures: [
-        {
-          id: 'lec_05',
-          number: '05',
-          title: 'Vectors, Linear Combinations & Geometric Span',
-          duration: '12:30',
-          durationSec: 750,
-          youtubeId: 'fNk_zzaMoSs',
-          completed: true,
-          active: false,
-        },
-        {
-          id: 'lec_06',
-          number: '06',
-          title: 'Linear Transformations & Matrix Multiplication',
-          duration: '16:10',
-          durationSec: 970,
-          youtubeId: 'kYB8IZa5AuE',
-          completed: false,
-          active: false,
-        },
-        {
-          id: 'lec_07',
-          number: '07',
-          title: 'Determinant: Area Scaling Factor & Singularities',
-          duration: '14:20',
-          durationSec: 860,
-          youtubeId: 'Ip3X9LOh2dk',
-          completed: false,
-          active: false,
-        },
-        {
-          id: 'lec_08',
-          number: '08',
-          title: 'Eigenvalues, Eigenvectors & PCA Spectral Projection',
-          duration: '18:50',
-          durationSec: 1130,
-          youtubeId: 'PFDu9oVAE-g',
-          completed: false,
-          active: false,
-        }
-      ]
-    }
-  ]);
+let messageIdSeq = 0;
+function createMessageId(prefix: string): string {
+  messageIdSeq += 1;
+  return `${prefix}_${messageIdSeq}`;
+}
 
-  const [activeLectureId, setActiveLectureId] = useState('lec_01');
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTimeSec, setCurrentTimeSec] = useState(194);
-  const [iframeSeekSec, setIframeSeekSec] = useState(194);
+export const VideoLectureStudioView: React.FC<{ onNavigate?: (view: DemoView) => void }> = ({ onNavigate }) => {
+  // 1. Course Track & Lecture Selection
+  const [activeCourseId, setActiveCourseId] = useState<string>(CURRICULUM_COURSES[0].id);
+  const activeCourse: CourseTrack = useMemo(() => {
+    return CURRICULUM_COURSES.find((c) => c.id === activeCourseId) || CURRICULUM_COURSES[0];
+  }, [activeCourseId]);
+
+  // Track completion state dynamically per lecture across chapters
+  const [lectureCompletionMap, setLectureCompletionMap] = useState<Record<string, boolean>>({
+    'lec_dl_01': true,
+    'lec_la_01': true,
+    'lec_calc_01': true,
+  });
+
+  const [activeLectureId, setActiveLectureId] = useState<string>(
+    activeCourse.chapters[0]?.lectures[0]?.id || 'lec_dl_01'
+  );
+
+  // Derive active lecture
+  const activeLecture: CourseLecture = useMemo(() => {
+    for (const ch of activeCourse.chapters) {
+      const match = ch.lectures.find((l) => l.id === activeLectureId);
+      if (match) return match;
+    }
+    return activeCourse.chapters[0]?.lectures[0] || CURRICULUM_COURSES[0].chapters[0].lectures[0];
+  }, [activeCourse, activeLectureId]);
+
+  // Playback & Scrub Bar State
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [currentTimeSec, setCurrentTimeSec] = useState<number>(0);
+  const [iframeSeekSec, setIframeSeekSec] = useState<number>(0);
   const [activeLang, setActiveLang] = useState<'EN' | 'HI' | 'TA' | 'ES'>('EN');
   const [activeTab, setActiveTab] = useState<'beebot' | 'beebook' | 'curriculum'>('beebot');
-  const [showInVideoQuiz, setShowInVideoQuiz] = useState(false);
+
+  // In-Video Micro-Quiz State
+  const [showInVideoQuiz, setShowInVideoQuiz] = useState<boolean>(false);
   const [quizAnswered, setQuizAnswered] = useState<number | null>(null);
-  const [quizStartTime, setQuizStartTime] = useState<number>(Date.now());
+  const quizElapsedSecRef = useRef<number>(12);
   const [quizAttempts, setQuizAttempts] = useState<number>(0);
   const [telemetryState, setTelemetryState] = useState<{
     cognitive_state?: string;
@@ -255,265 +165,271 @@ export const VideoLectureStudioView: React.FC<{ onNavigate?: (view: any) => void
     should_switch_modality?: boolean;
     dwell_ratio?: number;
   } | null>(null);
-  const [isEvaluatingTelemetry, setIsEvaluatingTelemetry] = useState(false);
-  const [showWarmupModal, setShowWarmupModal] = useState(false);
-  const [flashcardIdx, setFlashcardIdx] = useState(0);
-  const [isFlipped, setIsFlipped] = useState(false);
 
-  // In-Video AI RAG Tutor State
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
+  // Flashcards Warmup State
+  const [showWarmupModal, setShowWarmupModal] = useState<boolean>(false);
+  const [flashcardIdx, setFlashcardIdx] = useState<number>(0);
+  const [isFlipped, setIsFlipped] = useState<boolean>(false);
+  // Helper: Format seconds to MM:SS
+  const formatTime = useCallback((seconds: number): string => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  }, []);
+
+  // Helper: Get active concept from cues based on current second
+  const getActiveConcept = useCallback((sec: number): string => {
+    if (!activeLecture.cues || activeLecture.cues.length === 0) {
+      return activeLecture.conceptKey || activeLecture.title;
+    }
+    const currentCue = [...activeLecture.cues].reverse().find((c) => sec >= c.sec) || activeLecture.cues[0];
+    return currentCue.label;
+  }, [activeLecture]);
+
+  // Socratic Active-Recall Priming Checkpoint (Cognitive Buffer State)
+  const [showReentryPriming, setShowReentryPriming] = useState<boolean>(false);
+  const [primingCheckpointData, setPrimingCheckpointData] = useState<{
+    resumeTimestampSec: number;
+    lastConcept: string;
+    frictionIndex: number;
+    cognitiveState: string;
+    question: string;
+    options: string[];
+    correctIndex: number;
+    explanation: string;
+  } | null>(null);
+  const [primingSelectedOption, setPrimingSelectedOption] = useState<number | null>(null);
+  const [primingSubmitted, setPrimingSubmitted] = useState<boolean>(false);
+  const primedLecturesRef = useRef<Set<string>>(new Set());
+
+  // In-Video AI RAG Tutor State (BeeBot)
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>(() => [
     {
-      id: 'msg_welcome',
+      id: `msg_welcome_${activeLecture.id}`,
       sender: 'bot',
-      text: "Hello! I'm **BeeBot**, your IBM watsonx Socratic AI Video Assistant. I'm actively watching **3Blue1Brown: Chapter 1 - Neural Networks** with you.\n\nAsk me any question about the video, equations, or click a timestamped concept pill below!",
-      timestampSec: 15,
+      text: `Hello! I'm **BeeBot**, your IBM watsonx Socratic AI Video Assistant. I'm actively watching **${activeLecture.title}** with you.\n\nAsk me any question about the video, equations, or click a timestamped concept pill below!`,
+      timestampSec: activeLecture.cues[0]?.sec || 15,
       timestampStr: '00:15',
-      modelUsed: 'IBM watsonx RAG Engine (Granite 3.0 / OpenRouter)'
+      modelUsed: 'IBM watsonx RAG Engine (Granite 3.0 / Fast-Whisper)'
     }
   ]);
-  const [userQuery, setUserQuery] = useState('');
-  const [isBotLoading, setIsBotLoading] = useState(false);
+  const [userQuery, setUserQuery] = useState<string>('');
+  const [isBotLoading, setIsBotLoading] = useState<boolean>(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
+  const lastSaveSecRef = useRef<number>(0);
 
   // Auto-scroll chat on new messages
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatMessages, isBotLoading]);
 
-  // Active lecture object
-  const activeLecture = chapters
-    .flatMap((ch) => ch.lectures)
-    .find((l) => l.id === activeLectureId) || chapters[0].lectures[0];
-
-  // Auto-trigger micro-quiz when timeline approaches 3:15
+  // --- 2. Cognitive Context Buffer: Check on Lecture Selection ---
   useEffect(() => {
-    if (currentTimeSec >= 194 && currentTimeSec <= 198 && quizAnswered === null) {
-      setShowInVideoQuiz(true);
-      setQuizStartTime(Date.now());
-      setQuizAttempts(0);
-      setTelemetryState(null);
-    }
-  }, [currentTimeSec, quizAnswered]);
+    let isCancelled = false;
 
-  // Simulated live playback timer
+    async function checkBufferAndPrime() {
+      // If we already primed this lecture in current session, skip prompt
+      if (primedLecturesRef.current.has(activeLecture.id)) {
+        return;
+      }
+
+      try {
+        const resumeData = await ApiClient.resumeStudioContext(activeLecture.id, 'student_demo');
+        if (isCancelled) return;
+
+        const buffer = resumeData.context_buffer;
+        const targetSec = buffer?.timestamp_sec || 0;
+
+        // If student has watched past 30 seconds previously, activate Socratic Priming Checkpoint
+        if (targetSec > 30) {
+          const quiz = activeLecture.reentryPrimingQuiz || {
+            concept: buffer.last_active_concept || getActiveConcept(targetSec),
+            question: resumeData.priming_quiz?.question || `Welcome back! In ${activeLecture.title}, what is the central conceptual role of ${buffer.last_active_concept || 'this transformation'}?`,
+            options: resumeData.priming_quiz?.options || [
+              'It scales or shifts the mathematical mapping non-linearly',
+              'It resets all model parameters to zero',
+              'It multiplies the learning rate by a constant factor',
+              'It eliminates the need for gradient backpropagation'
+            ],
+            correctIndex: 0,
+            explanation: 'Active recall reconstructs the decayed working-memory trace in your hippocampus, accelerating conceptual synthesis.'
+          };
+
+          setPrimingCheckpointData({
+            resumeTimestampSec: targetSec,
+            lastConcept: buffer.last_active_concept || getActiveConcept(targetSec),
+            frictionIndex: buffer.friction_index ?? 0.35,
+            cognitiveState: buffer.cognitive_state ?? 'NORMAL_ENGAGEMENT',
+            question: quiz.question,
+            options: quiz.options,
+            correctIndex: quiz.correctIndex ?? 0,
+            explanation: quiz.explanation
+          });
+
+          setPrimingSelectedOption(null);
+          setPrimingSubmitted(false);
+          setShowReentryPriming(true);
+          setIsPlaying(false);
+        } else {
+          // Normal start from 0
+          setCurrentTimeSec(0);
+          setIframeSeekSec(0);
+        }
+      } catch (err) {
+        console.warn('Context buffer lookup error, default to start:', err);
+      }
+    }
+
+    checkBufferAndPrime();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [activeLecture, getActiveConcept]);
+
+  // Handle Priming Completion
+  const handleConfirmPrimingResume = (targetSec: number) => {
+    primedLecturesRef.current.add(activeLecture.id);
+    setShowReentryPriming(false);
+    setCurrentTimeSec(targetSec);
+    setIframeSeekSec(targetSec);
+    setIsPlaying(true);
+  };
+
+  const handleSkipPriming = () => {
+    const targetSec = primingCheckpointData?.resumeTimestampSec || 0;
+    primedLecturesRef.current.add(activeLecture.id);
+    setShowReentryPriming(false);
+    setCurrentTimeSec(targetSec);
+    setIframeSeekSec(targetSec);
+    setIsPlaying(true);
+  };
+
+  const handlePrimingAnswerSelect = (optionIdx: number) => {
+    if (primingSubmitted) return;
+    setPrimingSelectedOption(optionIdx);
+    setPrimingSubmitted(true);
+
+    if (optionIdx === primingCheckpointData?.correctIndex) {
+      confetti({
+        particleCount: 70,
+        spread: 60,
+        origin: { y: 0.6 }
+      });
+    }
+  };
+
+  // --- 3. Live Playback Timer & Continuous Context Auto-Saving ---
   useEffect(() => {
     if (!isPlaying) return;
+
     const interval = setInterval(() => {
       setCurrentTimeSec((prev) => {
         if (prev >= activeLecture.durationSec) {
           setIsPlaying(false);
+          setLectureCompletionMap((old) => ({ ...old, [activeLecture.id]: true }));
           return prev;
         }
-        return prev + 1;
+        const nextSec = prev + 1;
+        const triggerSec = activeLecture.inVideoQuiz?.triggerTimestampSec || 195;
+        if (nextSec === triggerSec && quizAnswered === null) {
+          setShowInVideoQuiz(true);
+          quizElapsedSecRef.current = 10;
+          setQuizAttempts(0);
+          setTelemetryState(null);
+        }
+        return nextSec;
       });
     }, 1000);
-    return () => clearInterval(interval);
-  }, [isPlaying, activeLecture.durationSec]);
 
+    return () => clearInterval(interval);
+  }, [isPlaying, activeLecture.durationSec, activeLecture.id, activeLecture.inVideoQuiz, quizAnswered]);
+
+  // Periodic Auto-Save Buffer (every 8 seconds of active playback)
+  useEffect(() => {
+    if (!isPlaying) return;
+
+    if (Math.abs(currentTimeSec - lastSaveSecRef.current) >= 8) {
+      lastSaveSecRef.current = currentTimeSec;
+      const activeConcept = getActiveConcept(currentTimeSec);
+
+      ApiClient.saveStudioContext({
+        lecture_id: activeLecture.id,
+        timestamp_sec: currentTimeSec,
+        dwell_time_sec: currentTimeSec,
+        friction_index: telemetryState?.friction_index ?? 0.35,
+        last_active_concept: activeConcept,
+        user_id: 'student_demo'
+      }).catch((err) => {
+        console.debug('Background buffer save notice:', err);
+      });
+    }
+  }, [currentTimeSec, isPlaying, activeLecture.id, getActiveConcept, telemetryState]);
+
+  // Handle Seek
   const handleSeek = (sec: number) => {
-    setCurrentTimeSec(sec);
-    setIframeSeekSec(sec);
+    const bounded = Math.max(0, Math.min(sec, activeLecture.durationSec));
+    setCurrentTimeSec(bounded);
+    setIframeSeekSec(bounded);
     setIsPlaying(true);
   };
 
-  const handleSelectLecture = (id: string) => {
-    setActiveLectureId(id);
+  // Switch Lecture
+  const handleSelectLecture = (lec: CourseLecture) => {
+    if (lec.id === activeLectureId) return;
+
+    // Save previous lecture state before switching
+    if (currentTimeSec > 10) {
+      ApiClient.saveStudioContext({
+        lecture_id: activeLecture.id,
+        timestamp_sec: currentTimeSec,
+        dwell_time_sec: currentTimeSec,
+        friction_index: telemetryState?.friction_index ?? 0.35,
+        last_active_concept: getActiveConcept(currentTimeSec),
+        user_id: 'student_demo'
+      }).catch(() => {});
+    }
+
+    setActiveLectureId(lec.id);
     setCurrentTimeSec(0);
     setIframeSeekSec(0);
-    setIsPlaying(true);
+    setIsPlaying(false);
+    setShowInVideoQuiz(false);
     setQuizAnswered(null);
-    setChapters((prev) =>
-      prev.map((ch) => ({
-        ...ch,
-        lectures: ch.lectures.map((l) => ({
-          ...l,
-          active: l.id === id,
-        })),
-      }))
-    );
-  };
+    setTelemetryState(null);
 
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  };
-
-  const getContextualPrompts = (sec: number) => {
-    if (sec < 105) {
-      return [
-        "Why is MNIST 28x28 grayscale used?",
-        "What do the 784 input neurons represent?",
-        "How is pixel brightness converted to activation?"
-      ];
-    } else if (sec < 270) {
-      return [
-        "Why are there 16 neurons in the hidden layers?",
-        "What does an activation value of 1.0 mean?",
-        "How do the 784 pixels connect to layer 2?"
-      ];
-    } else if (sec < 500) {
-      return [
-        "Explain why weights can be positive or negative",
-        "What is the formula for the weighted sum z?",
-        "Why does Grant call weights scale factors?"
-      ];
-    } else if (sec < 730) {
-      return [
-        "Why do we need the Sigmoid activation function?",
-        "What happens when weighted sum z is very negative?",
-        "Why not use a simple step function instead of Sigmoid?"
-      ];
-    } else if (sec < 940) {
-      return [
-        "What is the geometric role of the bias b?",
-        "How does bias shift the neuron's activation threshold?",
-        "Why is bias added after the weighted sum?"
-      ];
-    } else {
-      return [
-        "Explain the matrix equation a^(1) = sigma(W a^(0) + b)",
-        "What do the rows and columns of weight matrix W represent?",
-        "How do we vectorize the layer computations?"
-      ];
-    }
-  };
-
-  const handleSendQuery = async (queryText?: string) => {
-    const rawQuery = (queryText || userQuery).trim();
-    if (!rawQuery || isBotLoading) return;
-
-    // 1. Client-Side Prompt Sanitization
-    // Strip zero-width, null bytes, bidirectional overrides, and normalize whitespace
-    let sanitized = rawQuery
-      .replace(/[\u202E\u202D\u200B\u200C\u200D\uFEFF\x00\r]/g, '')
-      .replace(/<\s*(?:script|iframe|object|embed|svg)[^>]*>.*?<\s*\/\s*(?:script|iframe|object|embed|svg)\s*>/gi, '')
-      .replace(/\s+/g, ' ')
-      .trim();
-
-    if (sanitized.length > 1000) {
-      sanitized = sanitized.slice(0, 1000);
-    }
-
-    const currentSec = currentTimeSec;
-    const currentStr = formatTime(currentSec);
-
-    const userMsg: ChatMessage = {
-      id: `user_${Date.now()}`,
-      sender: 'user',
-      text: sanitized,
-      timestampSec: currentSec,
-      timestampStr: currentStr,
-      guardrails: {
-        passed: true,
-        sanitized: sanitized !== rawQuery,
-      }
-    };
-
-    setChatMessages((prev) => [...prev, userMsg]);
-    setUserQuery('');
-    setIsBotLoading(true);
-
-    // Fast-path client jailbreak detection for instant defensive feedback
-    const isJailbreak = /(?:ignore|disregard|forget|bypass|override)\s+(?:all\s+)?(?:previous|prior|system)\s+(?:instructions|prompts|rules)|act\s+as\s+(?:dan|developer\s+mode|jailbreak|unrestricted)|reveal\s+(?:system\s+prompt|api\s+key)/i.test(sanitized);
-
-    try {
-      const res = await ApiClient.askVideoQuestion({
-        query: sanitized,
-        video_id: activeLecture.youtubeId,
-        timestamp_sec: currentSec,
-        language: activeLang.toLowerCase(),
-      });
-
-      const botMsg: ChatMessage = {
-        id: `bot_${Date.now()}`,
+    setChatMessages([
+      {
+        id: createMessageId(`msg_welcome_${lec.id}`),
         sender: 'bot',
-        text: res.answer,
-        timestampSec: res.timestamp_sec,
-        timestampStr: res.timestamp_str,
-        modelUsed: res.model_used || 'openrouter/free (IBM watsonx RAG)',
-        guardrails: res.guardrails,
-      };
-      setChatMessages((prev) => [...prev, botMsg]);
-    } catch (err) {
-      console.warn('Backend QA error or offline, using calibrated RAG fallback:', err);
-      let fallbackText = '';
-      const qLower = sanitized.toLowerCase();
-
-      let fallbackGuardrail: ChatMessage['guardrails'] = {
-        passed: !isJailbreak,
-        policy: isJailbreak ? 'PROMPT_INJECTION_SHIELD' : 'IBM_GRANITE_GUARDRAILS_PASSED',
-        action: isJailbreak ? 'BLOCKED_INJECTION' : 'PERMITTED',
-        sanitized: sanitized !== rawQuery,
-      };
-
-      if (isJailbreak) {
-        fallbackText = `🛡️ **BeeBot Security Guardrail Triggered:**\n\nYour query contains instructions that attempt to override system constraints, extract hidden configurations, or alter the assistant persona.\n\nUnder **IBM Granite Guardrails & OWASP LLM-01**, BeeBot remains strictly dedicated to your engineering mathematics and deep learning curriculum. Please ask a conceptual question about the lecture video!`;
-      } else if (qLower.includes('weight') || qLower.includes('scale')) {
-        fallbackText = `Great question! At timestamp **[04:30]**, Grant Sanderson explains that **weights ($w_i$)** represent connection strengths between neurons.\n\nMathematically, the neuron computes a weighted sum:\n$$z = \\sum_{i=1}^{784} w_i a_i + b$$\n\n• A **positive weight** ($w > 0$) means the neuron fires when that pixel is bright.\n• A **negative weight** ($w < 0$) means the neuron wants that pixel to be dark.\n\nClick **[04:30]** in the video player above to see the green and red visual connection lines!`;
-      } else if (qLower.includes('sigmoid') || qLower.includes('activation') || qLower.includes('squash')) {
-        fallbackText = `At timestamp **[08:20]**, the video introduces the **Sigmoid Activation Function**:\n$$\\sigma(z) = \\frac{1}{1 + e^{-z}}$$\n\nBecause the raw weighted sum $z$ can be any arbitrary number between $-\\infty$ and $+\\infty$, the sigmoid function acts as a **squashing mechanism**, mapping the value smoothly into the range $[0.0, 1.0]$.\n\nCheck out **[08:20]** to watch the S-shaped sigmoid curve visualizer.`;
-      } else if (qLower.includes('bias') || qLower.includes('threshold')) {
-        fallbackText = `As explained at timestamp **[12:10]**, the **bias ($b$)** acts as an activation threshold.\n\nEven if the weighted sum $\\sum w_i a_i$ is positive, we might only want the neuron to fire if the signal is overwhelmingly strong (e.g. $> 10$). By setting $b = -10$, the neuron remains inactive unless the input exceeds the threshold.\n\nRevisit **[12:10]** in the timeline above for the threshold slider visualization!`;
-      } else if (qLower.includes('matrix') || qLower.includes('vector') || qLower.includes('layer')) {
-        fallbackText = `In clean linear algebra matrix form shown at timestamp **[15:40]**, the entire layer transition is represented concisely as:\n$$a^{(1)} = \\sigma(W a^{(0)} + b)$$\n\nWhere $W$ is the weight matrix, $a^{(0)}$ is the input vector, and $b$ is the bias vector.\n\nJump to **[15:40]** to see how matrix multiplication vectorizes 16 parallel neuron equations into one!`;
-      } else {
-        fallbackText = `Based on the lecture at timestamp **[${currentStr}]**:\n\nThe network computes neuron activations by evaluating weighted combinations of inputs, adding learned threshold biases, and applying non-linear activation functions:\n$$a^{(l)} = \\sigma\\left( W^{(l)} a^{(l-1)} + b^{(l)} \\right)$$\n\nJump to **[04:30]** for weights, **[08:20]** for sigmoid squashing, or **[12:10]** for bias thresholds!`;
+        text: `Hello! I'm **BeeBot**, your IBM watsonx Socratic AI Video Assistant. I'm actively watching **${lec.title}** with you.\n\nAsk me any question about the video, equations, or click a timestamped concept pill below!`,
+        timestampSec: lec.cues[0]?.sec || 15,
+        timestampStr: formatTime(lec.cues[0]?.sec || 15),
+        modelUsed: 'IBM watsonx RAG Engine (Granite 3.0 / Fast-Whisper)'
       }
+    ]);
+  };
 
-      const fallbackMsg: ChatMessage = {
-        id: `bot_${Date.now()}`,
-        sender: 'bot',
-        text: fallbackText,
-        timestampSec: currentSec,
-        timestampStr: currentStr,
-        modelUsed: isJailbreak ? 'IBM Granite Guardrails Shield (OWASP LLM-01)' : 'IBM watsonx Socratic RAG (Local Fast-Whisper Indexed)',
-        guardrails: fallbackGuardrail,
-      };
-      setChatMessages((prev) => [...prev, fallbackMsg]);
-    } finally {
-      setIsBotLoading(false);
+  // Switch Course Track
+  const handleSelectCourse = (courseId: string) => {
+    if (courseId === activeCourseId) return;
+    setActiveCourseId(courseId);
+    const targetCourse = CURRICULUM_COURSES.find((c) => c.id === courseId) || CURRICULUM_COURSES[0];
+    const firstLec = targetCourse.chapters[0]?.lectures[0];
+    if (firstLec) {
+      handleSelectLecture(firstLec);
     }
   };
 
-  // Multilingual fast-whisper synchronized transcripts for 3Blue1Brown Deep Learning Chapter 1
-  const transcripts = {
-    EN: [
-      { sec: 15, text: "This is a 3. It's clumsily written, 28 by 28 pixels, but your brain recognizes it immediately as a 3." },
-      { sec: 75, text: "Inside the neural network, each pixel's brightness becomes the activation of an input neuron: numbers ranging from 0.0 to 1.0." },
-      { sec: 194, text: "The activation of a neuron in layer L is computed by taking the weighted sum of activations from layer L-1 plus a bias, passed through a Sigmoid function." },
-      { sec: 320, text: "In compact matrix form, this elegant equation governs the entire layer: a^(l) = sigma( W^(l) * a^(l-1) + b^(l) )." },
-      { sec: 480, text: "When we train the network, we adjust these weights and biases using Gradient Descent to minimize the quadratic Cost function." }
-    ],
-    HI: [
-      { sec: 15, text: "यह संख्या 3 है। यह 28 गुणा 28 पिक्सल में लिखी गई है, पर आपका मस्तिष्क इसे तुरंत 3 पहचान लेता है।" },
-      { sec: 75, text: "न्यूरल नेटवर्क के भीतर, प्रत्येक पिक्सेल की चमक इनपुट न्यूरॉन का एक्टिवेशन बनती है: 0.0 से 1.0 तक।" },
-      { sec: 194, text: "परत L के न्यूरॉन का एक्टिवेशन पिछली परत के वेटेड सम (Weights Sum) और बायस को सिग्मॉइड फंक्शन से गुज़ार कर निकाला जाता है।" },
-      { sec: 320, text: "संक्षिप्त मैट्रिक्स रूप में, यह सुंदर समीकरण पूरी परत को नियंत्रित करता है: a^(l) = sigma( W^(l) * a^(l-1) + b^(l) )।" },
-      { sec: 480, text: "नेटवर्क को प्रशिक्षित करते समय, हम कॉस्ट फ़ंक्शन को कम करने के लिए ग्रेडिएंट डिसेंट का उपयोग करते हैं।" }
-    ],
-    TA: [
-      { sec: 15, text: "இது எண் 3 ஆகும். இது 28 க்கு 28 பிக்சல்களில் எழுதப்பட்டுள்ளது, ஆனால் உங்கள் மூளை உடனடியாக அதை 3 என்று அடையாளம் காண்கிறது." },
-      { sec: 75, text: "நியூரல் நெட்வொர்க்கில், ஒவ்வொரு பிக்சலின் வெளிச்சமும் உள்ளீட்டு நியூரானின் செயல்பாடாக (Activation) மாறுகிறது." },
-      { sec: 194, text: "அடுக்கு L இல் உள்ள நியூரானின் செயல்பாடு முந்தைய அடுக்கின் எடைகள் மற்றும் பயாஸ் ஆகியவற்றை சிக்மாய்டு செயல்பாடு மூலம் கணக்கிடப்படுகிறது." },
-      { sec: 320, text: "சுருக்கமான மேட்ரிக்ஸ் வடிவத்தில்: a^(l) = sigma( W^(l) * a^(l-1) + b^(l) ) என்ற சமன்பாடு முழு அடுக்கையும் நிர்வகிக்கிறது." },
-      { sec: 480, text: "விலை செயல்பாட்டை (Cost Function) குறைக்க கிரேடியன்ட் டிசென்ட் மூலம் எடைகளை மாற்றியமைக்கிறோம்." }
-    ],
-    ES: [
-      { sec: 15, text: "Este es un número 3. Está escrito en 28 por 28 píxeles, pero tu cerebro lo reconoce inmediatamente." },
-      { sec: 75, text: "Dentro de la red neuronal, el brillo de cada píxel se convierte en la activación de una neurona de entrada: de 0.0 a 1.0." },
-      { sec: 194, text: "La activación en la capa L se calcula sumando los pesos por activaciones de la capa anterior más el sesgo, aplicando la función Sigmoide." },
-      { sec: 320, text: "En forma matricial compacta: a^(l) = sigma( W^(l) * a^(l-1) + b^(l) )." },
-      { sec: 480, text: "Entrenamos la red ajustando estos pesos y sesgos mediante Descenso del Gradiente para minimizar la función de Costo." }
-    ]
-  };
-
+  // Evaluate Micro-Quiz Answer with Telemetry
   const handleQuizAnswer = async (idx: number) => {
     setQuizAnswered(idx);
     const newAttempts = quizAttempts + 1;
     setQuizAttempts(newAttempts);
 
-    if (idx === 1) {
+    const isCorrect = idx === (activeLecture.inVideoQuiz?.correctIndex ?? 1);
+
+    if (isCorrect) {
       confetti({
         particleCount: 80,
         spread: 70,
@@ -521,19 +437,18 @@ export const VideoLectureStudioView: React.FC<{ onNavigate?: (view: any) => void
       });
     }
 
-    const dwellSec = Math.max(10, Math.round((Date.now() - quizStartTime) / 1000));
-    setIsEvaluatingTelemetry(true);
+    const dwellSec = Math.max(10, quizElapsedSecRef.current);
     try {
       const tel = await ApiClient.evaluateTelemetry({
         dwell_time_sec: dwellSec,
-        hint_count: idx !== 1 ? 1 : 0,
+        hint_count: !isCorrect ? 1 : 0,
         attempt_count: newAttempts,
         item_difficulty_b: 0.65
       });
       setTelemetryState(tel);
     } catch {
-      // Local fallback
-      if (idx !== 1 || dwellSec > 45) {
+      // Local calibrated fallback
+      if (!isCorrect || dwellSec > 45) {
         setTelemetryState({
           cognitive_state: 'FRUSTRATED_BLOCK',
           friction_index: 0.78,
@@ -548,59 +463,300 @@ export const VideoLectureStudioView: React.FC<{ onNavigate?: (view: any) => void
           dwell_ratio: 0.9
         });
       }
-    } finally {
-      setIsEvaluatingTelemetry(false);
     }
   };
 
+  // Dynamic Contextual Prompts based on lecture cues
+  const getContextualPrompts = (sec: number): string[] => {
+    const cues = activeLecture.cues;
+    if (!cues || cues.length === 0) {
+      return [
+        `Explain the main concept of ${activeLecture.title}`,
+        'What are the key mathematical formulas here?',
+        'How does this apply to real-world AI systems?'
+      ];
+    }
+
+    const currentCue = [...cues].reverse().find((c) => sec >= c.sec) || cues[0];
+    return [
+      `Explain "${currentCue.label}" at timestamp [${formatTime(currentCue.sec)}]`,
+      `What is the mathematical formulation of ${currentCue.label}?`,
+      `Why is ${currentCue.label} crucial for ${activeCourse.title}?`
+    ];
+  };
+
+  // BeeBot Timestamp-Aware RAG QA
+  const handleSendQuery = async (queryText?: string) => {
+    const rawQuery = (queryText || userQuery).trim();
+    if (!rawQuery || isBotLoading) return;
+
+    // Client-side prompt sanitization (OWASP LLM-01 defense)
+    let sanitized = rawQuery
+      .replace(/[\u202E\u202D\u200B\u200C\u200D\uFEFF\x00\r]/g, '')
+      .replace(/<\s*(?:script|iframe|object|embed|svg)[^>]*>.*?<\s*\/\s*(?:script|iframe|object|embed|svg)\s*>/gi, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    if (sanitized.length > 1000) {
+      sanitized = sanitized.slice(0, 1000);
+    }
+
+    const currentSec = currentTimeSec;
+    const currentStr = formatTime(currentSec);
+
+    const userMsg: ChatMessage = {
+      id: createMessageId('user'),
+      sender: 'user',
+      text: sanitized,
+      timestampSec: currentSec,
+      timestampStr: currentStr,
+      guardrails: {
+        passed: true,
+        sanitized: sanitized !== rawQuery
+      }
+    };
+
+    setChatMessages((prev) => [...prev, userMsg]);
+    setUserQuery('');
+    setIsBotLoading(true);
+
+    const isJailbreak = /(?:ignore|disregard|forget|bypass|override)\s+(?:all\s+)?(?:previous|prior|system)\s+(?:instructions|prompts|rules)|act\s+as\s+(?:dan|developer\s+mode|jailbreak|unrestricted)|reveal\s+(?:system\s+prompt|api\s+key)/i.test(sanitized);
+
+    try {
+      const res = await ApiClient.askVideoQuestion({
+        query: sanitized,
+        video_id: activeLecture.youtubeId,
+        timestamp_sec: currentSec,
+        language: activeLang.toLowerCase()
+      });
+
+      const botMsg: ChatMessage = {
+        id: createMessageId('bot'),
+        sender: 'bot',
+        text: res.answer,
+        timestampSec: res.timestamp_sec,
+        timestampStr: res.timestamp_str,
+        modelUsed: res.model_used || 'openrouter/free (IBM watsonx RAG)',
+        guardrails: res.guardrails
+      };
+      setChatMessages((prev) => [...prev, botMsg]);
+    } catch (err) {
+      console.warn('Backend QA fallback:', err);
+      let fallbackText = '';
+      const qLower = sanitized.toLowerCase();
+
+      const fallbackGuardrail = {
+        passed: !isJailbreak,
+        policy: isJailbreak ? 'PROMPT_INJECTION_SHIELD' : 'IBM_GRANITE_GUARDRAILS_PASSED',
+        action: isJailbreak ? 'BLOCKED_INJECTION' : 'PERMITTED',
+        sanitized: sanitized !== rawQuery
+      };
+
+      if (isJailbreak) {
+        fallbackText = `🛡️ **BeeBot Security Guardrail Triggered:**\n\nYour query contains instructions that attempt to override system constraints or alter the assistant persona.\n\nUnder **IBM Granite Guardrails & OWASP LLM-01**, BeeBot remains strictly dedicated to your engineering mathematics and deep learning curriculum. Please ask a conceptual question about the lecture video!`;
+      } else {
+        // Dynamic lecture-grounded response
+        const matchingNote = activeLecture.beebookNotes?.find((n) =>
+          qLower.includes(n.conceptTitle.toLowerCase()) || (n.latexFormula && qLower.includes('formula'))
+        );
+
+        if (matchingNote) {
+          fallbackText = `Great question! At timestamp **[${matchingNote.timestampLabel}]**, the lecture examines **${matchingNote.conceptTitle}**:\n\n$$\n${matchingNote.latexFormula}\n$$\n\n• **Core Insight:** ${matchingNote.keyTakeaway}\n\nClick **[${matchingNote.timestampLabel}]** above to navigate directly to this derivation in the player!`;
+        } else {
+          fallbackText = `In **${activeLecture.title}** around timestamp **[${currentStr}]**:\n\nThe presentation demonstrates how mathematical structures translate into computational graphs:\n\n$$\n${activeLecture.beebookNotes?.[0]?.latexFormula || 'f(x) = \\sigma(W x + b)'}\n$$\n\n• **Key Takeaway:** ${activeLecture.description}\n\nJump to any timestamp marker in the timeline to explore the visual proof!`;
+        }
+      }
+
+      const fallbackMsg: ChatMessage = {
+        id: createMessageId('bot_fb'),
+        sender: 'bot',
+        text: fallbackText,
+        timestampSec: currentSec,
+        timestampStr: currentStr,
+        modelUsed: isJailbreak ? 'IBM Granite Guardrails Shield (OWASP LLM-01)' : 'IBM watsonx Socratic RAG (Local Fast-Whisper Indexed)',
+        guardrails: fallbackGuardrail
+      };
+      setChatMessages((prev) => [...prev, fallbackMsg]);
+    } finally {
+      setIsBotLoading(false);
+    }
+  };
+
+  // Synchronized Fast-Whisper Subtitle for Current Second
+  const currentSubtitleText = useMemo(() => {
+    const list = activeLecture.multilingualCues?.[activeLang] || activeLecture.cues;
+    if (!list || list.length === 0) {
+      return activeLecture.description;
+    }
+    const current = [...list].reverse().find((c) => currentTimeSec >= c.sec) || list[0];
+    return current.text;
+  }, [activeLecture, activeLang, currentTimeSec]);
+
   return (
-    <div className="max-w-[1440px] mx-auto px-6 md:px-12 py-8">
-      {/* Studio Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-gray-200 mb-6">
-        <div>
+    <div className="max-w-[1440px] mx-auto px-4 md:px-10 py-6">
+      
+      {/* ========================================================================= */}
+      {/* 1. TOP BAR: COURSE TRACK SELECTOR PILLS                                  */}
+      {/* ========================================================================= */}
+      <div className="mb-6 bg-white rounded-3xl p-3 shadow-xs border border-gray-200">
+        <div className="flex items-center justify-between px-2 pb-2.5 mb-2 border-b border-gray-100 flex-wrap gap-2">
           <div className="flex items-center gap-2">
+            <span className="w-6 h-6 rounded-lg bg-[#ffe24c] flex items-center justify-center text-xs font-bold text-black">
+              🐝
+            </span>
+            <span className="text-xs font-bold uppercase tracking-wider text-gray-700 font-display">
+              Skill-Bee Dynamic Learning Tracks
+            </span>
+            <span className="px-2 py-0.5 rounded-full bg-blue-50 text-[#0f62fe] border border-blue-200 text-[10px] font-bold">
+              Cognitive Buffer Active
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2 text-[11px] text-gray-500 font-mono">
+            <span className="flex items-center gap-1 text-emerald-700 font-bold">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              SC-Buffer Connected
+            </span>
+          </div>
+        </div>
+
+        {/* 4 Authentic Course Tracks */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+          {CURRICULUM_COURSES.map((course) => {
+            const isSelected = course.id === activeCourseId;
+            const totalLectures = course.chapters.reduce((acc, ch) => acc + ch.lectures.length, 0);
+
+            return (
+              <button
+                key={course.id}
+                onClick={() => handleSelectCourse(course.id)}
+                className={`p-3 rounded-2xl text-left border transition-all flex flex-col justify-between ${
+                  isSelected
+                    ? 'bg-black text-white border-black shadow-md scale-[1.01]'
+                    : 'bg-[#fbf9f6] border-gray-200 hover:border-gray-400 text-black'
+                }`}
+              >
+                <div className="flex items-center justify-between gap-1 mb-1">
+                  <span
+                    className={`px-2 py-0.5 rounded-md text-[10px] font-mono font-bold ${
+                      isSelected ? 'bg-[#ffe24c] text-black' : 'bg-gray-200 text-gray-800'
+                    }`}
+                  >
+                    {course.code}
+                  </span>
+                  <span
+                    className={`text-[10px] font-medium ${
+                      isSelected ? 'text-amber-300' : 'text-gray-500'
+                    }`}
+                  >
+                    {totalLectures} Lectures
+                  </span>
+                </div>
+                <h4 className="text-xs font-bold line-clamp-1 leading-snug">{course.title}</h4>
+                <p
+                  className={`text-[10px] line-clamp-1 mt-0.5 ${
+                    isSelected ? 'text-gray-300' : 'text-gray-500'
+                  }`}
+                >
+                  {course.instructor}
+                </p>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ========================================================================= */}
+      {/* 2. LECTURE HEADER & QUICK ACTION MODAL TRIGGERS                           */}
+      {/* ========================================================================= */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-gray-200 mb-6">
+        <div>
+          <div className="flex items-center gap-2 flex-wrap">
             <span className="px-2.5 py-0.5 rounded-full bg-[#ffe24c] text-black text-[11px] font-bold uppercase">
               Lecture {activeLecture.number}
             </span>
-            <span className="text-xs text-gray-500 font-semibold">CS302 Applied AI • Dr. Sunita Sharma</span>
+            <span className="text-xs text-gray-500 font-semibold">
+              {activeCourse.code} • {activeCourse.instructor}
+            </span>
             <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold">
-              Classroom Enrolled
+              Cognitive Tracing Active
             </span>
           </div>
-          <h2 className="font-display text-2xl md:text-3xl font-bold text-black mt-1">
+          <h2 className="font-display text-xl md:text-2xl font-bold text-black mt-1">
             {activeLecture.title}
           </h2>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* Socratic Priming Buffer Quick Test */}
           <button
-            onClick={() => setShowWarmupModal(true)}
-            className="px-4 py-2 rounded-full bg-[#e5deff] text-[#1b1735] text-xs font-bold hover:scale-105 transition-all flex items-center gap-1.5 shadow-sm"
+            onClick={() => {
+              const quiz = activeLecture.reentryPrimingQuiz;
+              setPrimingCheckpointData({
+                resumeTimestampSec: currentTimeSec > 30 ? currentTimeSec : 194,
+                lastConcept: getActiveConcept(currentTimeSec),
+                frictionIndex: telemetryState?.friction_index ?? 0.42,
+                cognitiveState: telemetryState?.cognitive_state ?? 'NORMAL_ENGAGEMENT',
+                question: quiz.question,
+                options: quiz.options,
+                correctIndex: quiz.correctIndex,
+                explanation: quiz.explanation
+              });
+              setPrimingSelectedOption(null);
+              setPrimingSubmitted(false);
+              setShowReentryPriming(true);
+            }}
+            className="px-3.5 py-2 rounded-full bg-amber-100 text-amber-950 border border-amber-300 text-xs font-bold hover:scale-105 transition-all flex items-center gap-1.5 shadow-xs"
+            title="Test the working memory reactivation checkpoint modal"
+          >
+            <Brain className="w-3.5 h-3.5 text-amber-700" />
+            <span>Test Re-entry Priming</span>
+          </button>
+
+          {/* Flashcards */}
+          <button
+            onClick={() => {
+              setFlashcardIdx(0);
+              setIsFlipped(false);
+              setShowWarmupModal(true);
+            }}
+            className="px-3.5 py-2 rounded-full bg-[#e5deff] text-[#1b1735] text-xs font-bold hover:scale-105 transition-all flex items-center gap-1.5 shadow-xs"
           >
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Honey Recall Flashcards</span>
+            <span>Recall Flashcards</span>
           </button>
+
+          {/* Simulate In-Video Micro-Quiz */}
           <button
-            onClick={() => setShowInVideoQuiz(true)}
-            className="px-4 py-2 rounded-full bg-black text-white text-xs font-bold hover:scale-105 transition-all flex items-center gap-1.5 shadow-sm"
+            onClick={() => {
+              setShowInVideoQuiz(true);
+              quizElapsedSecRef.current = 10;
+              setQuizAttempts(0);
+              setQuizAnswered(null);
+            }}
+            className="px-3.5 py-2 rounded-full bg-black text-white text-xs font-bold hover:scale-105 transition-all flex items-center gap-1.5 shadow-xs"
           >
             <Zap className="w-3.5 h-3.5 text-[#ffe24c]" />
-            <span>Simulate Micro-Quiz</span>
+            <span>Micro-Quiz</span>
           </button>
         </div>
       </div>
 
-      {/* Main 12-Column Studio Layout */}
+      {/* ========================================================================= */}
+      {/* 3. MAIN 12-COLUMN STUDIO GRID                                             */}
+      {/* ========================================================================= */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         
-        {/* Left 8 Cols: Video Player & Timeline Controller */}
+        {/* LEFT 8 COLS: DYNAMIC VIDEO PLAYER, TIMELINE SCRUBBER, FAST-WHISPER */}
         <div className="lg:col-span-8 flex flex-col gap-4">
           
-          {/* Real YouTube Embedded Player */}
+          {/* YouTube Embed Container */}
           <div className="relative w-full aspect-video rounded-[32px] bg-black overflow-hidden shadow-2xl border-4 border-white">
             <iframe
               key={`${activeLecture.youtubeId}-${iframeSeekSec}`}
-              src={`https://www.youtube-nocookie.com/embed/${activeLecture.youtubeId}?enablejsapi=1&rel=0&modestbranding=1${iframeSeekSec > 0 ? `&start=${iframeSeekSec}&autoplay=1` : ''}`}
+              src={`https://www.youtube-nocookie.com/embed/${activeLecture.youtubeId}?enablejsapi=1&rel=0&modestbranding=1${
+                iframeSeekSec > 0 ? `&start=${iframeSeekSec}&autoplay=1` : ''
+              }`}
               title={activeLecture.title}
               className="w-full h-full object-cover"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -608,9 +764,9 @@ export const VideoLectureStudioView: React.FC<{ onNavigate?: (view: any) => void
             />
 
             {/* In-Video Active Recall Micro-Quiz Overlay */}
-            {showInVideoQuiz && (
+            {showInVideoQuiz && activeLecture.inVideoQuiz && (
               <div className="absolute inset-0 bg-black/85 backdrop-blur-md z-30 flex items-center justify-center p-6 transition-all animate-in fade-in">
-                <div className="bg-white rounded-[28px] p-6 max-w-lg w-full shadow-2xl border border-gray-200">
+                <div className="bg-white rounded-[28px] p-6 max-w-lg w-full shadow-2xl border border-gray-200 max-h-[90%] overflow-y-auto">
                   <div className="flex items-center justify-between pb-3 border-b border-gray-100 mb-4">
                     <div className="flex items-center gap-2">
                       <div className="w-7 h-7 rounded-lg bg-[#ffe24c] flex items-center justify-center text-black font-bold text-xs">
@@ -618,7 +774,9 @@ export const VideoLectureStudioView: React.FC<{ onNavigate?: (view: any) => void
                       </div>
                       <div>
                         <h4 className="font-display font-bold text-sm text-black">Active Recall Micro-Quiz</h4>
-                        <p className="text-[10px] text-gray-500">Timestamp 03:14 • Test immediate retention (+50 XP)</p>
+                        <p className="text-[10px] text-gray-500">
+                          Timestamp {formatTime(activeLecture.inVideoQuiz.triggerTimestampSec)} • Immediate Retention (+{activeLecture.inVideoQuiz.xpReward || 50} XP)
+                        </p>
                       </div>
                     </div>
                     <button
@@ -630,49 +788,57 @@ export const VideoLectureStudioView: React.FC<{ onNavigate?: (view: any) => void
                   </div>
 
                   <p className="text-xs font-bold text-black mb-3">
-                    In the layer equation, what is the mathematical role of the Sigmoid activation function <Latex>{'\\sigma(z) = \\frac{1}{1 + e^{-z}}'}</Latex>?
+                    {activeLecture.inVideoQuiz.question}
                   </p>
 
                   <div className="space-y-2 mb-4">
-                    {[
-                      { id: 0, text: 'It inverts the matrix to compute eigenvalues' },
-                      { id: 1, text: 'It squashes the linear combination (W·a + b) into real interval (0, 1) introducing non-linearity' },
-                      { id: 2, text: 'It doubles the learning rate for gradient descent' },
-                      { id: 3, text: 'It resets all bias terms to zero' },
-                    ].map((opt) => (
-                      <button
-                        key={opt.id}
-                        onClick={() => handleQuizAnswer(opt.id)}
-                        className={`w-full p-3 rounded-xl text-left text-xs font-medium border transition-all ${
-                          quizAnswered === opt.id
-                            ? opt.id === 1
-                              ? 'bg-emerald-50 border-emerald-500 text-emerald-900 font-bold'
-                              : 'bg-rose-50 border-rose-500 text-rose-900'
-                            : 'bg-[#fbf9f6] border-gray-200 hover:border-gray-400 text-black'
-                        }`}
-                      >
-                        <span className="font-bold mr-2">{String.fromCharCode(65 + opt.id)}.</span> {opt.text}
-                      </button>
-                    ))}
+                    {activeLecture.inVideoQuiz.options.map((opt, optIdx) => {
+                      const isCorrectChoice = optIdx === activeLecture.inVideoQuiz.correctIndex;
+                      const isChosen = quizAnswered === optIdx;
+
+                      return (
+                        <button
+                          key={optIdx}
+                          onClick={() => handleQuizAnswer(optIdx)}
+                          className={`w-full p-3 rounded-xl text-left text-xs font-medium border transition-all ${
+                            isChosen
+                              ? isCorrectChoice
+                                ? 'bg-emerald-50 border-emerald-500 text-emerald-900 font-bold'
+                                : 'bg-rose-50 border-rose-500 text-rose-900'
+                              : 'bg-[#fbf9f6] border-gray-200 hover:border-gray-400 text-black'
+                          }`}
+                        >
+                          <span className="font-bold mr-2">{String.fromCharCode(65 + optIdx)}.</span> {opt}
+                        </button>
+                      );
+                    })}
                   </div>
 
                   {quizAnswered !== null && (
-                    <div className={`p-3 rounded-xl text-xs font-bold mb-3 ${quizAnswered === 1 ? 'bg-emerald-100 text-emerald-900' : 'bg-rose-100 text-rose-900'}`}>
-                      {quizAnswered === 1
-                        ? '🎉 Correct! Sigmoid provides the crucial non-linear activation map! +50 Honey XP awarded!'
-                        : 'Review note: Non-linear squashing allows neural networks to approximate any continuous function.'}
+                    <div
+                      className={`p-3 rounded-xl text-xs font-bold mb-3 ${
+                        quizAnswered === activeLecture.inVideoQuiz.correctIndex
+                          ? 'bg-emerald-100 text-emerald-900'
+                          : 'bg-rose-100 text-rose-900'
+                      }`}
+                    >
+                      {quizAnswered === activeLecture.inVideoQuiz.correctIndex
+                        ? `🎉 Correct! ${activeLecture.inVideoQuiz.explanation}`
+                        : `Review note: ${activeLecture.inVideoQuiz.socraticHint || activeLecture.inVideoQuiz.explanation}`}
                     </div>
                   )}
 
-                  {/* EdNet Streaming Friction & LinUCB Modality Alert */}
+                  {/* EdNet Telemetry & LinUCB Modality Recommendation */}
                   {telemetryState && (
-                    <div className={`p-3.5 rounded-2xl border text-xs mb-3 transition-all ${
-                      telemetryState.cognitive_state === 'FRUSTRATED_BLOCK'
-                        ? 'bg-amber-50 border-amber-300 text-amber-950'
-                        : telemetryState.cognitive_state === 'BLIND_GUESSING'
-                        ? 'bg-rose-50 border-rose-300 text-rose-950'
-                        : 'bg-emerald-50 border-emerald-300 text-emerald-950'
-                    }`}>
+                    <div
+                      className={`p-3.5 rounded-2xl border text-xs mb-3 transition-all ${
+                        telemetryState.cognitive_state === 'FRUSTRATED_BLOCK'
+                          ? 'bg-amber-50 border-amber-300 text-amber-950'
+                          : telemetryState.cognitive_state === 'BLIND_GUESSING'
+                          ? 'bg-rose-50 border-rose-300 text-rose-950'
+                          : 'bg-emerald-50 border-emerald-300 text-emerald-950'
+                      }`}
+                    >
                       <div className="flex items-center justify-between font-bold mb-1">
                         <span className="flex items-center gap-1.5">
                           <span>🧠 EdNet Telemetry:</span>
@@ -688,7 +854,7 @@ export const VideoLectureStudioView: React.FC<{ onNavigate?: (view: any) => void
                       {telemetryState.should_switch_modality && (
                         <div className="mt-2 pt-2 border-t border-amber-200 flex flex-col gap-2">
                           <p className="text-[11px] text-amber-900 font-medium leading-relaxed">
-                            <strong>LinUCB Multi-Armed Bandit:</strong> High cognitive friction detected. LinUCB recommends switching to an alternate modality.
+                            <strong>LinUCB Bandit Recommendation:</strong> High cognitive friction detected. Switching to multimodal synthesis.
                           </p>
                           <div className="flex gap-2">
                             <button
@@ -703,7 +869,9 @@ export const VideoLectureStudioView: React.FC<{ onNavigate?: (view: any) => void
                             <button
                               onClick={() => {
                                 setShowInVideoQuiz(false);
-                                setUserQuery("Explain the Sigmoid activation mathematically and why it is needed.");
+                                setUserQuery(
+                                  `Explain the core intuition of ${activeLecture.title} and why this equation works.`
+                                );
                                 setActiveTab('beebot');
                               }}
                               className="flex-1 py-1.5 px-2.5 rounded-xl bg-black hover:bg-gray-800 text-white font-bold text-[10px] transition-all"
@@ -727,8 +895,8 @@ export const VideoLectureStudioView: React.FC<{ onNavigate?: (view: any) => void
             )}
           </div>
 
-          {/* Interactive Timeline Scrub Bar */}
-          <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-200 flex flex-col gap-3">
+          {/* Interactive Scrub Bar & Playback Controls */}
+          <div className="bg-white rounded-2xl p-4 shadow-xs border border-gray-200 flex flex-col gap-3">
             <div className="flex items-center justify-between text-xs font-mono">
               <div className="flex items-center gap-2">
                 <span className="font-bold text-black">{formatTime(currentTimeSec)}</span>
@@ -736,18 +904,22 @@ export const VideoLectureStudioView: React.FC<{ onNavigate?: (view: any) => void
                 <span className="text-gray-500">{activeLecture.duration}</span>
               </div>
 
-              {/* Cue Marker Tags */}
-              <div className="flex items-center gap-2 text-[10px]">
-                <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 font-bold cursor-pointer hover:bg-amber-200 transition-colors" onClick={() => handleSeek(194)}>
-                  ⚡ 03:14 Micro-Quiz
-                </span>
-                <span className="px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-900 font-bold cursor-pointer hover:bg-indigo-200 transition-colors" onClick={() => handleSeek(320)}>
-                  📝 05:20 Matrix Formula
-                </span>
+              {/* Dynamic Cue Markers */}
+              <div className="flex items-center gap-1.5 text-[10px] overflow-x-auto max-w-[65%] pb-0.5">
+                {activeLecture.cues.slice(0, 3).map((cue, cIdx) => (
+                  <button
+                    key={cIdx}
+                    onClick={() => handleSeek(cue.sec)}
+                    className="px-2 py-0.5 rounded-full bg-amber-50 text-amber-900 border border-amber-200 font-bold hover:bg-amber-100 transition-colors shrink-0"
+                    title={cue.text}
+                  >
+                    ⏱️ {formatTime(cue.sec)} {cue.label}
+                  </button>
+                ))}
               </div>
             </div>
 
-            {/* Slider Input */}
+            {/* Range Slider */}
             <div className="relative flex items-center">
               <input
                 type="range"
@@ -762,7 +934,7 @@ export const VideoLectureStudioView: React.FC<{ onNavigate?: (view: any) => void
               />
             </div>
 
-            {/* Playback Controls & Fast-Whisper Subtitle Language Switcher */}
+            {/* Controls Bar & Fast-Whisper Language Switcher */}
             <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
               <div className="flex items-center gap-2">
                 <button
@@ -785,7 +957,7 @@ export const VideoLectureStudioView: React.FC<{ onNavigate?: (view: any) => void
                 </button>
               </div>
 
-              {/* Multilingual Fast-Whisper Language Selector */}
+              {/* Multilingual Fast-Whisper Selector */}
               <div className="flex items-center gap-1.5 bg-[#f5f3f0] p-1 rounded-full border border-gray-200">
                 <Globe className="w-3.5 h-3.5 text-gray-500 ml-2" />
                 {(['EN', 'HI', 'TA', 'ES'] as const).map((lang) => (
@@ -794,7 +966,7 @@ export const VideoLectureStudioView: React.FC<{ onNavigate?: (view: any) => void
                     onClick={() => setActiveLang(lang)}
                     className={`px-3 py-1 rounded-full text-[11px] font-bold transition-all ${
                       activeLang === lang
-                        ? 'bg-black text-white shadow-sm'
+                        ? 'bg-black text-white shadow-xs'
                         : 'text-gray-600 hover:text-black'
                     }`}
                   >
@@ -805,39 +977,35 @@ export const VideoLectureStudioView: React.FC<{ onNavigate?: (view: any) => void
             </div>
           </div>
 
-          {/* Live Synchronized Fast-Whisper Subtitle Card */}
-          <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-200 flex items-start gap-3">
+          {/* Synchronized Fast-Whisper Subtitle Card */}
+          <div className="bg-white rounded-2xl p-4 shadow-xs border border-gray-200 flex items-start gap-3">
             <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center shrink-0 text-sm font-bold">
               🎙️
             </div>
             <div className="flex-1">
               <div className="flex items-center justify-between mb-1">
                 <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">
-                  Fast-Whisper Live Translation ({activeLang})
+                  Fast-Whisper Live Translation ({activeLang}) • {activeLecture.title}
                 </span>
                 <span className="text-[10px] text-emerald-600 font-mono font-bold">● AI Synchronized</span>
               </div>
               <p className="text-sm font-medium text-black leading-relaxed">
-                {(() => {
-                  const list = transcripts[activeLang];
-                  const currentCue = [...list].reverse().find((c) => currentTimeSec >= c.sec) || list[0];
-                  return currentCue.text;
-                })()}
+                {currentSubtitleText}
               </p>
             </div>
           </div>
         </div>
 
-        {/* Right 4 Cols: BeeBook AI Notes & Course Curriculum Sidebar */}
+        {/* RIGHT 4 COLS: BEEBOT RAG AI TUTOR, BEEBOOK FORMULA NOTES, SYLLABUS */}
         <div className="lg:col-span-4 flex flex-col gap-4">
           
-          {/* Tab Pill: BeeBot AI Tutor vs BeeBook Notes vs Course Curriculum */}
-          <div className="bg-white rounded-2xl p-1.5 shadow-sm border border-gray-200 flex items-center gap-1">
+          {/* Tab Selector */}
+          <div className="bg-white rounded-2xl p-1.5 shadow-xs border border-gray-200 flex items-center gap-1">
             <button
               onClick={() => setActiveTab('beebot')}
               className={`flex-1 py-2 px-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
                 activeTab === 'beebot'
-                  ? 'bg-[#ffe24c] text-black shadow-sm'
+                  ? 'bg-[#ffe24c] text-black shadow-xs'
                   : 'text-gray-600 hover:text-black'
               }`}
             >
@@ -851,7 +1019,7 @@ export const VideoLectureStudioView: React.FC<{ onNavigate?: (view: any) => void
               onClick={() => setActiveTab('beebook')}
               className={`flex-1 py-2 px-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
                 activeTab === 'beebook'
-                  ? 'bg-[#ffe24c] text-black shadow-sm'
+                  ? 'bg-[#ffe24c] text-black shadow-xs'
                   : 'text-gray-600 hover:text-black'
               }`}
             >
@@ -862,7 +1030,7 @@ export const VideoLectureStudioView: React.FC<{ onNavigate?: (view: any) => void
               onClick={() => setActiveTab('curriculum')}
               className={`flex-1 py-2 px-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
                 activeTab === 'curriculum'
-                  ? 'bg-black text-white shadow-sm'
+                  ? 'bg-black text-white shadow-xs'
                   : 'text-gray-600 hover:text-black'
               }`}
             >
@@ -871,9 +1039,9 @@ export const VideoLectureStudioView: React.FC<{ onNavigate?: (view: any) => void
             </button>
           </div>
 
-          {/* TAB 0: BEEBOT AI VIDEO TUTOR (TIMESTAMP-AWARE RAG) */}
+          {/* TAB 1: BEEBOT AI VIDEO TUTOR (TIMESTAMP-AWARE RAG) */}
           {activeTab === 'beebot' && (
-            <div className="bg-white rounded-[32px] p-5 shadow-sm border border-gray-200 flex flex-col gap-3 h-[640px]">
+            <div className="bg-white rounded-[32px] p-5 shadow-xs border border-gray-200 flex flex-col gap-3 h-[640px]">
               {/* Header */}
               <div className="flex items-center justify-between pb-3 border-b border-gray-100 shrink-0">
                 <div className="flex items-center gap-2">
@@ -886,12 +1054,8 @@ export const VideoLectureStudioView: React.FC<{ onNavigate?: (view: any) => void
                       <span className="px-2 py-0.5 rounded-full bg-blue-50 text-[#0f62fe] border border-blue-200 text-[9px] font-bold">
                         IBM watsonx RAG
                       </span>
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[9px] font-bold" title="OWASP LLM-01 Protected • Input Sanitization • Jailbreak Shield">
-                        <ShieldCheck className="w-3 h-3 text-emerald-600" />
-                        <span>Granite Guardrails</span>
-                      </span>
                     </div>
-                    <p className="text-[10px] text-gray-500">Fast-Whisper Grounded Socratic Assistant • Prompt Sanitized</p>
+                    <p className="text-[10px] text-gray-500">Fast-Whisper Grounded Socratic Assistant</p>
                   </div>
                 </div>
 
@@ -904,12 +1068,12 @@ export const VideoLectureStudioView: React.FC<{ onNavigate?: (view: any) => void
                     onClick={() => {
                       setChatMessages([
                         {
-                          id: 'msg_welcome',
+                          id: createMessageId('msg_welcome_reset'),
                           sender: 'bot',
-                          text: "Hello! I'm **BeeBot**, your IBM watsonx Socratic AI Video Assistant. I'm actively watching **3Blue1Brown: Chapter 1 - Neural Networks** with you.\n\nAsk me any question about the video, equations, or click a timestamped concept pill below!",
-                          timestampSec: 15,
-                          timestampStr: '00:15',
-                          modelUsed: 'IBM watsonx RAG Engine (Granite 3.0 / OpenRouter)'
+                          text: `Hello! I'm **BeeBot**, your IBM watsonx Socratic AI Video Assistant. I'm actively watching **${activeLecture.title}** with you.\n\nAsk me any question about the video, equations, or click a timestamped concept pill below!`,
+                          timestampSec: currentTimeSec,
+                          timestampStr: formatTime(currentTimeSec),
+                          modelUsed: 'IBM watsonx RAG Engine (Granite 3.0 / Fast-Whisper)'
                         }
                       ]);
                     }}
@@ -921,7 +1085,7 @@ export const VideoLectureStudioView: React.FC<{ onNavigate?: (view: any) => void
                 </div>
               </div>
 
-              {/* Contextual Video Moment Pills */}
+              {/* Dynamic Contextual Moment Pills */}
               <div className="shrink-0 bg-[#fbf9f6] p-2.5 rounded-2xl border border-gray-200/80">
                 <div className="flex items-center justify-between mb-1.5">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500 flex items-center gap-1">
@@ -966,9 +1130,9 @@ export const VideoLectureStudioView: React.FC<{ onNavigate?: (view: any) => void
                     <div
                       className={`max-w-[92%] p-3.5 rounded-2xl text-xs ${
                         msg.sender === 'user'
-                          ? 'bg-black text-white rounded-br-none shadow-sm'
+                          ? 'bg-black text-white rounded-br-none shadow-xs'
                           : msg.guardrails && !msg.guardrails.passed
-                          ? 'bg-amber-50/90 border border-amber-300 text-amber-950 rounded-bl-none shadow-sm'
+                          ? 'bg-amber-50/90 border border-amber-300 text-amber-950 rounded-bl-none shadow-xs'
                           : 'bg-[#fbf9f6] border border-gray-200 rounded-bl-none shadow-xs'
                       }`}
                     >
@@ -1016,7 +1180,7 @@ export const VideoLectureStudioView: React.FC<{ onNavigate?: (view: any) => void
                     <div className="space-y-1.5 flex-1">
                       <div className="flex items-center gap-2">
                         <span className="text-[11px] font-bold text-gray-700">BeeBot is reasoning...</span>
-                        <span className="text-[9px] font-mono text-gray-400">OpenRouter Free • RAG Sync</span>
+                        <span className="text-[9px] font-mono text-gray-400">Fast-Whisper Grounded</span>
                       </div>
                       <div className="h-2 bg-gray-200 rounded-full w-3/4" />
                       <div className="h-2 bg-gray-200 rounded-full w-1/2" />
@@ -1045,7 +1209,9 @@ export const VideoLectureStudioView: React.FC<{ onNavigate?: (view: any) => void
                   />
                   <button
                     type="button"
-                    onClick={() => handleSendQuery(`Explain what is happening in the video at timestamp ${formatTime(currentTimeSec)}`)}
+                    onClick={() =>
+                      handleSendQuery(`Explain what is happening in the video at timestamp ${formatTime(currentTimeSec)}`)
+                    }
                     title="Ask about this exact moment"
                     className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] font-mono font-bold text-gray-400 hover:text-black transition-colors"
                   >
@@ -1056,7 +1222,7 @@ export const VideoLectureStudioView: React.FC<{ onNavigate?: (view: any) => void
                 <button
                   type="submit"
                   disabled={!userQuery.trim() || isBotLoading}
-                  className="w-9 h-9 rounded-xl bg-black text-white hover:bg-gray-800 disabled:opacity-40 disabled:hover:bg-black flex items-center justify-center shrink-0 transition-all hover:scale-105 active:scale-95 shadow-sm"
+                  className="w-9 h-9 rounded-xl bg-black text-white hover:bg-gray-800 disabled:opacity-40 disabled:hover:bg-black flex items-center justify-center shrink-0 transition-all hover:scale-105 active:scale-95 shadow-xs"
                 >
                   <Send className="w-4 h-4" />
                 </button>
@@ -1073,107 +1239,115 @@ export const VideoLectureStudioView: React.FC<{ onNavigate?: (view: any) => void
             </div>
           )}
 
-          {/* TAB 1: BEEBOOK AI LIVE LECTURE NOTES (WITH PROPER LATEX) */}
+          {/* TAB 2: BEEBOOK AI FORMULA NOTES (WITH LATEX & CODE SNIPPETS) */}
           {activeTab === 'beebook' && (
-            <div className="bg-white rounded-[32px] p-6 shadow-sm border border-gray-200 flex flex-col gap-4 max-h-[620px] overflow-y-auto">
+            <div className="bg-white rounded-[32px] p-6 shadow-xs border border-gray-200 flex flex-col gap-4 max-h-[620px] overflow-y-auto">
               <div className="flex items-center justify-between pb-3 border-b border-gray-100">
                 <div>
-                  <h3 className="font-display text-base font-bold text-black">BeeBook Live Notes</h3>
-                  <p className="text-[11px] text-gray-500">Autonomous LaTeX & Cognitive Synthesis</p>
+                  <h3 className="font-display text-base font-bold text-black">BeeBook Formula Notes</h3>
+                  <p className="text-[11px] text-gray-500">
+                    {activeLecture.title} • {activeLecture.beebookNotes?.length || 0} Core Formulations
+                  </p>
                 </div>
                 <span className="px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 text-[10px] font-bold">
                   Watsonx Synthesized
                 </span>
               </div>
 
-              {/* Note 1: Neural Layer Equation */}
-              <div className="p-4 rounded-2xl bg-[#fbf9f6] border border-gray-200 hover:border-gray-300 transition-colors">
-                <div className="flex items-center justify-between text-xs font-bold text-gray-500 mb-1">
-                  <span className="text-[#0f62fe]">TIMESTAMP 03:14</span>
-                  <span className="text-emerald-700">Core Formulation</span>
+              {/* Render dynamic lecture notes */}
+              {activeLecture.beebookNotes && activeLecture.beebookNotes.length > 0 ? (
+                activeLecture.beebookNotes.map((note) => (
+                  <div
+                    key={note.id}
+                    className="p-4 rounded-2xl bg-[#fbf9f6] border border-gray-200 hover:border-gray-300 transition-colors space-y-2"
+                  >
+                    <div className="flex items-center justify-between text-xs font-bold text-gray-500">
+                      <button
+                        onClick={() => handleSeek(note.timestampSec)}
+                        className="inline-flex items-center gap-1 text-[#0f62fe] hover:underline font-mono"
+                      >
+                        <span>⏱️ TIMESTAMP</span>
+                        <span>{note.timestampLabel}</span>
+                      </button>
+                      <span className="text-emerald-700 text-[10px] uppercase tracking-wider">
+                        {note.isBookmarked ? '★ Core Formula' : 'Derivation'}
+                      </span>
+                    </div>
+
+                    <h4 className="font-bold text-sm text-black">{note.conceptTitle}</h4>
+
+                    {/* KaTeX Formula Box */}
+                    {note.latexFormula && (
+                      <div className="bg-white p-3 rounded-xl border border-gray-200 text-center my-2 shadow-xs overflow-x-auto">
+                        <Latex block>{note.latexFormula}</Latex>
+                      </div>
+                    )}
+
+                    <p className="text-xs text-gray-600 leading-relaxed">{note.keyTakeaway}</p>
+
+                    {/* Optional Python Implementation Snippet */}
+                    {note.pythonSnippet && (
+                      <div className="mt-2 bg-[#1b1c1a] text-amber-200 p-3 rounded-xl font-mono text-[10px] overflow-x-auto border border-gray-800">
+                        <div className="text-gray-400 text-[9px] mb-1 font-sans flex items-center justify-between">
+                          <span>Python Implementation:</span>
+                          <span className="text-emerald-400">numpy / torch</span>
+                        </div>
+                        <pre>{note.pythonSnippet}</pre>
+                      </div>
+                    )}
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-8 text-xs text-gray-500">
+                  No formula notes found for this lecture.
                 </div>
-                <h4 className="font-bold text-sm text-black mb-1">Layer Vectorized Activation</h4>
-                
-                {/* Real KaTeX Rendered Formula (Requirement 6) */}
-                <div className="bg-white p-3 rounded-xl border border-gray-200 text-center my-2 shadow-xs">
-                  <Latex block>
-                    {'a^{(l)} = \\sigma\\left( W^{(l)} a^{(l-1)} + b^{(l)} \\right)'}
-                  </Latex>
-                </div>
-
-                <p className="text-xs text-gray-600 leading-relaxed">
-                  Where <Latex>{'W^{(l)}'}</Latex> is the weight matrix connecting layer <Latex>{'l-1'}</Latex> to layer <Latex>{'l'}</Latex>, and <Latex>{'b^{(l)}'}</Latex> is the learned bias threshold vector.
-                </p>
-              </div>
-
-              {/* Note 2: Sigmoid Activation Function */}
-              <div className="p-4 rounded-2xl bg-[#fbf9f6] border border-gray-200 hover:border-gray-300 transition-colors">
-                <div className="flex items-center justify-between text-xs font-bold text-gray-500 mb-1">
-                  <span className="text-[#0f62fe]">TIMESTAMP 05:20</span>
-                  <span className="text-purple-700">Non-Linearity</span>
-                </div>
-                <h4 className="font-bold text-sm text-black mb-1">Sigmoid Function & Range</h4>
-
-                <div className="bg-white p-3 rounded-xl border border-gray-200 text-center my-2 shadow-xs">
-                  <Latex block>
-                    {'\\sigma(z) = \\frac{1}{1 + e^{-z}}, \\quad \\sigma\'(z) = \\sigma(z)(1 - \\sigma(z))'}
-                  </Latex>
-                </div>
-
-                <p className="text-xs text-gray-600 leading-relaxed">
-                  Maps any real input <Latex>{'z \\in (-\\infty, +\\infty)'}</Latex> smoothly into activation range <Latex>{'(0, 1)'}</Latex>.
-                </p>
-              </div>
-
-              {/* Note 3: Quadratic Loss & Objective */}
-              <div className="p-4 rounded-2xl bg-[#fbf9f6] border border-gray-200 hover:border-gray-300 transition-colors">
-                <div className="flex items-center justify-between text-xs font-bold text-gray-500 mb-1">
-                  <span className="text-[#0f62fe]">TIMESTAMP 08:00</span>
-                  <span className="text-amber-700">Loss Metric</span>
-                </div>
-                <h4 className="font-bold text-sm text-black mb-1">Network Cost (MSE)</h4>
-
-                <div className="bg-white p-3 rounded-xl border border-gray-200 text-center my-2 shadow-xs">
-                  <Latex block>
-                    {'C(W, b) = \\frac{1}{2n} \\sum_{x} \\| y(x) - a^L(x) \\|^2'}
-                  </Latex>
-                </div>
-
-                <p className="text-xs text-gray-600 leading-relaxed">
-                  Gradient descent computes <Latex>{'\\nabla C'}</Latex> to update weights in the direction of steepest loss reduction.
-                </p>
-              </div>
+              )}
 
               {/* 1-Click Export Notes Button */}
               <button
-                onClick={() => alert("BeeBook Notes with KaTeX formulas exported as PDF & Markdown summary!")}
+                onClick={() => {
+                  const summaryContent = `# BeeBook Notes: ${activeLecture.title}\nCourse: ${activeCourse.title} (${activeCourse.code})\n\n` +
+                    (activeLecture.beebookNotes || [])
+                      .map((n) => `### ${n.conceptTitle} [${n.timestampLabel}]\n$$${n.latexFormula}$$\n${n.keyTakeaway}\n`)
+                      .join('\n\n');
+                  
+                  const blob = new Blob([summaryContent], { type: 'text/markdown' });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = `${activeLecture.id}_beebook_notes.md`;
+                  a.click();
+                  URL.revokeObjectURL(url);
+                }}
                 className="w-full py-3 rounded-full bg-black text-white text-xs font-bold hover:scale-[1.02] transition-all flex items-center justify-center gap-2 mt-2"
               >
                 <Bookmark className="w-3.5 h-3.5 text-[#ffe24c]" />
-                <span>Export BeeBook Summary (.md / PDF)</span>
+                <span>Export BeeBook Summary (.md)</span>
               </button>
             </div>
           )}
 
-          {/* TAB 2: COURSE CURRICULUM SIDEBAR (Requirement 5) */}
+          {/* TAB 3: COURSE CURRICULUM SYLLABUS */}
           {activeTab === 'curriculum' && (
-            <div className="bg-white rounded-[32px] p-6 shadow-sm border border-gray-200 flex flex-col gap-4 max-h-[620px] overflow-y-auto">
+            <div className="bg-white rounded-[32px] p-6 shadow-xs border border-gray-200 flex flex-col gap-4 max-h-[620px] overflow-y-auto">
               <div className="flex items-center justify-between pb-3 border-b border-gray-100">
                 <div>
-                  <h3 className="font-display text-base font-bold text-black">CS302 Syllabus Modules</h3>
-                  <p className="text-[11px] text-gray-500">8 Calibrated Lectures • 2 Chapters</p>
+                  <h3 className="font-display text-base font-bold text-black">{activeCourse.code} Syllabus</h3>
+                  <p className="text-[11px] text-gray-500">
+                    {activeCourse.chapters.reduce((acc, ch) => acc + ch.lectures.length, 0)} Lectures • {activeCourse.chapters.length} Chapters
+                  </p>
                 </div>
                 <div className="text-right">
-                  <span className="text-xs font-bold text-black">25% Done</span>
+                  <span className="text-xs font-bold text-black">Track Enrolled</span>
                   <div className="w-16 h-1.5 bg-gray-100 rounded-full mt-1 overflow-hidden">
-                    <div className="w-1/4 h-full bg-[#0f62fe] rounded-full" />
+                    <div className="w-1/2 h-full bg-[#0f62fe] rounded-full" />
                   </div>
                 </div>
               </div>
 
-              {/* Chapters & Lecture List */}
+              {/* Chapters and Lecture Switcher */}
               <div className="space-y-4">
-                {chapters.map((ch) => (
+                {activeCourse.chapters.map((ch) => (
                   <div key={ch.id} className="space-y-2">
                     <div className="text-[11px] font-bold uppercase tracking-wider text-gray-400 px-1">
                       {ch.title}
@@ -1182,10 +1356,12 @@ export const VideoLectureStudioView: React.FC<{ onNavigate?: (view: any) => void
                     <div className="space-y-1.5">
                       {ch.lectures.map((lec) => {
                         const isCurrent = lec.id === activeLectureId;
+                        const isDone = lectureCompletionMap[lec.id] || lec.completed;
+
                         return (
                           <div
                             key={lec.id}
-                            onClick={() => handleSelectLecture(lec.id)}
+                            onClick={() => handleSelectLecture(lec)}
                             className={`p-3 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
                               isCurrent
                                 ? 'bg-black text-white border-black shadow-md'
@@ -1197,19 +1373,23 @@ export const VideoLectureStudioView: React.FC<{ onNavigate?: (view: any) => void
                                 className={`w-7 h-7 rounded-xl flex items-center justify-center shrink-0 font-bold text-xs ${
                                   isCurrent
                                     ? 'bg-[#ffe24c] text-black'
-                                    : lec.completed
+                                    : isDone
                                     ? 'bg-emerald-100 text-emerald-800'
                                     : 'bg-gray-200 text-gray-700'
                                 }`}
                               >
-                                {lec.completed ? '✓' : lec.number}
+                                {isDone ? '✓' : lec.number}
                               </div>
                               <div className="truncate">
                                 <p className="text-xs font-bold truncate leading-tight">
                                   {lec.title}
                                 </p>
-                                <p className={`text-[10px] mt-0.5 ${isCurrent ? 'text-gray-300' : 'text-gray-500'}`}>
-                                  {lec.duration} • 3Blue1Brown Neural Foundations
+                                <p
+                                  className={`text-[10px] mt-0.5 ${
+                                    isCurrent ? 'text-gray-300' : 'text-gray-500'
+                                  }`}
+                                >
+                                  {lec.duration} • {activeCourse.instructor.split('&')[0].trim()}
                                 </p>
                               </div>
                             </div>
@@ -1229,7 +1409,163 @@ export const VideoLectureStudioView: React.FC<{ onNavigate?: (view: any) => void
         </div>
       </div>
 
-      {/* Honey Recall Flashcards Modal */}
+      {/* ========================================================================= */}
+      {/* 4. SOCRATIC RE-ENTRY PRIMING CHECKPOINT MODAL (COGNITIVE SC-BUFFER)       */}
+      {/* ========================================================================= */}
+      {showReentryPriming && primingCheckpointData && (
+        <div className="fixed inset-0 bg-black/75 backdrop-blur-md z-50 flex items-center justify-center p-4 md:p-6 animate-in fade-in">
+          <div className="bg-white rounded-[36px] p-6 md:p-8 max-w-xl w-full shadow-2xl border-2 border-amber-200 max-h-[95vh] overflow-y-auto">
+            
+            {/* Header */}
+            <div className="flex items-center justify-between pb-4 border-b border-gray-100 mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-[#ffe24c] flex items-center justify-center text-black font-bold text-lg shadow-sm">
+                  🧠
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-display text-base md:text-lg font-bold text-black">
+                      Socratic Re-entry Priming Checkpoint
+                    </h3>
+                    <span className="px-2 py-0.5 rounded-full bg-blue-100 text-[#0f62fe] text-[10px] font-mono font-bold">
+                      SC-Buffer
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-gray-500">
+                    Restoring decayed working-memory buffer before resuming video playback
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={handleSkipPriming}
+                className="text-gray-400 hover:text-black font-bold text-sm px-2 py-1 rounded-lg"
+                title="Skip priming and resume immediately"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Context Buffer Status Pill */}
+            <div className="bg-[#fbf9f6] p-3 rounded-2xl border border-gray-200 mb-4 flex items-center justify-between text-xs">
+              <div className="flex items-center gap-2">
+                <span className="text-gray-500 font-medium">Paused At:</span>
+                <span className="font-mono font-bold text-black bg-amber-100 px-2 py-0.5 rounded-md border border-amber-300">
+                  {formatTime(primingCheckpointData.resumeTimestampSec)}
+                </span>
+                <span className="text-gray-400">•</span>
+                <span className="font-semibold text-gray-700 truncate max-w-[200px]">
+                  {primingCheckpointData.lastConcept}
+                </span>
+              </div>
+              <div className="font-mono text-[10px] text-gray-600 bg-white px-2 py-1 rounded-lg border border-gray-200 shrink-0">
+                Friction F = {primingCheckpointData.frictionIndex.toFixed(2)}
+              </div>
+            </div>
+
+            {/* Cognitive Science Explanation Callout */}
+            <div className="p-3.5 rounded-2xl bg-amber-50/70 border border-amber-200/80 mb-4 text-xs text-amber-950 leading-relaxed">
+              <p className="font-bold mb-1 flex items-center gap-1.5 text-amber-900">
+                <span>⚡ Cognitive Load Continuity Protocol:</span>
+              </p>
+              <p className="text-[11px] text-amber-900/90">
+                According to Cognitive Load Theory (Sweller & Ebbinghaus), working memory traces for abstract mathematical formulations decay by up to 60% after context switches. Answering one active-recall question primes your hippocampus before video playback resumes.
+              </p>
+            </div>
+
+            {/* Socratic Priming Question */}
+            <div className="mb-4">
+              <p className="text-sm font-bold text-black mb-3">
+                {primingCheckpointData.question}
+              </p>
+
+              <div className="space-y-2.5">
+                {primingCheckpointData.options.map((opt, optIdx) => {
+                  const isSelected = primingSelectedOption === optIdx;
+                  const isCorrect = optIdx === primingCheckpointData.correctIndex;
+
+                  let optionStyle = 'bg-[#fbf9f6] border-gray-200 hover:border-gray-400 text-black';
+                  if (primingSubmitted) {
+                    if (isCorrect) {
+                      optionStyle = 'bg-emerald-50 border-emerald-500 text-emerald-900 font-bold';
+                    } else if (isSelected) {
+                      optionStyle = 'bg-rose-50 border-rose-500 text-rose-900';
+                    }
+                  }
+
+                  return (
+                    <button
+                      key={optIdx}
+                      onClick={() => handlePrimingAnswerSelect(optIdx)}
+                      disabled={primingSubmitted}
+                      className={`w-full p-3.5 rounded-2xl text-left text-xs font-medium border transition-all flex items-start gap-2.5 ${optionStyle}`}
+                    >
+                      <span className="w-5 h-5 rounded-md bg-white border border-gray-200 flex items-center justify-center font-bold text-[11px] shrink-0 text-black">
+                        {String.fromCharCode(65 + optIdx)}
+                      </span>
+                      <span className="leading-relaxed flex-1">{opt}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Feedback Alert */}
+            {primingSubmitted && (
+              <div
+                className={`p-3.5 rounded-2xl text-xs font-medium mb-4 leading-relaxed ${
+                  primingSelectedOption === primingCheckpointData.correctIndex
+                    ? 'bg-emerald-100 text-emerald-950 border border-emerald-300'
+                    : 'bg-amber-100 text-amber-950 border border-amber-300'
+                }`}
+              >
+                <div className="font-bold flex items-center gap-1.5 mb-1">
+                  {primingSelectedOption === primingCheckpointData.correctIndex ? (
+                    <>
+                      <span>🎉 Working Memory Primed (+25 Honey XP)!</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>💡 Memory Reconstruction Cue:</span>
+                    </>
+                  )}
+                </div>
+                <p className="text-[11px]">{primingCheckpointData.explanation}</p>
+              </div>
+            )}
+
+            {/* Modal Action Buttons */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-2.5 pt-2">
+              <button
+                onClick={() => handleConfirmPrimingResume(0)}
+                className="w-full sm:w-auto px-4 py-2.5 rounded-full border border-gray-200 text-xs font-bold hover:bg-gray-100 text-gray-700"
+              >
+                Restart from 00:00
+              </button>
+
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <button
+                  onClick={handleSkipPriming}
+                  className="flex-1 sm:flex-none px-4 py-2.5 rounded-full border border-gray-200 text-xs font-bold hover:bg-gray-100 text-gray-600"
+                >
+                  Skip Priming
+                </button>
+                <button
+                  onClick={() => handleConfirmPrimingResume(primingCheckpointData.resumeTimestampSec)}
+                  className="flex-1 sm:flex-none px-6 py-2.5 rounded-full bg-black text-white text-xs font-bold hover:scale-105 transition-all shadow-md flex items-center justify-center gap-1.5"
+                >
+                  <span>Resume at {formatTime(primingCheckpointData.resumeTimestampSec)}</span>
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* 5. HONEY RECALL FLASHCARDS MODAL                                          */}
+      {/* ========================================================================= */}
       {showWarmupModal && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-6 animate-in fade-in">
           <div className="bg-white rounded-[36px] p-8 max-w-md w-full shadow-2xl border border-gray-200">
@@ -1240,7 +1576,9 @@ export const VideoLectureStudioView: React.FC<{ onNavigate?: (view: any) => void
                 </div>
                 <div>
                   <h3 className="font-display text-base font-bold text-black">Honey Memory Warm-Up</h3>
-                  <p className="text-[11px] text-gray-500">Flashcard {flashcardIdx + 1} of 2 • Pre-Lecture Retrieval</p>
+                  <p className="text-[11px] text-gray-500">
+                    Flashcard {flashcardIdx + 1} of {activeLecture.flashcards?.length || 1} • Pre-Lecture Retrieval
+                  </p>
                 </div>
               </div>
               <button
@@ -1252,45 +1590,36 @@ export const VideoLectureStudioView: React.FC<{ onNavigate?: (view: any) => void
             </div>
 
             {/* Flashcard Component */}
-            <div
-              onClick={() => setIsFlipped(!isFlipped)}
-              className="w-full min-h-[200px] p-6 rounded-3xl bg-[#fbf9f6] border border-gray-200 flex flex-col justify-between cursor-pointer hover:border-black transition-all shadow-inner mb-6 text-center"
-            >
-              <span className="text-[10px] font-bold text-gray-400 uppercase">
-                {isFlipped ? 'Answer (Click to Flip Back)' : 'Question (Click to Flip)'}
-              </span>
+            {(() => {
+              const currentCard = activeLecture.flashcards?.[flashcardIdx] || {
+                frontQuestion: `What is the core intuition behind ${activeLecture.title}?`,
+                backAnswer: activeLecture.description,
+                tag: 'Foundations'
+              };
 
-              <div className="my-auto text-sm font-bold text-black">
-                {flashcardIdx === 0 ? (
-                  isFlipped ? (
-                    <span>
-                      The derivative of sigmoid is <Latex>{'\\sigma(z)(1 - \\sigma(z))'}</Latex>. Its peak value is 0.25 at z = 0, causing repeated multiplication to exponentially diminish gradient signals!
-                    </span>
-                  ) : (
-                    <span>
-                      Why does deep stacking of Sigmoid activations cause the infamous <em>Vanishing Gradient Problem</em> during backpropagation?
-                    </span>
-                  )
-                ) : (
-                  isFlipped ? (
-                    <span>
-                      Bias shifts the activation threshold horizontally, allowing a neuron to remain inactive until a minimum cumulative excitation is achieved.
-                    </span>
-                  ) : (
-                    <span>
-                      What is the geometric and biological role of the bias vector <Latex>{'\\vec{b}'}</Latex> in <Latex>{'W \\vec{a} + \\vec{b}'}</Latex>?
-                    </span>
-                  )
-                )}
-              </div>
+              return (
+                <div
+                  onClick={() => setIsFlipped(!isFlipped)}
+                  className="w-full min-h-[200px] p-6 rounded-3xl bg-[#fbf9f6] border border-gray-200 flex flex-col justify-between cursor-pointer hover:border-black transition-all shadow-inner mb-6 text-center"
+                >
+                  <span className="text-[10px] font-bold text-gray-400 uppercase">
+                    {isFlipped ? 'Answer (Click to Flip Back)' : 'Question (Click to Flip)'}
+                  </span>
 
-              <span className="text-[10px] text-gray-400">↻ Click to Flip</span>
-            </div>
+                  <div className="my-auto text-sm font-bold text-black leading-relaxed">
+                    {isFlipped ? currentCard.backAnswer : currentCard.frontQuestion}
+                  </div>
+
+                  <span className="text-[10px] text-gray-400">↻ Click to Flip</span>
+                </div>
+              );
+            })()}
 
             <div className="flex items-center justify-between gap-3">
               <button
                 onClick={() => {
-                  setFlashcardIdx((prev) => (prev === 0 ? 1 : 0));
+                  const total = activeLecture.flashcards?.length || 1;
+                  setFlashcardIdx((prev) => (prev + 1) % total);
                   setIsFlipped(false);
                 }}
                 className="flex-1 py-2.5 rounded-full border border-gray-200 text-xs font-bold hover:bg-gray-100"

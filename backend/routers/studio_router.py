@@ -342,3 +342,87 @@ def ask_video_qa(payload: VideoQARequest):
             "off_topic_warning": guard_eval.get("is_off_topic_warning", False)
         }
     }
+
+
+# =========================================================================
+# Socratic Cognitive Working Memory Buffer (SC-Buffer) Persistence Engine
+# =========================================================================
+
+class ContextBufferSaveRequest(BaseModel):
+    user_id: Optional[str] = "std_demo"
+    lecture_id: str
+    course_id: Optional[str] = "course_dl"
+    timestamp_sec: int
+    watched_segments: Optional[List[List[int]]] = []
+    last_active_concept: Optional[str] = "Neural Network Foundations"
+    friction_index: Optional[float] = 0.15
+    cognitive_state: Optional[str] = "NORMAL_ENGAGEMENT"
+
+# In-memory working memory buffer store
+STUDIO_CONTEXT_BUFFERS = {}
+
+@router.post("/context/save", summary="Persist Student Video Working Memory Buffer")
+def save_studio_context(payload: ContextBufferSaveRequest):
+    """
+    Saves live playback progress, watched ranges, and cognitive friction state.
+    Used by Socratic SC-Buffer to resume with an active priming question.
+    """
+    key = f"{payload.user_id}_{payload.lecture_id}"
+    STUDIO_CONTEXT_BUFFERS[key] = {
+        "user_id": payload.user_id,
+        "lecture_id": payload.lecture_id,
+        "course_id": payload.course_id,
+        "timestamp_sec": payload.timestamp_sec,
+        "watched_segments": payload.watched_segments or [],
+        "last_active_concept": payload.last_active_concept,
+        "friction_index": payload.friction_index,
+        "cognitive_state": payload.cognitive_state,
+        "has_reentry_priming": payload.timestamp_sec > 30
+    }
+    return {
+        "success": True,
+        "saved_key": key,
+        "timestamp_sec": payload.timestamp_sec,
+        "message": f"Working memory snapshot saved at {payload.timestamp_sec}s."
+    }
+
+@router.get("/context/resume/{lecture_id}", summary="Fetch Student Context Buffer & Socratic Priming Quiz")
+def resume_studio_context(lecture_id: str, user_id: str = "std_demo"):
+    """
+    Retrieves the student's working memory buffer.
+    If the student paused after >30s, generates an active recall priming checkpoint.
+    """
+    key = f"{user_id}_{lecture_id}"
+    buf = STUDIO_CONTEXT_BUFFERS.get(key, {
+        "user_id": user_id,
+        "lecture_id": lecture_id,
+        "course_id": "course_dl",
+        "timestamp_sec": 194,
+        "watched_segments": [[0, 194]],
+        "last_active_concept": "Sigmoid Squashing Layer",
+        "friction_index": 0.45,
+        "cognitive_state": "NORMAL_ENGAGEMENT",
+        "has_reentry_priming": True
+    })
+
+    # Generate a relevant Socratic Priming Question based on last active concept
+    priming_quiz = {
+        "concept": buf.get("last_active_concept", "Neural Foundations"),
+        "question": f"Welcome back! Before resuming at [{buf['timestamp_sec'] // 60:02d}:{buf['timestamp_sec'] % 60:02d}], let's prime your working memory: In the layer equation a^(l) = sigma(W · a^(l-1) + b), what does the bias term b adjust?",
+        "options": [
+            "The activation threshold determining how easily a neuron lights up",
+            "The learning rate for gradient descent",
+            "The dimensions of the weight matrix",
+            "The regularization penalty"
+        ],
+        "correct_index": 0,
+        "explanation": "The bias shifts the activation curve, effectively setting the threshold that input signals must exceed to activate the neuron.",
+        "xp_reward": 25
+    }
+
+    return {
+        "context_buffer": buf,
+        "should_prime": buf.get("timestamp_sec", 0) > 30,
+        "priming_quiz": priming_quiz
+    }
+

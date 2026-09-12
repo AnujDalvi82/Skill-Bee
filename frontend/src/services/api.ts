@@ -336,4 +336,70 @@ export class ApiClient {
       };
     }
   }
+
+  // --- Socratic Working Memory Context Buffer (SC-Buffer) ---
+  static async saveStudioContext(payload: {
+    user_id?: string;
+    lecture_id: string;
+    course_id?: string;
+    timestamp_sec: number;
+    dwell_time_sec?: number;
+    watched_segments?: number[][];
+    last_active_concept?: string;
+    friction_index?: number;
+    cognitive_state?: string;
+  }): Promise<any> {
+    try {
+      return await this.request('/studio/context/save', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      });
+    } catch {
+      // Graceful local cache fallback
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(`skillbee_context_buffer_${payload.lecture_id}`, JSON.stringify(payload));
+      }
+      return { success: true, cached: 'local' };
+    }
+  }
+
+  static async resumeStudioContext(lectureId: string, userId: string = 'std_demo'): Promise<{
+    context_buffer: any;
+    should_prime: boolean;
+    priming_quiz?: any;
+  }> {
+    try {
+      return await this.request(`/studio/context/resume/${encodeURIComponent(lectureId)}?user_id=${encodeURIComponent(userId)}`);
+    } catch {
+      // Local storage fallback
+      let saved = null;
+      if (typeof window !== 'undefined') {
+        const raw = localStorage.getItem(`skillbee_context_buffer_${lectureId}`);
+        if (raw) saved = JSON.parse(raw);
+      }
+      return {
+        context_buffer: saved || {
+          lecture_id: lectureId,
+          timestamp_sec: 194,
+          last_active_concept: 'Sigmoid Squashing Layer',
+          friction_index: 0.45,
+          cognitive_state: 'NORMAL_ENGAGEMENT'
+        },
+        should_prime: (saved?.timestamp_sec || 194) > 30,
+        priming_quiz: {
+          concept: saved?.last_active_concept || 'Sigmoid Squashing Layer',
+          question: `Welcome back! In the layer equation a^(l) = sigma(W·a^(l-1) + b), what does the bias term b adjust?`,
+          options: [
+            'The activation threshold determining how easily a neuron lights up',
+            'The learning rate for gradient descent',
+            'The dimensions of the weight matrix',
+            'The regularization penalty'
+          ],
+          correct_index: 0,
+          explanation: 'The bias shifts the activation curve, effectively setting the threshold that input signals must exceed to activate the neuron.',
+          xp_reward: 25
+        }
+      };
+    }
+  }
 }

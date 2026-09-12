@@ -89,6 +89,7 @@ export interface InVideoQuizCheckpoint {
   correctIndex: number;
   xpReward: number;
   socraticHint: string;
+  explanation?: string;
 }
 
 // 6. Pre-Lecture Flashcard
@@ -100,6 +101,62 @@ export interface PreLectureFlashcard {
   backAnswer: string;
   latexFormula?: string;
   tag: string;
+}
+
+// 6b. Video Learning Studio Dynamic Types & Socratic Context Buffer
+export interface VideoContextBuffer {
+  videoId: string;
+  lectureId: string;
+  courseId: string;
+  lastTimestampSec: number;
+  watchedSegments: [number, number][];
+  lastActiveConcept: string;
+  cognitiveFrictionAtExit: number;
+  lastCognitiveState: string;
+  reentryQuizCompleted?: boolean;
+  savedAtISO: string;
+}
+
+export interface CourseLecture {
+  id: string;
+  number: string;
+  title: string;
+  duration: string;
+  durationSec: number;
+  youtubeId: string;
+  completed: boolean;
+  active: boolean;
+  description: string;
+  conceptKey: string;
+  cues: { sec: number; label: string; text: string }[];
+  multilingualCues?: Record<'EN' | 'HI' | 'TA' | 'ES', { sec: number; text: string }[]>;
+  beebookNotes: BeeBookNote[];
+  inVideoQuiz: InVideoQuizCheckpoint;
+  reentryPrimingQuiz: {
+    concept: string;
+    question: string;
+    options: string[];
+    correctIndex: number;
+    explanation: string;
+    triggerTimestampSec: number;
+  };
+  flashcards: PreLectureFlashcard[];
+}
+
+export interface CourseChapter {
+  id: string;
+  title: string;
+  lectures: CourseLecture[];
+}
+
+export interface CourseTrack {
+  id: string;
+  title: string;
+  code: string;
+  instructor: string;
+  badge: string;
+  description: string;
+  chapters: CourseChapter[];
 }
 
 // 7. Faculty Triage Record (UCI Risk Model)
