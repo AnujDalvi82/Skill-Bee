@@ -1,175 +1,185 @@
-# SCAMPER Innovation Platform
+<p align="center">
+  <h1 align="center">🐝 Skill-Bee</h1>
+  <p align="center">
+    <strong>Closed-Loop Adaptive Learning Intelligence Platform</strong><br>
+    <em>Bridging College Curricula with Industry Mastery for Higher Engineering Education</em>
+  </p>
+  <p align="center">
+    <a href="#-problem-statement">Problem Statement</a> •
+    <a href="#-core-thesis--product-vision">Product Vision</a> •
+    <a href="#-system-architecture">Architecture</a> •
+    <a href="#-starter-pack-datasets">Datasets</a> •
+    <a href="#-key-features">Key Features</a> •
+    <a href="#-ibm-technology-alignment">IBM Tech</a> •
+    <a href="#-repository-structure">Repository</a>
+  </p>
+</p>
 
-A digital platform for structured creative thinking, empowering teams to unlock systematic innovation through the proven SCAMPER methodology.
+---
 
-## Product Vision
+## 📌 Problem Statement
 
-To become the leading digital platform for structured creative thinking, empowering every team to unlock systematic innovation through proven methodologies like SCAMPER, transforming how organizations approach product development and problem-solving.
+**Problem Statement No. 4: Making Learning Intelligent using AI** (IBM National Hackathon)
 
-## Target Audience
+Engineering colleges conventionally deliver uniform curriculum, learning materials, and assessment schedules across entire classrooms (60–120+ students), disregarding significant individual variances in:
+- **Prior knowledge** & foundational gaps
+- **Learning speed** & acquisition velocity
+- **Conceptual understanding** vs. superficial memorization
+- **Study behaviour**, dwell time, and persistence
+- **Preferred learning modalities** (code, visual simulation, mathematical proof, text)
+- **Assessment performance** under test pressure
+- **Areas of cognitive difficulty**
+- **Engagement telemetry** with learning content
 
-- Innovation teams
-- Product managers
-- Design thinking facilitators
-- Startup founders
-- Corporate strategy groups seeking structured approaches to creative problem-solving and continuous improvement initiatives
+### The 3 Core Questions Skill-Bee Answers:
+1. **Diagnostic:** *"What does the student actually understand right now?"*
+2. **Predictive:** *"What are they likely to struggle with next?"*
+3. **Prescriptive & Interventive:** *"What learning intervention will help, and when is human faculty intervention required?"*
 
-## Core Features
+---
 
-- **Project Management**: Create and manage innovation projects
-- **SCAMPER Sessions**: Apply SCAMPER techniques (Substitute, Combine, Adapt, Modify, Put to another use, Eliminate, Reverse)
-- **Idea Tracking**: Capture and manage ideas generated from SCAMPER sessions
-- **CRUD Operations**: Full create, read, update, delete functionality for all entities
+## 💡 Core Thesis & Product Vision
 
-## Technology Stack
+Current Massive Open Online Courses (e.g., Coursera) and institutional LMSs suffer from **abysmal completion rates (< 15%)** and severe **prerequisite collapse**: when an engineering student gets stuck on an advanced topic (like *Backpropagation* or *Principal Component Analysis*), the platform repeats the same video transcript rather than diagnosing that the student forgot 1st-year *Multivariable Chain Rule* or *Matrix Eigenvalues*.
 
-- **Backend**: FastAPI (Python)
-- **Database**: SQLite (SQLAlchemy ORM)
-- **Architecture**: Modular Monolith
-- **API**: RESTful API with automatic OpenAPI documentation
+**Skill-Bee transforms IBM SkillsBuild into an Adaptive Cognitive Operating System:**
+- **Synchronized Dual-Horizon Dashboard:** Connects a student's active university classroom (e.g., *Dr. Sharma's 4th Sem Math & CS*) with their chosen industry career pathway (e.g., *AI & Machine Learning Engineer*).
+- **Mastery-Driven Prerequisite Graph:** Maps college academic concepts as prerequisite bridges required to unlock high-value industry competencies.
+- **Faculty Early-Warning Cockpit:** Replaces noisy grade books with an ICU-style triage radar (Green / Amber / Red) that flags at-risk students weeks before mid-term exams.
 
-## Prerequisites
+---
 
-- Python 3.9 or higher
-- pip (Python package manager)
+## 🏗️ System Architecture
 
-## Installation
-
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd <project-directory>
-```
-
-2. Create a virtual environment:
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
-
-3. Install dependencies:
-```bash
-pip install -r backend/requirements.txt
-```
-
-4. Set up environment variables:
-```bash
-cp .env.example .env
-# Edit .env file with your configuration
-```
-
-## Running Locally
-
-1. Activate virtual environment (if not already activated):
-```bash
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
-
-2. Start the application:
-```bash
-cd backend
-uvicorn main:app --reload --host 0.0.0.0 --port 8000
-```
-
-3. Access the application:
-- API: http://localhost:8000
-- Interactive API Documentation: http://localhost:8000/docs
-- Alternative API Documentation: http://localhost:8000/redoc
-
-## API Endpoints
-
-### Projects
-- `POST /api/v1/projects` - Create a new project
-- `GET /api/v1/projects` - List all projects
-- `GET /api/v1/projects/{project_id}` - Get a specific project
-- `PUT /api/v1/projects/{project_id}` - Update a project
-- `DELETE /api/v1/projects/{project_id}` - Delete a project
-
-### SCAMPER Sessions
-- `POST /api/v1/sessions` - Create a new SCAMPER session
-- `GET /api/v1/sessions` - List all sessions (filter by project_id)
-- `GET /api/v1/sessions/{session_id}` - Get a specific session
-- `PUT /api/v1/sessions/{session_id}` - Update a session
-- `DELETE /api/v1/sessions/{session_id}` - Delete a session
-
-### Ideas
-- `POST /api/v1/ideas` - Create a new idea
-- `GET /api/v1/ideas` - List all ideas (filter by session_id)
-- `GET /api/v1/ideas/{idea_id}` - Get a specific idea
-- `PUT /api/v1/ideas/{idea_id}` - Update an idea
-- `DELETE /api/v1/ideas/{idea_id}` - Delete an idea
-
-## SCAMPER Methodology
-
-SCAMPER is a creative thinking technique that uses seven prompts:
-
-- **S**ubstitute: What can you substitute or replace?
-- **C**ombine: What can you combine or merge?
-- **A**dapt: What can you adapt or adjust?
-- **M**odify: What can you magnify, minify, or modify?
-- **P**ut to another use: How can you use it differently?
-- **E**liminate: What can you remove or simplify?
-- **R**everse: What can you rearrange or reverse?
-
-## Project Structure
+Skill-Bee enforces a **decoupled dual-layer architecture** strictly separating deterministic, psychometric mastery computation from generative natural language scaffolding.
 
 ```
-.
-├── backend/
-│   ├── main.py              # Main application entry point
-│   ├── config.py            # Configuration management
-│   ├── database.py          # Database setup and session management
-│   ├── models.py            # SQLAlchemy database models
-│   ├── schemas.py           # Pydantic schemas for validation
-│   ├── routers/
-│   │   └── scamper_router.py # API route handlers
-│   └── requirements.txt     # Python dependencies
-├── .env.example             # Environment variables template
-└── README.md               # This file
+                                  [ STUDENT TELEMETRY ]
+                     (Answers, Dwell Time, Hint Latency, Retry Counts)
+                                            │
+                                            ▼
+ ┌────────────────────────────────────────────────────────────────────────────────────────┐
+ │  LAYER 1: DETERMINISTIC PSYCHOMETRIC & COGNITIVE ENGINE                                │
+ │  ────────────────────────────────────────────────────────────────────────────────────  │
+ │  • 2-Parameter Logistic Item Response Theory (2PL-IRT) + Bayesian Belief Updating       │
+ │  • Computes Latent Ability (θ), Item Difficulty (b), and Discrimination (a)             │
+ │  • Directed Acyclic Graph (DAG) Concept Knowledge Graph (Math ➔ ML Prerequisite Chains) │
+ │  • Backward Prerequisite Traversal: Isolates foundational math decay behind ML errors  │
+ │  • Contextual Multi-Armed Bandit (LinUCB): Dynamically selects optimal modality        │
+ └──────────────────────────────────────────┬─────────────────────────────────────────────┘
+                                            │ Immutable JSON Assessment State
+                                            ▼
+ ┌────────────────────────────────────────────────────────────────────────────────────────┐
+ │  LAYER 2: SOCRATIC TUTOR & GENERATIVE SCAFFOLDING (IBM Granite 3.0)                    │
+ │  ────────────────────────────────────────────────────────────────────────────────────  │
+ │  • Consumes diagnostic JSON vectors without calculating grades (hallucination-free)    │
+ │  • Progressive Socratic hint engine: guides students without spoon-feeding answers     │
+ │  • 1-Click Faculty Lesson Briefs & Remedial Micro-Quiz Generator                       │
+ └──────────────────────────────────────────┬─────────────────────────────────────────────┘
+                                            │
+                     ┌──────────────────────┴──────────────────────┐
+                     ▼                                             ▼
+        [ STUDENT DUAL-HORIZON VIEW ]               [ FACULTY TRIAGE RADAR ]
+        • Academic & Career Roadmap Sync            • Green / Amber / Red Tiers
+        • Dynamic Prerequisite Graph                • Pre-Exam Dropout Early Warning
+        • Modality-Adaptive Content Player          • Automated Peer-to-Peer Matchmaker
 ```
 
-## Environment Variables
+---
 
-See `.env.example` for all available configuration options:
+## 📊 Starter Pack Datasets & Ingestion Strategy
 
-- `DATABASE_URL`: Database connection string
-- `SECRET_KEY`: Secret key for security (change in production)
-- `CORS_ORIGINS`: Allowed CORS origins
-- `DEBUG`: Enable/disable debug mode
+Skill-Bee strictly anchors its machine learning pipelines and psychometrics in the official hackathon starter pack:
 
-## Development
+| Dataset | Records / Scope | Exact Role in Skill-Bee |
+| :--- | :--- | :--- |
+| **EdNet** | 131M+ interactions, 784k+ students | Trains sequential knowledge tracing, dwell-time thresholds, hint-consumption penalties, and frustration/guessing detection. |
+| **MathE** | 9,546 higher-ed mathematics responses | Calibrates empirical difficulty ($b$) and discrimination ($a$) parameters across foundational Linear Algebra, Calculus, and Probability. |
+| **UCI Higher Education Performance** | 145 instances, 31 features | Powers the Faculty Early-Warning Classifier to predict end-of-term academic failure based on study habits and early engagement. |
+| **Indian Open Government Data** | Data.gov.in & AICTE/NPTEL standards | Calibrates curriculum ontologies to Indian engineering standards and establishes Tier-2 / Tier-3 regional performance baselines. |
 
-### Database Migrations
+---
 
-The application automatically creates database tables on startup. For production, consider using Alembic for migrations:
+## ⚡ Key Features
 
-```bash
-pip install alembic
-alembic init alembic
-# Configure alembic.ini and env.py
-alembic revision --autogenerate -m "Initial migration"
-alembic upgrade head
+### 1. Student Experience (The Adaptive Learning Loop)
+* **Cold-Start Computerized Adaptive Test (CAT):** A 3–5 question diagnostic calibrated on MathE to instantly establish baseline ability ($\theta$) upon joining a classroom.
+* **Dual-Horizon Roadmap:** Academic syllabus concepts dynamically unlock career milestones (e.g., *"Master Matrix Inverses to unlock Neural Network Weights"*).
+* **Multi-Modal Content Bandit (LinUCB):** Automatically selects the most effective format for each student:
+  - 🖥️ Interactive Python code lab
+  - 📊 Visual dynamic simulation
+  - 📝 Concise mathematical proof / cheatsheet
+  - 🎥 Focused micro-video explanation
+* **Socratic Companion:** Real-time conversational tutor providing multi-level progressive hints.
+
+### 2. Faculty ICU Cockpit (Human-in-the-Loop Triage)
+* **Triage Stratification:** Automatically clusters the class into:
+  - 🟢 **Green (Autonomous):** Pacing ahead, eligible to be peer mentors.
+  - 🟡 **Amber (Friction):** Automated remedial modules dispatched.
+  - 🔴 **Red (Critical Collapse):** Foundational prerequisite breakdown requiring direct intervention.
+* **1-Click Remedial Micro-Quiz:** Generates and dispatches a 5-minute pre-lecture diagnostic quiz targeting class-wide bottlenecks.
+* **Automated Peer Matchmaker:** Intelligently pairs struggling Red-tier students with compatible Green-tier lab peers.
+* **1-Page Diagnostic Dossier:** Auto-generates a student briefing card for office hours in under 30 seconds.
+
+---
+
+## 🛡️ IBM Technology Alignment
+
+- **IBM Granite 3.0 via watsonx.ai:** Generates pedagogically sound, hallucination-free Socratic hints and faculty briefs.
+- **watsonx.governance:** Provides transparent, auditable, and bias-free psychometric scoring, ensuring recommendations are equitable across varied socio-economic student demographics.
+- **Red Hat OpenShift / IBM Cloud:** Containerized, scalable microservices designed for enterprise university deployments.
+
+---
+
+## 📁 Repository Structure
+
+```
+Skill-Bee/
+├── datasets/                 # Real starter pack data & ingestion pipelines
+│   ├── mathe/               # MathE item calibration (IRT parameters)
+│   ├── ednet/               # EdNet interaction telemetry & dwell-time models
+│   └── uci_performance/     # UCI academic risk predictive models
+│
+├── core_engine/              # Deterministic Cognitive Mastery Engine
+│   ├── irt_engine.py        # 2PL-IRT + Bayesian ability & mastery computation
+│   ├── concept_dag.py       # Knowledge Graph (Math prerequisites -> ML skills)
+│   ├── root_cause.py        # Backward prerequisite graph traversal
+│   └── bandit_recommender.py# LinUCB Contextual Bandit for adaptive modalities
+│
+├── faculty_cockpit/          # Faculty Triage & Early Intervention Engine
+│   ├── risk_classifier.py   # Predicts student failure risk (Green / Amber / Red)
+│   ├── triage_service.py    # Auto-clusters cohort bottlenecks & peer matching
+│   └── remedial_generator.py# Generates 10-minute micro-quizzes & teacher dossiers
+│
+├── backend/                  # FastAPI Application
+│   ├── api/
+│   │   ├── student.py       # Onboarding, Diagnostic, Next-Action, Progress
+│   │   ├── faculty.py       # Classroom overview, Heatmap, Triage alerts
+│   │   └── analytics.py     # NBA/NAAC Course Outcome (CO/PO) metrics
+│   ├── main.py              # Application entrypoint
+│   └── requirements.txt
+│
+└── frontend/                 # Interactive Web Dashboard (React / Tailwind)
+    ├── src/
+    │   ├── components/      # Reusable UI components
+    │   ├── pages/
+    │   │   ├── StudentDashboard.tsx  # Dual-Horizon Roadmap & Adaptive Player
+    │   │   └── FacultyCockpit.tsx    # ICU-style Triage & Intervention Radar
 ```
 
-### Code Quality
+---
 
-Follow PEP 8 style guidelines for Python code. Use tools like:
-- `black` for code formatting
-- `flake8` for linting
-- `mypy` for type checking
+## 🎯 Target Performance Benchmarks
 
-## Security Considerations
+- **Diagnostic Accuracy:** $\text{AUC} \ge 0.82$ on next-question response prediction.
+- **Root-Cause Precision:** $\ge 90\%$ accuracy in isolating foundational math gaps behind ML failures.
+- **Faculty Triage Latency:** Reduces instructor intervention decision time to $< 30$ seconds.
+- **Computational Footprint:** Sub-15ms inference latency on a single CPU core with $< 50\text{ MB}$ RAM footprint for deployment on local college intranet servers.
 
-- Change `SECRET_KEY` in production to a strong random string
-- Use environment variables for sensitive configuration
-- Enable HTTPS in production
-- Implement rate limiting for API endpoints
-- Add authentication and authorization as needed
+---
 
-## License
+## 👥 Authors & Acknowledgments
 
-[Add your license information here]
-
-## Support
-
-For questions or issues, please contact [your contact information]
+- **Team:** `team_063`
+- **Hackathon:** IBM National Hackathon — BOB Hacks
+- **Mentorship:** IBM Technology Expert Labs
