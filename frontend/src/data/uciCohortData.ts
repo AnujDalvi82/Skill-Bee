@@ -17,7 +17,15 @@ export const COHORT_MOCK_DATA: StudentTriageRecord[] = [
     suggestedPeerId: 'stud-012',
     suggestedPeerName: 'Ananya Sen',
     hoursSpentWeekly: 3.5,
-    lastActiveHoursAgo: 26
+    lastActiveHoursAgo: 26,
+    latent_theta: -1.45,
+    friction_index: 0.82,
+    xai_attribution: {
+      calculus_decay_pct: 44.5,
+      telemetry_friction_pct: 38.2,
+      attendance_decay_pct: 17.3
+    },
+    office_hour_script: 'Focus 10-min remedial review on Matrix Inversion row-reduction step. Recommend 2D visual determinant simulation.'
   },
   {
     id: 'stud-002',
@@ -32,7 +40,15 @@ export const COHORT_MOCK_DATA: StudentTriageRecord[] = [
     suggestedPeerId: 'stud-007',
     suggestedPeerName: 'Devansh Roy',
     hoursSpentWeekly: 2.8,
-    lastActiveHoursAgo: 48
+    lastActiveHoursAgo: 48,
+    latent_theta: -1.68,
+    friction_index: 0.88,
+    xai_attribution: {
+      calculus_decay_pct: 51.0,
+      telemetry_friction_pct: 32.5,
+      attendance_decay_pct: 16.5
+    },
+    office_hour_script: 'Chain rule nested partial derivatives breakdown. Student experiences cognitive block after 3rd nested Jacobian.'
   },
   {
     id: 'stud-003',
@@ -47,7 +63,15 @@ export const COHORT_MOCK_DATA: StudentTriageRecord[] = [
     suggestedPeerId: 'stud-012',
     suggestedPeerName: 'Ananya Sen',
     hoursSpentWeekly: 6.2,
-    lastActiveHoursAgo: 8
+    lastActiveHoursAgo: 8,
+    latent_theta: 0.12,
+    friction_index: 0.45,
+    xai_attribution: {
+      calculus_decay_pct: 32.0,
+      telemetry_friction_pct: 45.0,
+      attendance_decay_pct: 23.0
+    },
+    office_hour_script: 'Review characteristic equation det(A - lambda*I) = 0 with geometric vector scaling demo.'
   },
   {
     id: 'stud-004',
@@ -60,7 +84,15 @@ export const COHORT_MOCK_DATA: StudentTriageRecord[] = [
     currentDwellFriction: 'NORMAL',
     primaryBlockerConcept: 'Gradient Descent Convergence',
     hoursSpentWeekly: 7.0,
-    lastActiveHoursAgo: 14
+    lastActiveHoursAgo: 14,
+    latent_theta: 0.35,
+    friction_index: 0.38,
+    xai_attribution: {
+      calculus_decay_pct: 28.5,
+      telemetry_friction_pct: 48.0,
+      attendance_decay_pct: 23.5
+    },
+    office_hour_script: 'Address learning rate oscillations. Transition to interactive Jupyter loss surface contour visualizer.'
   },
   {
     id: 'stud-012',
@@ -73,7 +105,15 @@ export const COHORT_MOCK_DATA: StudentTriageRecord[] = [
     currentDwellFriction: 'LOW',
     primaryBlockerConcept: 'None (Ahead of Pacing)',
     hoursSpentWeekly: 14.5,
-    lastActiveHoursAgo: 2
+    lastActiveHoursAgo: 2,
+    latent_theta: 1.85,
+    friction_index: 0.08,
+    xai_attribution: {
+      calculus_decay_pct: 5.0,
+      telemetry_friction_pct: 6.0,
+      attendance_decay_pct: 89.0
+    },
+    office_hour_script: 'Advanced topic readiness: Nominate as peer tutor for Section B Linear Algebra laboratory.'
   },
   {
     id: 'stud-007',
@@ -86,7 +126,15 @@ export const COHORT_MOCK_DATA: StudentTriageRecord[] = [
     currentDwellFriction: 'LOW',
     primaryBlockerConcept: 'None (Ahead of Pacing)',
     hoursSpentWeekly: 12.8,
-    lastActiveHoursAgo: 5
+    lastActiveHoursAgo: 5,
+    latent_theta: 1.65,
+    friction_index: 0.12,
+    xai_attribution: {
+      calculus_decay_pct: 8.0,
+      telemetry_friction_pct: 7.0,
+      attendance_decay_pct: 85.0
+    },
+    office_hour_script: 'High autonomy. Prepared for advanced Transformers & Multi-Head Self-Attention modules.'
   }
 ];
 

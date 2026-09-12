@@ -120,7 +120,7 @@ export default function Home() {
         )}
 
         {activeView === 'lecture' && (
-          <VideoLectureStudioView />
+          <VideoLectureStudioView onNavigate={(view) => setActiveView(view)} />
         )}
 
         {activeView === 'faculty' && (

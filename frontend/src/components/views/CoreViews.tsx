@@ -1223,8 +1223,11 @@ export const ColdStartCATView: React.FC<{ onComplete: () => void }> = ({ onCompl
   const [deltaHistory, setDeltaHistory] = useState<number[]>([]);
   const [isDone, setIsDone] = useState(false);
   const [backendEvaluated, setBackendEvaluated] = useState(false);
+  const [activeQuestion, setActiveQuestion] = useState(MATHE_QUESTION_BANK[0]);
+  const [fisherInfo, setFisherInfo] = useState<number>(0.72);
+  const [isAdaptiveLive, setIsAdaptiveLive] = useState<boolean>(false);
 
-  const question = MATHE_QUESTION_BANK[currentIdx];
+  const question = activeQuestion;
 
   const handleSelectOption = async (idx: number) => {
     setSelectedOpt(idx);
@@ -1254,10 +1257,47 @@ export const ColdStartCATView: React.FC<{ onComplete: () => void }> = ({ onCompl
     }
   };
 
-  const handleNext = () => {
-    if (currentIdx < MATHE_QUESTION_BANK.length - 1) {
-      setCurrentIdx(currentIdx + 1);
+  const handleNext = async () => {
+    const nextIdx = currentIdx + 1;
+    if (nextIdx < MATHE_QUESTION_BANK.length) {
+      setCurrentIdx(nextIdx);
       setSelectedOpt(null);
+
+      // Attempt to pull optimal diagnostic item from the 833 calibrated MathE items
+      try {
+        const answeredIds = accumulatedResponses.map((r) => r.question_id);
+        const adaptiveRes = await ApiClient.getAdaptiveQuestion({
+          topic: nextIdx <= 2 ? 'Linear Algebra' : 'Calculus',
+          theta: theta,
+          answered: answeredIds.join(',')
+        });
+
+        if (adaptiveRes && adaptiveRes.selected_item) {
+          const item = adaptiveRes.selected_item;
+          setActiveQuestion({
+            id: `mathe-item-${item.question_id}`,
+            topic: item.topic || 'LinearAlgebra',
+            conceptKey: item.subtopic?.toLowerCase().replace(/\s+/g, '_') || 'eigenvalues',
+            conceptLabel: `${item.topic} • ${item.subtopic}`,
+            question: item.question_text || MATHE_QUESTION_BANK[nextIdx].question,
+            latexEquation: item.latex || MATHE_QUESTION_BANK[nextIdx].latexEquation,
+            options: item.options || MATHE_QUESTION_BANK[nextIdx].options,
+            correctIndex: item.correct_index !== undefined ? item.correct_index : MATHE_QUESTION_BANK[nextIdx].correctIndex,
+            explanation: item.explanation || `Item selected via Maximum Fisher Information criterion (I = ${adaptiveRes.fisher_information_at_theta}) to optimize diagnostic precision at current theta = ${theta.toFixed(2)}.`,
+            difficulty_b: item.difficulty_b,
+            discrimination_a: item.discrimination_a,
+            prerequisites: ['matrix_inversion']
+          });
+          setFisherInfo(adaptiveRes.fisher_information_at_theta || 0.65);
+          setIsAdaptiveLive(true);
+        } else {
+          setActiveQuestion(MATHE_QUESTION_BANK[nextIdx]);
+          setIsAdaptiveLive(false);
+        }
+      } catch {
+        setActiveQuestion(MATHE_QUESTION_BANK[nextIdx]);
+        setIsAdaptiveLive(false);
+      }
     } else {
       setIsDone(true);
     }
@@ -1396,9 +1436,29 @@ export const ColdStartCATView: React.FC<{ onComplete: () => void }> = ({ onCompl
             {!isDone ? (
               <div>
                 <div className="mb-6">
-                  <span className="text-xs font-bold text-purple-700 bg-purple-100 px-2.5 py-1 rounded-full">
-                    {question.conceptLabel}
-                  </span>
+                  <div className="flex flex-wrap items-center gap-2 mb-2">
+                    <span className="text-xs font-bold text-purple-700 bg-purple-100 px-2.5 py-1 rounded-full">
+                      {question.conceptLabel}
+                    </span>
+                    <span className="text-[10px] font-mono font-bold text-gray-600 bg-gray-100 px-2.5 py-1 rounded-full">
+                      Item ID: {question.id}
+                    </span>
+                    <span className="text-[10px] font-mono font-bold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-full border border-blue-200">
+                      2PL Diff (b): {question.difficulty_b > 0 ? `+${question.difficulty_b.toFixed(2)}` : question.difficulty_b.toFixed(2)}
+                    </span>
+                    <span className="text-[10px] font-mono font-bold text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-full border border-indigo-200">
+                      Discrim (a): {question.discrimination_a.toFixed(2)}
+                    </span>
+                    <span className="text-[10px] font-mono font-bold text-amber-800 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200">
+                      Fisher Info I(θ): {fisherInfo.toFixed(3)}
+                    </span>
+                    {isAdaptiveLive && (
+                      <span className="text-[10px] font-mono font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200 flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        833 MathE Dataset Bank
+                      </span>
+                    )}
+                  </div>
                   <h3 className="font-display text-lg md:text-xl font-bold text-black mt-3">
                     {question.question}
                   </h3>

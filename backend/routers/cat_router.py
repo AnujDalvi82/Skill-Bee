@@ -5,6 +5,7 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from database import get_db
 import models, security
+from ml.orchestrator import cognitive_orchestrator
 
 router = APIRouter(prefix="/api/cat", tags=["Computerized Adaptive Testing (CAT)"])
 
@@ -101,8 +102,28 @@ def fisher_information(theta: float, a: float, b: float, D: float = 1.702) -> fl
 
 @router.get("/questions")
 def get_cat_question_pool():
-    """Return all calibrated 2PL-IRT questions in pool"""
-    return {"questions": MATHE_ITEMS, "total": len(MATHE_ITEMS)}
+    """Return calibrated 2PL-IRT questions in pool, integrated with MathE 833 item bank"""
+    calibrated_bank = cognitive_orchestrator.mathe_items if cognitive_orchestrator.mathe_items else []
+    return {
+        "questions": MATHE_ITEMS,
+        "starter_total": len(MATHE_ITEMS),
+        "calibrated_mathe_item_bank_size": len(calibrated_bank),
+        "total_available": len(MATHE_ITEMS) + len(calibrated_bank)
+    }
+
+@router.get("/next-adaptive-question")
+def select_adaptive_question(
+    topic: str = "Linear Algebra",
+    theta: float = 0.0,
+    answered: Optional[str] = None
+):
+    """Selects the question maximizing Fisher Information using calibrated MathE item bank"""
+    answered_ids = [int(q.strip()) for q in answered.split(",") if q.strip().isdigit()] if answered else []
+    return cognitive_orchestrator.select_next_adaptive_question(
+        topic=topic,
+        current_theta=theta,
+        answered_ids=answered_ids
+    )
 
 @router.post("/evaluate")
 def evaluate_cat_responses(

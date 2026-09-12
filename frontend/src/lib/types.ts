@@ -117,6 +117,14 @@ export interface StudentTriageRecord {
   suggestedPeerName?: string;
   hoursSpentWeekly: number;
   lastActiveHoursAgo: number;
+  xai_attribution?: {
+    calculus_decay_pct: number;
+    telemetry_friction_pct: number;
+    attendance_decay_pct: number;
+  };
+  office_hour_script?: string;
+  latent_theta?: number;
+  friction_index?: number;
 }
 
 // 8. Cohort Health Overview

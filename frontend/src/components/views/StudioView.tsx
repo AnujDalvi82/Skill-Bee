@@ -142,7 +142,7 @@ const RenderChatMessage: React.FC<{ content: string; onSeek: (sec: number) => vo
   );
 };
 
-export const VideoLectureStudioView: React.FC = () => {
+export const VideoLectureStudioView: React.FC<{ onNavigate?: (view: any) => void }> = ({ onNavigate }) => {
   // Course curriculum state
   const [chapters, setChapters] = useState<Chapter[]>([
     {
@@ -247,6 +247,15 @@ export const VideoLectureStudioView: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'beebot' | 'beebook' | 'curriculum'>('beebot');
   const [showInVideoQuiz, setShowInVideoQuiz] = useState(false);
   const [quizAnswered, setQuizAnswered] = useState<number | null>(null);
+  const [quizStartTime, setQuizStartTime] = useState<number>(Date.now());
+  const [quizAttempts, setQuizAttempts] = useState<number>(0);
+  const [telemetryState, setTelemetryState] = useState<{
+    cognitive_state?: string;
+    friction_index?: number;
+    should_switch_modality?: boolean;
+    dwell_ratio?: number;
+  } | null>(null);
+  const [isEvaluatingTelemetry, setIsEvaluatingTelemetry] = useState(false);
   const [showWarmupModal, setShowWarmupModal] = useState(false);
   const [flashcardIdx, setFlashcardIdx] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
@@ -280,6 +289,9 @@ export const VideoLectureStudioView: React.FC = () => {
   useEffect(() => {
     if (currentTimeSec >= 194 && currentTimeSec <= 198 && quizAnswered === null) {
       setShowInVideoQuiz(true);
+      setQuizStartTime(Date.now());
+      setQuizAttempts(0);
+      setTelemetryState(null);
     }
   }, [currentTimeSec, quizAnswered]);
 
@@ -496,14 +508,48 @@ export const VideoLectureStudioView: React.FC = () => {
     ]
   };
 
-  const handleQuizAnswer = (idx: number) => {
+  const handleQuizAnswer = async (idx: number) => {
     setQuizAnswered(idx);
+    const newAttempts = quizAttempts + 1;
+    setQuizAttempts(newAttempts);
+
     if (idx === 1) {
       confetti({
         particleCount: 80,
         spread: 70,
         origin: { y: 0.6 }
       });
+    }
+
+    const dwellSec = Math.max(10, Math.round((Date.now() - quizStartTime) / 1000));
+    setIsEvaluatingTelemetry(true);
+    try {
+      const tel = await ApiClient.evaluateTelemetry({
+        dwell_time_sec: dwellSec,
+        hint_count: idx !== 1 ? 1 : 0,
+        attempt_count: newAttempts,
+        item_difficulty_b: 0.65
+      });
+      setTelemetryState(tel);
+    } catch {
+      // Local fallback
+      if (idx !== 1 || dwellSec > 45) {
+        setTelemetryState({
+          cognitive_state: 'FRUSTRATED_BLOCK',
+          friction_index: 0.78,
+          should_switch_modality: true,
+          dwell_ratio: 1.8
+        });
+      } else {
+        setTelemetryState({
+          cognitive_state: 'NORMAL_ENGAGEMENT',
+          friction_index: 0.15,
+          should_switch_modality: false,
+          dwell_ratio: 0.9
+        });
+      }
+    } finally {
+      setIsEvaluatingTelemetry(false);
     }
   };
 
@@ -615,6 +661,58 @@ export const VideoLectureStudioView: React.FC = () => {
                       {quizAnswered === 1
                         ? '🎉 Correct! Sigmoid provides the crucial non-linear activation map! +50 Honey XP awarded!'
                         : 'Review note: Non-linear squashing allows neural networks to approximate any continuous function.'}
+                    </div>
+                  )}
+
+                  {/* EdNet Streaming Friction & LinUCB Modality Alert */}
+                  {telemetryState && (
+                    <div className={`p-3.5 rounded-2xl border text-xs mb-3 transition-all ${
+                      telemetryState.cognitive_state === 'FRUSTRATED_BLOCK'
+                        ? 'bg-amber-50 border-amber-300 text-amber-950'
+                        : telemetryState.cognitive_state === 'BLIND_GUESSING'
+                        ? 'bg-rose-50 border-rose-300 text-rose-950'
+                        : 'bg-emerald-50 border-emerald-300 text-emerald-950'
+                    }`}>
+                      <div className="flex items-center justify-between font-bold mb-1">
+                        <span className="flex items-center gap-1.5">
+                          <span>🧠 EdNet Telemetry:</span>
+                          <span className="uppercase font-mono text-[10px] px-1.5 py-0.5 rounded bg-black/10">
+                            {telemetryState.cognitive_state?.replace('_', ' ')}
+                          </span>
+                        </span>
+                        <span className="font-mono text-[10px] px-2 py-0.5 rounded-full bg-white/90 border border-gray-200">
+                          Friction F = {telemetryState.friction_index?.toFixed(2)}
+                        </span>
+                      </div>
+
+                      {telemetryState.should_switch_modality && (
+                        <div className="mt-2 pt-2 border-t border-amber-200 flex flex-col gap-2">
+                          <p className="text-[11px] text-amber-900 font-medium leading-relaxed">
+                            <strong>LinUCB Multi-Armed Bandit:</strong> High cognitive friction detected. LinUCB recommends switching to an alternate modality.
+                          </p>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => {
+                                setShowInVideoQuiz(false);
+                                onNavigate?.('roadmap');
+                              }}
+                              className="flex-1 py-1.5 px-2.5 rounded-xl bg-[#ffe24c] hover:bg-yellow-400 text-black font-bold text-[10px] transition-all"
+                            >
+                              🎨 Visual Sim (LinUCB)
+                            </button>
+                            <button
+                              onClick={() => {
+                                setShowInVideoQuiz(false);
+                                setUserQuery("Explain the Sigmoid activation mathematically and why it is needed.");
+                                setActiveTab('beebot');
+                              }}
+                              className="flex-1 py-1.5 px-2.5 rounded-xl bg-black hover:bg-gray-800 text-white font-bold text-[10px] transition-all"
+                            >
+                              🤖 Ask BeeBot RAG
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
 

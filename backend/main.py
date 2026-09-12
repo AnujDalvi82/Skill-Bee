@@ -7,7 +7,7 @@ from slowapi.errors import RateLimitExceeded
 from config import settings
 from database import engine, Base
 import models
-from routers import auth_router, cat_router, dag_router, faculty_router, studio_router
+from routers import auth_router, cat_router, dag_router, faculty_router, studio_router, ml_router
 
 # Initialize database tables
 Base.metadata.create_all(bind=engine)
@@ -56,6 +56,7 @@ app.include_router(cat_router.router)
 app.include_router(dag_router.router)
 app.include_router(faculty_router.router)
 app.include_router(studio_router.router)
+app.include_router(ml_router.router)
 
 @app.get("/", tags=["Health"])
 def health_check():
